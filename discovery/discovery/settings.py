@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'social_app',
+    'login',
 
     'allauth',
     'allauth.account',
@@ -129,9 +129,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+"""
+STATIC_ROOT = os.path.join(BASE_DIR, 'root')
+STATICFILES_DIR = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'boot'),
+]
+"""
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backend.AuthenticationBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 SITE_ID = 1
