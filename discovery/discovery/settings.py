@@ -95,7 +95,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'discovery_db',
         'USER': 'postgres',
-        'PASSWORD': 'root',
+        # comment out own password before pushing to master
+        'PASSWORD': 'Mangojango88!',
+        # 'PASSWORD':,
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
