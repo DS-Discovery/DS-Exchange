@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import render
 import datetime
 
@@ -16,10 +17,14 @@ from .models import Partner
 from students.models import Student
 # Create your views here.
 from django.http import HttpResponse
+from django.template import loader
+from .models import Partner
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the projects index.")
+    latest_question_list = Partner.objects.order_by('project_name')
+    context = {'latest_question_list': latest_question_list}
+    return render(request, 'projects.html', context)
 
 
 def detail(request, project_name):

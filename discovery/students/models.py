@@ -19,23 +19,9 @@ class Student(models.Model):
     def __str__(self):
         return self.full_name
 
-
-class Question(models.Model):
-    partner = models.ForeignKey('projects.Partner', on_delete=models.CASCADE, default="404")
-    question_text = models.CharField(max_length=200)
-    def create_id(partner, question_text):
-        return hash(str(partner) + str(question_text))
-
-
-    id = models.CharField(primary_key=True, default = create_id(partner, question_text), max_length = 200)
-
-    def __str__(self):
-        return self.question_text
-
-
 class Answer(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, default="404") # PRIMARY KEY
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    student = models.ForeignKey('students.Student', on_delete=models.CASCADE) # PRIMARY KEY
+    question = models.ForeignKey('projects.Question', on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=1000)
     def __str__(self):
         return self.answer_text
