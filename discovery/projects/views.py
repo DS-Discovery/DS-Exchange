@@ -9,18 +9,35 @@ from .models import Partner
 
 def index(request):
     if request.method == 'POST':
+        # here when select dropdown category
         category = request.POST.get('category_wanted')
         latest_question_list = Partner.objects.filter(project_category__contains=category)
+        print(request.POST)
     else:
         latest_question_list = Partner.objects.order_by('project_name')
+
     project_category_list = set()
     for e in Partner.objects.all():
         categories = e.project_category.strip().split(',')
         categories = [cat.strip() for cat in categories]
         project_category_list.update(categories)
     project_category_list = sorted(list(project_category_list))
-    context = {'latest_question_list': latest_question_list,
-                'project_category_list': project_category_list}
+
+
+    # need to send requested category back to keep category selected
+    if request.method == "POST":
+        context = {'latest_question_list': latest_question_list,
+                   'project_category_list': project_category_list,
+                   # send selected category back
+                   'selected_category': request.POST.get("category_wanted")
+                   }
+
+    else:
+        context = {'latest_question_list': latest_question_list,
+                   'project_category_list': project_category_list,
+                   }
+
+    print(context["project_category_list"])
     return render(request, 'projects.html', context)
 
 
