@@ -11,8 +11,13 @@ def index(request):
     if request.method == 'POST':
         # here when select dropdown category
         category = request.POST.get('category_wanted')
-        latest_question_list = Partner.objects.filter(project_category__contains=category)
+        project = request.POST.get('project_wanted')
         print(request.POST)
+        print("project_wanted is", project)
+        if category:
+            latest_question_list = Partner.objects.filter(project_category__contains=category)
+        else:
+            latest_question_list = Partner.objects.order_by('project_name')
     else:
         latest_question_list = Partner.objects.order_by('project_name')
 
@@ -26,18 +31,25 @@ def index(request):
 
     # need to send requested category back to keep category selected
     if request.method == "POST":
-        context = {'latest_question_list': latest_question_list,
-                   'project_category_list': project_category_list,
-                   # send selected category back
-                   'selected_category': request.POST.get("category_wanted")
-                   }
+        if category:
+            context = {'latest_question_list': latest_question_list,
+                       'project_category_list': project_category_list,
+                       # send selected category back
+                       'selected_category': request.POST.get("category_wanted")
+                       }
+        else:
+            context = {'latest_question_list': latest_question_list,
+                       'project_category_list': project_category_list,
+                       }
+        if project:
+            context["selected_project"] = Partner.objects.filter(project_name=project)[0]
 
     else:
         context = {'latest_question_list': latest_question_list,
                    'project_category_list': project_category_list,
                    }
 
-    print(context["project_category_list"])
+    print("selected project", context["selected_project"])
     return render(request, 'projects.html', context)
 
 
