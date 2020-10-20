@@ -90,9 +90,9 @@ def app(request, project_name):
         return render(request, 'projects/detail.html', {'questions': questions, 'partner' : partner, 'form' : form})
 
 
-    def results(request, question_id):
-        response = "You're looking at the results of question %s."
-        return HttpResponse(response % question_id)
+def results(request, question_id):
+    response = "You're looking at the results of question %s."
+    return HttpResponse(response % question_id)
 
     # def studentApplication(request):
     #     student_instance = get_object_or_404(Student)

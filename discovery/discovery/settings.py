@@ -96,7 +96,7 @@ DATABASES = {
         'NAME': 'discovery_db',
         'USER': 'postgres',
         # comment out own password before pushing to master
-        'PASSWORD': 'Mangojango88!',
+        'PASSWORD': 'root',
         # 'PASSWORD':,
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -148,6 +148,8 @@ STATICFILES_DIR = [
     os.path.join(BASE_DIR, 'boot'),
 ]
 """
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -156,8 +158,31 @@ AUTHENTICATION_BACKENDS = (
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = '/'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+ACCOUNT_SESSION_REMEMBER = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = None
 
+AUTH_USER_MODEL = 'login.User'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_REDIRECT_URL ='/'
+# LOGIN_REDIRECT_URL = "test"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "test"
+
+# ACCOUNT_FORMS = {
+#     'login': 'login.forms.CustomLoginForm',
+#     'add_email': 'allauth.account.forms.AddEmailForm',
+#     'change_password': 'allauth.account.forms.ChangePasswordForm',
+#     'set_password': 'allauth.account.forms.SetPasswordForm',
+#     'reset_password': 'allauth.account.forms.ResetPasswordForm',
+#     'reset_password_from_key': 'allauth.account.forms.ResetPasswordKeyForm',
+#     'disconnect': 'allauth.socialaccount.forms.DisconnectForm',
+# }
+# ACCOUNT_ADAPTER = "accounts.adapters.AccountAdapter"
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
