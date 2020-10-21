@@ -39,89 +39,69 @@
         {% endif %}
         -->
 
-
-                <!--
-
-                {% if project_category_list %}
-                    {% for category in project_category_list %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/projects/{{category}}"> {{category}} <span class="sr-only">(current)</span></a>
-                        </li>
-                    {% endfor %}
-                {% else %}
-                    <p>No Categories are available.</p>
-                {% endif %}
-                -->
-
-
         <div class="d-flex flex-column">
 
-             <!-- project listing -->
+
+            <div class="d-flex flex-row justify-content-center align-items-center border p-2">
+                <ul class="list-group list-group-horizontal-lg">
+                    <li class="list-group-item flex-fill pl-5 pr-5"><h4 class="mt-3">Projects</h4></li>
+                    <li class="list-group-item flex-fill pl-5 pr-5">
+                        <div class="mt-3">
+
+                            <form method="post" novalidate>
+                                {% csrf_token %}
+                                <select name = "category_wanted" class="form-control" onChange="form.submit();">
+                                {% if project_category_list %}
+                                    {% for category in project_category_list %}
+                                        {% if selected_category == category %}
+                                            <option class="dropdown-item" value="{{category}}" selected>{{category}}</option>
+                                        {% else %}
+                                            <option class="dropdown-item" value="{{category}}">{{category}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No Categories are available.</p>
+                                {% endif %}
+
+                                </select>
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            </div>
 
             <!-- start flexbox layout -->
-            <div class="d-flex flex-row justify-content-center align-items-center border p-2">
+
+                <!-- temp comment out this bar, don't need for project listing
               <ul class="list-group list-group-horizontal-lg">
                 <li class="list-group-item flex-fill "><h4>Basic Information</h4></li>
-                <li class="list-group-item flex-fill "><h4>Projects</h4>
-                  <div class="mt-3">
-                    <!-- <div class="border border-dark mr-2 pr-5 pl-5">
-                        <h5>Projects</h5>
-                    </div> -->
-                      <form method="post" novalidate>
-                          {% csrf_token %}
-                          <select name = "category_wanted" class="form-control" onChange="form.submit();">
-                              {% if project_category_list %}
-                                  {% for category in project_category_list %}
-                                      {% if selected_category == category %}
-                                          <option class="dropdown-item" value="{{category}}" selected>{{category}}</option>
-                                      {% else %}
-                                          <option class="dropdown-item" value="{{category}}">{{category}}</option>
-                                      {% endif %}
-                                  {% endfor %}
-                              {% else %}
-                                  <p>No Categories are available.</p>
-                              {% endif %}
 
-                          </select>
-                      </form>
-                  </div>
-                </li>
                 <li class="list-group-item flex-fill"><h4>Application</h4></li>
                 <li class="list-group-item flex-fill"><h4>Status</h4></li>
               </ul>
-
-
-
             </div>
 
+            -->
+
             <div class="d-flex flex-row">
-                <div class="col-3 border p-2">
-
-
-                    <div class="list-group">
-
-
-                      <form method="post" novalidate>
-                          {% csrf_token %}
-                          <select name = "project_wanted" class="form-control" onChange="form.submit();">
-
-                            {% if latest_question_list %}
-                                <ul>
-                                    {% for question in latest_question_list %}
-                                      <option type="button" class="list-group-item list-group-item-action" value="{{question}}">{{ question.project_name }}</option>
-                                        <!-- <button type="button" name = "project_wanted" class="list-group-item list-group-item-action" value="{{question}}">{{ question.project_name }}</button> -->
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p>No projects are available.</p>
-                            {% endif %}
-                          </select>
-                      </form>
-
-                    </div>
-
+                 <div class="col-3 border p-2">
+                    <form method="post" novalidate>
+                      {% csrf_token %}
+                      <div class="list-group">
+                        {% if latest_question_list %}
+                            <ul>
+                                {% for question in latest_question_list %}
+                                   <input type="submit" class="list-group-item list-group-item-action" name="project_wanted" value="{{question.project_name}}" />
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No projects are available.</p>
+                        {% endif %}
+                      </div>
+                    </form>
                 </div>
-                <div class="col-6">
+
+                <div class="col-6 border p-2">
                   <br>
                   <h4>Project Info: </h4>
                   <p id="demo"></p>
@@ -136,37 +116,6 @@
                   <p>Student Number: {{ selected_project.student_num }}</p>
                   <p>Project Description: {{ selected_project.description }}</p>
 
-
-                  <!-- <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane active" id="home" role="tabpanel">
-                      Velit aute mollit ipsum ad dolor consectetur nulla officia culpa adipisicing exercitation fugiat tempor.
-                      Voluptate deserunt sit sunt nisi aliqua fugiat proident ea ut. Mollit voluptate reprehenderit occaecat nisi
-                      ad non minim tempor sunt voluptate consectetur exercitation id ut nulla. Ea et fugiat aliquip nostrud sunt
-                      incididunt consectetur culpa aliquip eiusmod dolor. Anim ad Lorem aliqua in cupidatat nisi enim eu nostrud
-                      do aliquip veniam minim.
-                    </div>
-                    <div class="tab-pane" id="profile" role="tabpanel">
-                      Cupidatat quis ad sint excepteur laborum in esse qui. Et excepteur consectetur ex nisi eu do cillum ad
-                      laborum. Mollit et eu officia dolore sunt Lorem culpa qui commodo velit ex amet id ex. Officia anim
-                      incididunt laboris deserunt anim aute dolor incididunt veniam aute dolore do exercitation. Dolor nisi culpa
-                      ex ad irure in elit eu dolore. Ad laboris ipsum reprehenderit irure non commodo enim culpa commodo veniam
-                      incididunt veniam ad.
-                    </div>
-                    <div class="tab-pane" id="messages" role="tabpanel">
-                      Ut ut do pariatur aliquip aliqua aliquip exercitation do nostrud commodo reprehenderit aute ipsum
-                      voluptate. Irure Lorem et laboris nostrud amet cupidatat cupidatat anim do ut velit mollit consequat enim
-                      tempor. Consectetur est minim nostrud nostrud consectetur irure labore voluptate irure. Ipsum id Lorem sit
-                      sint voluptate est pariatur eu ad cupidatat et deserunt culpa sit eiusmod deserunt. Consectetur et fugiat
-                      anim do eiusmod aliquip nulla laborum elit adipisicing pariatur cillum.
-                    </div>
-                    <div class="tab-pane" id="settings" role="tabpanel">
-                      Irure enim occaecat labore sit qui aliquip reprehenderit amet velit. Deserunt ullamco ex elit nostrud ut
-                      dolore nisi officia magna sit occaecat laboris sunt dolor. Nisi eu minim cillum occaecat aute est cupidatat
-                      aliqua labore aute occaecat ea aliquip sunt amet. Aute mollit dolor ut exercitation irure commodo non amet
-                      consectetur quis amet culpa. Quis ullamco nisi amet qui aute irure eu. Magna labore dolor quis ex labore id
-                      nostrud deserunt dolor eiusmod eu pariatur culpa mollit in irure.
-                    </div>
-                  </div> -->
                 </div>
 
 
@@ -188,10 +137,6 @@
                   </div>
                 </div>
             </div>
-
-
-
-        </div>
 
 
 

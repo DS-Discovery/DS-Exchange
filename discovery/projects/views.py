@@ -49,7 +49,7 @@ def index(request):
                    'project_category_list': project_category_list,
                    }
 
-    print("selected project", context["selected_project"])
+    # print("selected project", context["selected_project"])
     return render(request, 'projects.html', context)
 
 
