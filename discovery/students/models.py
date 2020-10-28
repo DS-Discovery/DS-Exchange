@@ -15,6 +15,8 @@ class Student(models.Model):
     first_choice = models.CharField(max_length=1000)
     second_choice = models.CharField(max_length=1000)
     third_choice = models.CharField(max_length=1000)
+    # first_name = models.CharField(max_length=100)
+    # last_name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.full_name

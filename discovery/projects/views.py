@@ -103,7 +103,8 @@ def app(request, project_name):
                 if form.is_valid:
                     form = AnswerForm(request.POST)
                     print("form", form)
-                    a = Answer(student = student, question = question, answer_text = request.POST[str(question.id)])
+                    # a = Answer(student = student, question = question, answer_text = request.POST[str(question.id)])
+                    a = Answer(student = student, question = question, answer_text = form.cleaned_data[str(question.id)])
                     print(a)
                     a.save()
                 return HttpResponseRedirect('/submitted')
