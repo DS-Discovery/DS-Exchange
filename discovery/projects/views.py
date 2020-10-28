@@ -99,9 +99,9 @@ def app(request, project_name):
                 print(question.id)
                 print(request.POST)
                 print(request.POST[str(question.id)])
-
+                form = AnswerForm(request.POST)
                 if form.is_valid:
-                    form = AnswerForm(request.POST)
+
                     print("form", form)
                     # a = Answer(student = student, question = question, answer_text = request.POST[str(question.id)])
                     a = Answer(student = student, question = question, answer_text = form.cleaned_data[str(question.id)])

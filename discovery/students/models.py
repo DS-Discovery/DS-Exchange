@@ -23,6 +23,7 @@ class Student(models.Model):
 
 class Answer(models.Model):
     student = models.ForeignKey('students.Student', on_delete=models.CASCADE) # PRIMARY KEY
+    # email_address = models.EmailField(primary_key=True)
     question = models.ForeignKey('projects.Question', on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=1000)
     def __str__(self):
