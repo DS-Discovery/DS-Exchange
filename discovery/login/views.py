@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 
 from students.models import Student
+from students.models import Partner
 from django.contrib.auth.decorators import login_required
 from allauth.account.views import SignupView
 
@@ -110,7 +111,36 @@ def studentProfileView(request):
     print(context)
     return render(request, 'login/studentBasic.html', {'context' : context})
 
+@login_required
+def partner_profile_edit(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
 
+    if request.method == 'POST':
+        print(email)
+        partner = Partner.objects.filter(email_address = email)
+        # form = EditStudentSignupForm(request.POST)
+        form = EditPartnerSignupForm(request.POST)
+        if form.is_valid():
+            pass
+    
+
+    else: 
+        form = EditPartnerSignupForm()
+
+
+
+
+    return render(request, 'account/partnerEdit.html', {'title' : "Partner Edit Profile", 'form' : form})
+
+
+@login_required
 def partnerProfileView(request):
-    pass
-    # return render(request, 'login/partnerBasic.html')
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    context = Partner.objects.get(email_address = email).__dict__
+    print(context)
+    return render(request, 'login/partnerBasic.html', {'context' : context})
