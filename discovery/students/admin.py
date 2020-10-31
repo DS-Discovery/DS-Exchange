@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import Student
+from .models import Answer
 # from .models import Question
 class StudentAdmin(admin.ModelAdmin):
 
@@ -10,6 +11,15 @@ class StudentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Student, StudentAdmin)
+
+class AnswerAdmin(admin.ModelAdmin):
+
+    list_display = ('student', 'question')
+
+
+
+
+admin.site.register(Answer, AnswerAdmin)
 
 
 # class QuestionAdmin(admin.ModelAdmin):

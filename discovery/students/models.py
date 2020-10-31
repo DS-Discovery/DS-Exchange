@@ -19,10 +19,10 @@ class Student(models.Model):
     # last_name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.full_name
+        return self.email_address
 
 class Answer(models.Model):
-    student = models.ForeignKey('students.Student', on_delete=models.CASCADE) # PRIMARY KEY
+    student = models.ForeignKey(Student, on_delete=models.CASCADE) # PRIMARY KEY
     # email_address = models.EmailField(primary_key=True)
     question = models.ForeignKey('projects.Question', on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=1000)

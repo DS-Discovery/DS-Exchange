@@ -97,6 +97,7 @@ def student_profile_edit(request):
 
 
 
+
     return render(request, 'account/studentSignup.html', {'title' : "Student Edit Profile", 'form' : form})
 
 @login_required
