@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.http import HttpResponse
 
 from students.models import Student
-from students.models import Partner
+from projects.models import Partner
 from django.contrib.auth.decorators import login_required
 from allauth.account.views import SignupView
 

@@ -81,18 +81,29 @@ def detail(request, project_name):
 
 
 def app(request, project_name):
+        # this view shows the project name as well as the project questions
+        # need to add user authentication
+
+
+    # check to see if that partner project exists, if so, get the questions for it
         try:
             partner = Partner.objects.get(project_name=project_name)
             print(partner, project_name)
-            # print([e.project_name for e in Partner.objects.all()])
+
             questions = Question.objects.filter(partner = partner)
-            # questions = question.objects.get(project_name = project)
+
 
         except Question.DoesNotExist:
             raise Http404("Question does not exist")
 
+
+        #if this form is submitted, then we want to save the answers
         if request.method == 'POST':
-            student = Student.objects.get(email_address = "andersonlam@berkeley.edu")
+
+            email = None
+            if request.user.is_authenticated:
+                email = request.user.email
+            student = Student.objects.get(email_address = email)
             print(student)
 
             for question in questions:
@@ -100,10 +111,10 @@ def app(request, project_name):
                 print(request.POST)
                 print(request.POST[str(question.id)])
                 form = AnswerForm(request.POST)
-                if form.is_valid:
+                if form.is_valid():
 
                     print("form", form)
-                    # a = Answer(student = student, question = question, answer_text = request.POST[str(question.id)])
+
                     a = Answer(student = student, question = question, answer_text = form.cleaned_data[str(question.id)])
                     print(a)
                     a.save()
