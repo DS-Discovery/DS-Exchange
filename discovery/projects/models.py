@@ -19,6 +19,15 @@ class Partner(models.Model):
     def __str__(self):
         return self.project_name
 
+# class Project(models.Model):
+#     organization = models.CharField(max_length=100)
+
+#     project_name = models.CharField(max_length=200)
+
+#     project_category = models.CharField(max_length=100)
+#     student_num = models.IntegerField(default=0)
+#     description = models.CharField(max_length=5000)
+
 class Question(models.Model):
     partner = models.ForeignKey('projects.Partner', on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)

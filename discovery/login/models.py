@@ -5,43 +5,36 @@ from projects.models import Partner
 from django.contrib.auth.models import User
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.contrib.auth.models import Group
-
+from allauth.socialaccount.signals import pre_social_login
+from allauth.account.utils import perform_login
+from django.dispatch import receiver
+from allauth.account.signals import user_signed_up
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
         user.username = user.email
 
-        # def find_usertype(email_address):
-        #     query = Partner.objects.filter(email_address=email_address)
-        #     print("PARTNER EMAIL QUERY" + query)
-        #     if len(query) > 0:
-                
-        #         group = Group.objects.get(name='Partner')
-        #         return group
-        #     group = Group.objects.get(name='Student')
-        #     return group
-    
+        def populateGroup(self, user):
+            pass
 
-        # user.groups.add(find_usertype(user.email))
-        # user.save()
-        # query = Partner.objects.filter(email_address=user.email)
-        
-        # print("PARTNER EMAIL QUERY" + str(query))
-        # if len(query) > 0:
-        #     partner = Group.objects.get(name = 'Partner')
-        #     user.groups.add(partner)
-        # else:
-        #     student = Group.objects.get(name = 'Student')
-        #     user.groups.add(student)
         return user
 
 
-# class StudentUser(models.Model):
-#     student = models.ForeignKey('students.Student', on_delete=models.CASCADE)
+@receiver(user_signed_up)
+def populateGroup(sender, user, **kwargs):
+        user = User.objects.get(email=user.email)
 
-# class PartnerUser(models.Model):
-#     partner = models.ForeignKey('projects.Partner', on_delete=models.CASCADE)
+  
+        query = Partner.objects.filter(email_address=user.email)
+        if len(query) > 0:
+            partner = Group.objects.get(name = 'Partner')
+            user.groups.add(partner)
+        else:
+            student = Group.objects.get(name = 'Student')
+            user.groups.add(student)
+        user.save()
+
 
 
 

@@ -22,7 +22,7 @@ urlpatterns = [
     path('projects/', include('projects.urls')),
     #path('', include('pages.urls')),
     path('', TemplateView.as_view(template_name="login/index.html")),
-    path('login/', include('login.urls')),
+    path('', include('login.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     # path('accounts/social/signup', include('allauth.urls')),

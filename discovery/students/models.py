@@ -4,8 +4,9 @@ from django.db import models
 from django.utils import timezone
 # from django.apps import apps
 # Partner = apps.get_model('projects', 'Partner')
-
+from django.contrib.auth.models import User
 class Student(models.Model):
+    # user = models.ForeignKey(User, on_delete=models.CASCADE)
     email_address = models.EmailField(primary_key=True) # NEED TO PRIMARY KEY
     full_name = models.CharField(max_length=200)
     student_id = models.CharField(max_length=200)
@@ -22,8 +23,8 @@ class Student(models.Model):
         return self.email_address
 
 class Answer(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE) # PRIMARY KEY
-    # email_address = models.EmailField(primary_key=True)
+    # student = models.ForeignKey(Student, on_delete=models.CASCADE) # PRIMARY KEY
+    email_address = models.EmailField(primary_key=True)
     question = models.ForeignKey('projects.Question', on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=1000)
     def __str__(self):

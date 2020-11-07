@@ -4,14 +4,16 @@ from django.http import HttpResponse
 
 from students.models import Student
 from projects.models import Partner
+
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from allauth.account.views import SignupView
 
 from .forms import StudentSignupForm
 
 from .forms import EditStudentSignupForm
-
-
+from .forms import EditPartnerSignupForm
+from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth import update_session_auth_hash
 
@@ -20,31 +22,8 @@ def index(request):
 
 
 
-
-
-def view_profile(request, pk=None):
-    if pk:
-        user = Student.objects.get(pk=pk)
-    else:
-        user = request.user
-    args = {'user': user}
-    return render(request, 'accounts/profile.html', args)
-
-def edit_profile(request):
-    if request.method == 'POST':
-        form = EditStudentProfileForm(request.POST, instance=request.user)
-
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('accounts:view_profile'))
-    else:
-        form = EditStudentProfileForm(instance=request.user)
-        args = {'form': form}
-        return render(request, 'accounts/edit_profile.html', args)
-
-
 @login_required
-def student_signup(request):
+def studentSignup(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -55,7 +34,7 @@ def student_signup(request):
     if request.method == 'POST':
         form = StudentSignupForm(request.POST)
         if form.is_valid():
-            email = username
+
             full_name = form.cleaned_data['full_name']
             sid = form.cleaned_data['student_id']
             college = form.cleaned_data['college']
@@ -67,20 +46,23 @@ def student_signup(request):
             # print(s)
             s.save()
 
+            return HttpResponseRedirect('/student/profile')
+
         # return HttpResponseRedirect('/submitted')
     else: # GET
         form = StudentSignupForm()
 
 
 
-    return render(request, 'account/studentSignup.html', {'title' : "Student Create Profile",'form' : form})
+    return render(request, 'account/studentProfileEdit.html', {'title' : "Student Create Profile",'form' : form})
 
 @login_required
-def student_profile_edit(request):
+def studentProfileEdit(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
 
+    
     if request.method == 'POST':
         print(email)
         student = Student.objects.filter(email_address = email)
@@ -91,28 +73,34 @@ def student_profile_edit(request):
             student.update(college = form.cleaned_data['college'])
             student.update(major = form.cleaned_data['major'])
             student.update(year = form.cleaned_data['year'])
-    
+            return HttpResponseRedirect('/student/profile')
 
     else: 
-        form = EditStudentSignupForm()
+        data = Student.objects.get(email_address = email).__dict__
+        form = EditStudentSignupForm(initial = data)
 
 
 
 
-    return render(request, 'account/studentSignup.html', {'title' : "Student Edit Profile", 'form' : form})
+    return render(request, 'account/studentProfileEdit.html', {'title' : "Student Edit Profile", 'form' : form})
 
 @login_required
 def studentProfileView(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
+    studentExists = Student.objects.filter(email_address = email).exists()
+
+    if not studentExists:
+        return HttpResponseRedirect("/student/signup")
+
 
     context = Student.objects.get(email_address = email).__dict__
     print(context)
     return render(request, 'login/studentBasic.html', {'context' : context})
 
 @login_required
-def partner_profile_edit(request):
+def partnerProfileEdit(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -120,19 +108,29 @@ def partner_profile_edit(request):
     if request.method == 'POST':
         print(email)
         partner = Partner.objects.filter(email_address = email)
-        # form = EditStudentSignupForm(request.POST)
+
         form = EditPartnerSignupForm(request.POST)
         if form.is_valid():
-            pass
-    
+
+            partner.update(first_name = form.cleaned_data['first_name'])
+            partner.update(last_name = form.cleaned_data['last_name'])
+            partner.update(organization = form.cleaned_data['organization'])
+            partner.update(project_name = form.cleaned_data['project_name'])
+            partner.update(project_category = form.cleaned_data['project_category'])
+            partner.update(student_num = form.cleaned_data['student_num'])
+            partner.update(description = form.cleaned_data['description'])
+
+            return HttpResponseRedirect('/partner/profile')
+  
 
     else: 
-        form = EditPartnerSignupForm()
+        data = Partner.objects.get(email_address = email).__dict__
+        form = EditPartnerSignupForm(initial=data)
 
 
 
 
-    return render(request, 'account/partnerEdit.html', {'title' : "Partner Edit Profile", 'form' : form})
+    return render(request, 'account/partnerProfileEdit.html', {'title' : "Partner Edit Profile", 'form' : form})
 
 
 @login_required
@@ -144,3 +142,12 @@ def partnerProfileView(request):
     context = Partner.objects.get(email_address = email).__dict__
     print(context)
     return render(request, 'login/partnerBasic.html', {'context' : context})
+
+@login_required
+def redirectProfile(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    if User.objects.filter(email = email, groups__name = "Partner").exists():
+        return HttpResponseRedirect('/partner/profile')
+    return HttpResponseRedirect('/student/profile')

@@ -39,7 +39,7 @@
        
                 </div>
                 <li class="list-group-item flex-fill "><h4>Projects</h4></li>
-            
+           
               </ul>
 
 
@@ -51,35 +51,24 @@
 
                 </div> -->
                 <div class="col-6">
-                  <br>
-                  <h3>Basic Information: </h3>
-                  <p id="demo"></p>
-                  <br>
-
-                  <h4>Organization - {{ context.organization }} </h4>
                   
-                  <p>Project Name - {{ context.project_name }} </p>
-                  <p>Project Category - {{ context.project_category }} </p>
-                  <p>Student Number - {{ context.student_num }} </p>
-                  <p>Description - {{ context.description }} </p>
-                  <br>
-                  <h4>Contact Information:</h4>
-                  <p>Email Address - {{ context.email_address }} </p>
-                  <p>First Name - {{ context.first_name }} </p>
-                  <p>Last Name - {{ context.last_name }} </p>
-
-
-                  <div>
-
-
-                    
-    
 
 
 
-                  </div>
+                    {% block content %}
+                    <h1>{{title}}</h1>
+
+
+                    <form action="" method="post">
+                      {% csrf_token %}
+                      <table>
+                      {{ form.as_table }}
+                      </table>
+                      <input type="submit" value="Submit">
+                    </form>
+                    {% endblock %}
   
-                  <button onclick="location.href = '/partner/edit'">Edit Profile</button>
+
                 </div>
 
 
@@ -91,5 +80,6 @@
 
 
 
-    </body>
+
+</body>
 </html>
