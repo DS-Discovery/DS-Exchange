@@ -13,9 +13,9 @@ class Student(models.Model):
     college = models.CharField(max_length=200)
     major = models.CharField(max_length=200)
     year = models.CharField(max_length=100)
-    first_choice = models.CharField(max_length=1000)
-    second_choice = models.CharField(max_length=1000)
-    third_choice = models.CharField(max_length=1000)
+    first_choice = models.CharField(max_length=1000, default= None)
+    second_choice = models.CharField(max_length=1000, default= None)
+    third_choice = models.CharField(max_length=1000, default= None)
     # first_name = models.CharField(max_length=100)
     # last_name = models.CharField(max_length=100)
 
