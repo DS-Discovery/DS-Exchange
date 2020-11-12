@@ -19,6 +19,7 @@ from students.models import Student
 from django.http import HttpResponse
 from django.template import loader
 from .models import Partner
+from .models import Project
 
 
 def index(request):
@@ -29,14 +30,14 @@ def index(request):
         print(request.POST)
         print("project_wanted is", project)
         if category:
-            latest_question_list = Partner.objects.filter(project_category__contains=category)
+            latest_question_list = Project.objects.filter(project_category__contains=category)
         else:
-            latest_question_list = Partner.objects.order_by('project_name')
+            latest_question_list = Project.objects.order_by('project_name')
     else:
-        latest_question_list = Partner.objects.order_by('project_name')
+        latest_question_list = Project.objects.order_by('project_name')
 
     project_category_list = set()
-    for e in Partner.objects.all():
+    for e in Project.objects.all():
         categories = e.project_category.strip().split(',')
         categories = [cat.strip() for cat in categories]
         project_category_list.update(categories)
@@ -56,7 +57,7 @@ def index(request):
                        'project_category_list': project_category_list,
                        }
         if project:
-            context["selected_project"] = Partner.objects.filter(project_name=project)[0]
+            context["selected_project"] = Project.objects.filter(project_name=project)[0]
 
     else:
         context = {'latest_question_list': latest_question_list,
@@ -69,10 +70,10 @@ def index(request):
 
 def detail(request, project_name):
     try:
-        partner = Partner.objects.get(project_name=project_name)
-        print(partner, project_name)
+        project = Project.objects.get(project_name=project_name)
+        print(project, project_name)
         # print([e.project_name for e in Partner.objects.all()])
-        questions = Question.objects.filter(partner = partner)
+        questions = Question.objects.filter(project = project)
         # questions = question.objects.get(project_name = project)
 
     except Question.DoesNotExist:
@@ -87,10 +88,10 @@ def app(request, project_name):
 
     # check to see if that partner project exists, if so, get the questions for it
         try:
-            partner = Partner.objects.get(project_name=project_name)
-            print(partner, project_name)
+            project = Project.objects.get(project_name=project_name)
+            print(project, project_name)
 
-            questions = Question.objects.filter(partner = partner)
+            questions = Question.objects.filter(project = project)
 
 
         except Question.DoesNotExist:
@@ -125,10 +126,10 @@ def app(request, project_name):
         args = {}
         args.update(csrf(request))
         args['form'] = form
-        print(partner, questions)
+        print(project, questions)
 
 
-        return render(request, 'projects/detail.html', {'questions': questions, 'partner' : partner, 'form' : form})
+        return render(request, 'projects/detail.html', {'questions': questions, 'project' : project, 'form' : form})
 
 
 def results(request, question_id):

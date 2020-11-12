@@ -35,13 +35,14 @@ def studentSignup(request):
         form = StudentSignupForm(request.POST)
         if form.is_valid():
 
-            full_name = form.cleaned_data['full_name']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
             sid = form.cleaned_data['student_id']
             college = form.cleaned_data['college']
             major = form.cleaned_data['major']
             year = form.cleaned_data['year']
 
-            s = Student(email_address = email, full_name = full_name,
+            s = Student(email_address = email, first_name = first_name, last_name = last_name,
                          student_id = sid, college = college, major = major, year = year)
             # print(s)
             s.save()
@@ -69,7 +70,8 @@ def studentProfileEdit(request):
         form = EditStudentSignupForm(request.POST)
         if form.is_valid():
 
-            student.update(full_name = form.cleaned_data['full_name'])
+            student.update(first_name = form.cleaned_data['first_name'])
+            student.update(last_name = form.cleaned_data['last_name'])
             student.update(college = form.cleaned_data['college'])
             student.update(major = form.cleaned_data['major'])
             student.update(year = form.cleaned_data['year'])

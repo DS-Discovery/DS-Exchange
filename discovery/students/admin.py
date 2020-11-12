@@ -5,7 +5,7 @@ from .models import Answer
 # from .models import Question
 class StudentAdmin(admin.ModelAdmin):
 
-    list_display = ('email_address', 'full_name')
+    list_display = ('email_address', 'first_name', 'last_name')
 
 
 
@@ -14,8 +14,8 @@ admin.site.register(Student, StudentAdmin)
 
 class AnswerAdmin(admin.ModelAdmin):
 
-    # list_display = ('student', 'question')
-    list_display = ('email_address', 'question')
+    list_display = ('student', 'question')
+    # list_display = ('email_address', 'question')
 
 
 

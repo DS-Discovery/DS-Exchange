@@ -19,7 +19,8 @@ class StudentSignupForm(forms.ModelForm):
         model = Student
         # fields = "__all__"
         fields = (
-            'full_name',
+            'first_name',
+            'last_name',
             'student_id',
             'college',
             'major',
@@ -32,7 +33,8 @@ class EditStudentSignupForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = (
-            'full_name',
+            'first_name',
+            'last_name',
             'college',
             'major',
             'year',
@@ -62,8 +64,8 @@ class EditPartnerSignupForm(forms.ModelForm):
             'first_name',
             'last_name',
             'organization',
-            'project_name',
-            'project_category',
-            'student_num',
-            'description',            
+            # 'project_name',
+            # 'project_category',
+            # 'student_num',
+            # 'description',            
             )

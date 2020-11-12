@@ -59,12 +59,16 @@
                   <p id="demo"></p>
                   <br>
 
-                  <h4>Full Name - {{ context.full_name }} </h4>
+                  <h4>First Name - {{ context.first_name }} </h4>
+                  <p>Last Name: {{ context.last_name }}</p>
                   <p>Email: {{ context.email_address }}</p>
                   <p>SID: {{ context.student_id }}</p>
                   <p>Major: {{ context.major }}</p>
                   <p>Year: {{ context.year }}</p>
                   <p>College: {{ context.college }}</p>
+                  <p>First Choice: {{ context.first_choice }}</p>
+                  <p>Second Choice: {{ context.second_choice }}</p>
+                  <p>Third Choice: {{ context.third_choice }}</p>
                   <p>General Interest Statement: Not A Field Yet</p>
                   <button onclick="location.href = '/student/edit'">Edit Profile</button>
 
