@@ -6,7 +6,7 @@ from django.utils import timezone
 class Project(models.Model):
     organization = models.CharField(max_length=100)
 
-    project_name = models.CharField(max_length=200)
+    project_name = models.CharField(max_length=200, primary_key=True)
 
     project_category = models.CharField(max_length=100)
     student_num = models.IntegerField(default=0)
