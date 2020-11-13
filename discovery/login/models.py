@@ -24,7 +24,6 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 @receiver(user_signed_up)
 def populateGroup(sender, user, **kwargs):
         user = User.objects.get(email=user.email)
-
   
         query = Partner.objects.filter(email_address=user.email)
         if len(query) > 0:
