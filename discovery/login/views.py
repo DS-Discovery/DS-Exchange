@@ -34,7 +34,6 @@ def studentSignup(request):
     if request.method == 'POST':
         form = StudentSignupForm(request.POST)
         if form.is_valid():
-
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             sid = form.cleaned_data['student_id']
@@ -63,9 +62,9 @@ def studentProfileEdit(request):
     if request.user.is_authenticated:
         email = request.user.email
 
-    
     if request.method == 'POST':
-        print(email)
+        print("Post request: ", request.POST)
+        print("Email: ", email)
         student = Student.objects.filter(email_address = email)
         form = EditStudentSignupForm(request.POST)
         if form.is_valid():
@@ -98,7 +97,7 @@ def studentProfileView(request):
 
 
     context = Student.objects.get(email_address = email).__dict__
-    print(context)
+    # print(context)
     return render(request, 'login/studentBasic.html', {'context' : context})
 
 @login_required
