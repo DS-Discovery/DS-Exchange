@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'login',
-
+    # 'social_app',
+    
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -170,23 +171,21 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = None
+ACCOUNT_LOGOUT_ON_GET = True #url accounts/logout 
 
-AUTH_USER_MODEL = 'login.User'
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+
+SIGNUP_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL ='/'
-# LOGIN_REDIRECT_URL = "test"
-# ACCOUNT_LOGOUT_REDIRECT_URL = "test"
 
-# ACCOUNT_FORMS = {
-#     'login': 'login.forms.CustomLoginForm',
-#     'add_email': 'allauth.account.forms.AddEmailForm',
-#     'change_password': 'allauth.account.forms.ChangePasswordForm',
-#     'set_password': 'allauth.account.forms.SetPasswordForm',
-#     'reset_password': 'allauth.account.forms.ResetPasswordForm',
-#     'reset_password_from_key': 'allauth.account.forms.ResetPasswordKeyForm',
-#     'disconnect': 'allauth.socialaccount.forms.DisconnectForm',
+SOCIALACCOUNT_ADAPTER = "login.models.CustomSocialAccountAdapter"
+# SOCIALACCOUNT_FORMS = {
+#     'signup': 'login.forms.StudentSignupForm'
 # }
-# ACCOUNT_ADAPTER = "accounts.adapters.AccountAdapter"
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [

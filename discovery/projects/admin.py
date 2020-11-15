@@ -2,6 +2,7 @@
 from django.contrib import admin
 
 from .models import Partner
+from .models import Project
 from .models import Question
 
 
@@ -11,18 +12,26 @@ class QuestionInLine(admin.TabularInline):
     extra = 3
 
 
+
 class PartnerAdmin(admin.ModelAdmin):
-    # fieldsets = [
-    #     (None,               {'fields': ['project_name']}),
-    #     ('Date information', {'fields': ['organization', 'project_category', 'email_address', 'first_name', 'last_name', 'student_num', 'description'], 'classes': ['collapse']}),
-    # ]
-    fields = ['project_name', 'organization', 'project_category', 'email_address','first_name','last_name','student_num', 'description']
+
+    fields = [ 'email_address','first_name','last_name', 'projects',]
+    
+    def all_projects(self, obj):
+        return "\n".join([p.project_name for p in obj.projects.all()])
+    # search_fields =['projects',]
+    list_display = ['email_address', 'all_projects', ]
+
+
+admin.site.register(Partner, PartnerAdmin)
+
+class ProjectAdmin(admin.ModelAdmin):
+    
+    fields = ['project_name', 'organization', 'project_category','student_num', 'description']
     inlines = [QuestionInLine]
     list_display = ('project_name', 'project_category')
     list_filter = ['project_category']
     search_fields = ['project_name']
 
 
-
-admin.site.register(Partner, PartnerAdmin)
-# admin.site.register(Partner)
+admin.site.register(Project, ProjectAdmin)
