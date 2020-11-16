@@ -24,8 +24,7 @@ class Student(models.Model):
 
 class Answer(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE) # PRIMARY KEY
-
-    question = models.ForeignKey('projects.Question', on_delete=models.CASCADE)
+    question = models.ForeignKey('projects.project', on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=1000)
     def __str__(self):
         return self.answer_text
