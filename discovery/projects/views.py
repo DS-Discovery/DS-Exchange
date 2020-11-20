@@ -135,7 +135,13 @@ def app(request, project_name):
         
         if form.is_valid(): 
             print("Is valid")
-            a = Answer(student = student, question = project, answer_text = form.cleaned_data['answer_text'])
+
+            try:
+                a = Answer.objects.get(student=student, question=project)
+                a.answer_text = form.cleaned_data['answer_text']
+            except:
+                a = Answer(student = student, question = project, answer_text = form.cleaned_data['answer_text'])
+            
             a.save()
         else:
             print("not valid")
