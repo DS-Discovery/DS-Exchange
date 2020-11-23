@@ -7,6 +7,7 @@ from .models import Question
 
 
 
+
 class QuestionInLine(admin.TabularInline):
     model = Question
     extra = 3
