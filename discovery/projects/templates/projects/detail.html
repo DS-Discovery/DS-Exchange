@@ -17,7 +17,7 @@
 
   {% for question in questions.all %}
     <h1>
-      {{ question.question_text }} <br>
+      {{ question.question_num }}. {{ question.question_text }} <br>
   </h1>
       <textarea name="{{ question.id }}" rows=”4″ cols=”20″> </textarea><br>
       <!-- {{ form }} -->
