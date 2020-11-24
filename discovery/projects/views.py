@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 import datetime
+import operator
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -88,7 +89,7 @@ def app(request, project_name):
     # check to see if that partner project exists, if so, get the questions for it
     try:
         project = Project.objects.get(project_name=project_name)
-        questions = Question.objects.filter(project = project)
+        questions = Question.objects.filter(project = project).order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist")
 
@@ -157,6 +158,7 @@ def app(request, project_name):
     # print(questions)
 
     if request.user.is_authenticated:
+        print(questions)
         return render(request, 'projects/detail.html', {'questions': questions, 'project' : project, 'form' : form})
     else:
         raise Http404("User is not logged in")

@@ -28,6 +28,7 @@ class Partner(models.Model):
 
 class Question(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    question_num = models.IntegerField(default=0)
     question_text = models.CharField(max_length=200)
     # question_type = models.CharField(max_length=200)
     # def create_id(partner, question_text):

@@ -161,8 +161,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-# site_id is really weird, check from 1-3 to see which one eventually works
-SITE_ID = 3
+# site_id is really weird, check from 1-n to see which one eventually works
+SITE_ID = 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
