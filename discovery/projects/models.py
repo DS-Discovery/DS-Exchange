@@ -4,10 +4,11 @@ from django.db import models
 from django.utils import timezone
 
 class Project(models.Model):
-    organization = models.CharField(max_length=100)
 
     project_name = models.CharField(max_length=200)
-
+    organization = models.CharField(max_length=100)
+    semester = models.CharField(max_length=100)
+    year = models.CharField(max_length=100)
     project_category = models.CharField(max_length=100)
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
@@ -36,6 +37,8 @@ class Question(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)
     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
+    question_data =  models.CharField(max_length=1000, null=True, blank=True)
+
     # def create_id(partner, question_text):
     #     return hash(str(partner) + str(question_text))
     #
