@@ -57,6 +57,12 @@ def index(request):
                        }
         if project:
             context["selected_project"] = Project.objects.filter(project_name=project)[0]
+            selected_partner = None
+            for partner in Partner.objects.all():
+                projects = partner.projects.all()
+                if context["selected_project"] in projects:
+                    selected_partner = partner
+            context["selected_partner"] = partner
             context["labels"] = context["selected_project"].project_category.split(",")
 
     else:
