@@ -21,7 +21,6 @@ from django.template import loader
 from .models import Partner
 from .models import Project
 
-
 def index(request):
     if request.method == 'POST':
         # here when select dropdown category
@@ -58,13 +57,20 @@ def index(request):
                        }
         if project:
             context["selected_project"] = Project.objects.filter(project_name=project)[0]
+            selected_partner = None
+            for partner in Partner.objects.all():
+                projects = partner.projects.all()
+                if context["selected_project"] in projects:
+                    selected_partner = partner
+            context["selected_partner"] = partner
+            context["labels"] = context["selected_project"].project_category.split(",")
 
     else:
         context = {'latest_question_list': latest_question_list,
                    'project_category_list': project_category_list,
                    }
 
-    # print("selected project", context["selected_project"])
+    # print("context", context)
     return render(request, 'projects.html', context)
 
 
@@ -123,17 +129,17 @@ def app(request, project_name):
                 is_valid = False
             answer_text += str(k) + ". " + post[k] + " "
             post.pop(k)
-        
+
         answer_text = answer_text.strip()
         if is_valid:
             post['answer_text'] = answer_text
         print(post)
 
         request.POST = post
-        
+
         form = AnswerForm(request.POST)
-        
-        if form.is_valid(): 
+
+        if form.is_valid():
             print("Is valid")
             a = Answer(student = student, question = project, answer_text = form.cleaned_data['answer_text'])
             a.save()
