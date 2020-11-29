@@ -30,14 +30,24 @@ if __name__ == "__main__":
         choices.append(row["3) What is your THIRD choice?"])
 
         for proj in choices:
+
+
             try:
                 projObj = Project.objects.get(project_name=proj)
                 proj_id = projObj.id
+
+
 
                 application = Application(email_address=row["Email Address"],
                                           project_id=proj_id,
                                           status="SENT",
                                           )
+
+                if row["Email Address"] == "yasinifatema@berkeley.edu":
+                    print(proj)
+                    print(proj_id)
+                    print(application)
+
                 application.save()
 
             except ObjectDoesNotExist:
