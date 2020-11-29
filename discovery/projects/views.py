@@ -71,7 +71,7 @@ def index(request):
                    }
 
     # print("context", context)
-    return render(request, 'projects.html', context)
+    return render(request, 'projects/listing.html', context)
 
 
 def detail(request, project_name):
