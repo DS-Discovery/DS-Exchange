@@ -26,8 +26,8 @@ def index(request):
         # here when select dropdown category
         category = request.POST.get('category_wanted')
         project = request.POST.get('project_wanted')
-        print(request.POST)
-        print("project_wanted is", project)
+        # print(request.POST)
+        # print("project_wanted is", project)
         if category:
             latest_question_list = Project.objects.filter(project_category__contains=category)
         else:
@@ -62,7 +62,7 @@ def index(request):
                 projects = partner.projects.all()
                 if context["selected_project"] in projects:
                     selected_partner = partner
-            context["selected_partner"] = partner
+            context["selected_partner"] = selected_partner
             context["labels"] = context["selected_project"].project_category.split(",")
 
     else:
