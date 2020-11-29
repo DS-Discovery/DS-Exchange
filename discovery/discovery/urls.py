@@ -28,5 +28,6 @@ urlpatterns = [
     # path('accounts/social/signup', include('allauth.urls')),
     path('applications/', include('applications.urls')),
 
+
  
 ]
