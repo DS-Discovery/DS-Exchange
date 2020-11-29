@@ -17,7 +17,13 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="../#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/profile">Profile <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+              </li>
+            </ul>
             {% if not user.is_authenticated %}
                 <a href="{% provider_login_url 'google' %}">Login with Google</a>
             {% else %}
@@ -56,14 +62,14 @@
 
             <!-- start flexbox layout -->
 
-                <!-- temp comment out this bar, don't need for project listing
-              <ul class="list-group list-group-horizontal-lg">
+                <!-- temp comment out this bar, don't need for project listing -->
+              <!-- <ul class="list-group list-group-horizontal-lg">
                 <li class="list-group-item flex-fill "><h4>Basic Information</h4></li>
                 <li class="list-group-item flex-fill"><h4>Application</h4></li>
                 <li class="list-group-item flex-fill"><h4>Status</h4></li>
               </ul>
-            </div>
-            -->
+            </div> -->
+           
 
             <div class="d-flex flex-row">
                  <div class="col-3 border p-2">
@@ -72,7 +78,10 @@
                       <div class="list-group">
                         {% if latest_question_list %}
                             {% for question in latest_question_list %}
-                               <input type="submit" class="list-group-item list-group-item-action" name="project_wanted" value="{{question.project_name}}" />
+                            <script>
+                              var selected_category = document.getElementById("ddlViewBy").value;
+                            </script>
+                               <button type="submit" class="list-group-item list-group-item-action" name="project_wanted" value="{{question.project_name}}+{{selected_category}}"> {{question.project_name}}</button>
                             {% endfor %}
                         {% else %}
                             <p>No projects are available.</p>
