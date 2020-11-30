@@ -170,26 +170,3 @@ def app(request, project_name):
 def results(request, question_id):
     response = "You're looking at the results of question %s."
     return HttpResponse(response % question_id)
-
-    # def studentApplication(request):
-    #     student_instance = get_object_or_404(Student)
-    #
-    #     if request.method == "POST":
-    #
-    #         form = studentApplication(request.POST)
-    #         if form.is_valid():
-    #             student_instance.first_name = form.cleaned_data['first_name']
-    #
-    #             student_instance.save()
-    #
-    #             return HttpResponse(reverse('index'))
-    #     else:
-    #         proposed_renewal_date = None
-    #         form = studnetForm(initial={'first_name': proposed_renewal_date})
-    #
-    #     context = {
-    #         'form': form,
-    #         'student_instance': student_instance,
-    #     }
-    #
-    #     return render(request, 'catalog/application.html', context)

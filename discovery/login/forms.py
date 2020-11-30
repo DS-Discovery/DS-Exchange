@@ -8,6 +8,7 @@ from allauth.socialaccount.forms import SignupForm
 
 from students.models import Student
 from projects.models import Partner
+from projects.models import Project
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
@@ -40,21 +41,6 @@ class EditStudentSignupForm(forms.ModelForm):
             'year',
         )
 
-# class PartnerSignupForm(forms.ModelForm):
-
-#     class Meta:
-#         model = Partner
-#         # fields = "__all__"
-#         fields = (
-#             'email_address',
-#             'first_name',
-#             'last_name',
-#             'organization',
-#             'project_name',
-#             'project_category',
-#             'student_num',
-#             'description',            
-#             )
 
 class EditPartnerSignupForm(forms.ModelForm):
 
@@ -63,8 +49,19 @@ class EditPartnerSignupForm(forms.ModelForm):
         fields = (
             'first_name',
             'last_name',
-            # 'project_name',
-            # 'project_category',
-            # 'student_num',
-            # 'description',            
+       
+            )
+
+
+class EditProjectForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = (
+            'project_name',
+            'organization',
+            'project_name',
+            'project_category',
+            'student_num',
+            'description',            
             )

@@ -115,11 +115,6 @@ def partnerProfileEdit(request):
 
             partner.update(first_name = form.cleaned_data['first_name'])
             partner.update(last_name = form.cleaned_data['last_name'])
-            partner.update(organization = form.cleaned_data['organization'])
-            partner.update(project_name = form.cleaned_data['project_name'])
-            partner.update(project_category = form.cleaned_data['project_category'])
-            partner.update(student_num = form.cleaned_data['student_num'])
-            partner.update(description = form.cleaned_data['description'])
 
             return HttpResponseRedirect('/partner/profile')
   
@@ -128,10 +123,37 @@ def partnerProfileEdit(request):
         data = Partner.objects.get(email_address = email).__dict__
         form = EditPartnerSignupForm(initial=data)
 
-
-
-
     return render(request, 'account/partnerProfileEdit.html', {'title' : "Partner Edit Profile", 'form' : form})
+
+@login_required
+def projectEdit(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    if request.method == 'POST':
+
+        project = Project.objects.filter(id = request)
+
+        form = EditProjectForm(request.POST)
+        if form.is_valid():
+            project.update(organization = form.cleaned_data['organization'])
+            partner.update(project_name = form.cleaned_data['project_name'])
+            partner.update(project_category = form.cleaned_data['project_category'])
+            partner.update(student_num = form.cleaned_data['student_num'])
+            partner.update(description = form.cleaned_data['description'])
+
+            return HttpResponseRedirect('/project/profile')
+    else: 
+        data = Project.objects.get(email_address = email).__dict__
+        form = EditProjectForm(initial=data)
+
+    return render(request, 'account/projectEdit.html', {'title' : "Project Edit Profile", 'form' : form})
+
+@login_required
+def addProjectQuestions(request):
+    pass
+
 
 
 @login_required

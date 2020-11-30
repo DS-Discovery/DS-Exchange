@@ -101,7 +101,7 @@ DATABASES = {
         'NAME': 'discovery_db',
         'USER': 'postgres',
         # comment out own password before pushing to master
-        'PASSWORD': 'Mangojango88!',
+        'PASSWORD': 'root',
         # 'PASSWORD':,
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -163,7 +163,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = 4
+SITE_ID = 1
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
