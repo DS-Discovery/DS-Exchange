@@ -35,6 +35,7 @@ class Question(models.Model):
     ('checkbox','checkbox'),
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    question_num = models.IntegerField(default=0)
     question_text = models.CharField(max_length=200)
     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
     question_data =  models.CharField(max_length=1000, null=True, blank=True)
