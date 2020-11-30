@@ -63,7 +63,6 @@ class EditPartnerSignupForm(forms.ModelForm):
         fields = (
             'first_name',
             'last_name',
-            'organization',
             # 'project_name',
             # 'project_category',
             # 'student_num',
