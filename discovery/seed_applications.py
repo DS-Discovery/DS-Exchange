@@ -12,6 +12,7 @@ import django
 
 django.setup()
 
+from students.models import Student
 from projects.models import Project
 from applications.models import Application
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,8 +22,14 @@ if __name__ == "__main__":
     path = "csv/student_sp2020.csv"
     df = pd.read_csv(path)
 
+    # find corresponding Student
+    try:
+        student = Student.objects.get(email_address=row["Email Address"])
+    except ObjectDoesNotExist:
+        continue
+
     for _, row in df.iterrows():
-        # find corresponding Project record and get id
+        # find corresponding Project
 
         choices = []
         choices.append(row["1) What is your FIRST choice?"])
@@ -32,11 +39,11 @@ if __name__ == "__main__":
         for i in range(3):
 
             try:
-                projObj = Project.objects.get(project_name=choices[i])
-                proj_id = projObj.id
+                project = Project.objects.get(project_name=choices[i])
 
-                application = Application(email_address=row["Email Address"],
-                                          project_id=proj_id,
+
+                application = Application(student=student,
+                                          project=project,
                                           rank=i+1,
                                           status="SENT",
                                           )
