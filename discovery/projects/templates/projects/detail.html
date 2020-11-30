@@ -3,7 +3,9 @@
 <html>
 <head>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-</head><h1> {{project}} </h1>
+  <title>{{project}} Application</title>
+</head>
+<h1> {{project}} </h1>
 
 
 <body>
@@ -15,7 +17,7 @@
 
   {% for question in questions.all %}
     <h1>
-      {{ question.question_text }} <br>
+      {{ question.question_num }}. {{ question.question_text }} <br>
   </h1>
       <textarea name="{{ question.id }}" rows=”4″ cols=”20″> </textarea><br>
       <!-- {{ form }} -->
