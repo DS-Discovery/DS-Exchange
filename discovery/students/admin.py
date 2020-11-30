@@ -14,7 +14,7 @@ admin.site.register(Student, StudentAdmin)
 
 class AnswerAdmin(admin.ModelAdmin):
 
-    list_display = ('student', 'question')
+    list_display = ('application', 'question_num')
     # list_display = ('email_address', 'question')
 
 

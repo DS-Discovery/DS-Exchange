@@ -3,11 +3,11 @@ import datetime
 from django import forms
 
 
-from .models import Answer
+from .models import Application
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-class AnswerForm(forms.ModelForm):
+class ApplicationForm(forms.ModelForm):
     class Meta:
-        model = Answer
-        fields = ('answer_text', 'question_num')
+        model = Application
+        fields = ('student', 'project')
