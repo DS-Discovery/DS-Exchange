@@ -16,5 +16,5 @@ def index(request):
     }
     return render(request, "application_listing.html", context=context)
 
-def getApp(request):
-   return
+def getProject(request):
+   print("INSIDE GETPROJECT")
