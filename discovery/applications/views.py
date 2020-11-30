@@ -12,7 +12,7 @@ def index(request):
     first_project = Project.objects.get(id=all_apps[0].project_id)
 
     context = {"num_apps": num_apps,
-               "first_project": first_project,
+               "active_project": first_project,
     }
     return render(request, "application_listing.html", context=context)
 
