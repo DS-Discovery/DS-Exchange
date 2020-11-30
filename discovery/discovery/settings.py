@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
+    'applications.apps.ApplicationsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -100,7 +101,7 @@ DATABASES = {
         'NAME': 'discovery_db',
         'USER': 'postgres',
         # comment out own password before pushing to master
-        'PASSWORD': 'root',
+        'PASSWORD': 'Mangojango88!',
         # 'PASSWORD':,
         'HOST': '127.0.0.1',
         'PORT': '5432',
@@ -161,7 +162,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-SITE_ID = 2
+# site_id is really weird, check from 1-n to see which one eventually works
+SITE_ID = 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True

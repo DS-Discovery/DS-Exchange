@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 import datetime
+import operator
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
@@ -22,19 +23,7 @@ from .models import Partner
 from .models import Project
 
 def index(request):
-    if request.method == 'POST':
-        # here when select dropdown category
-        category = request.POST.get('category_wanted')
-        project = request.POST.get('project_wanted')
-        print(request.POST)
-        print("project_wanted is", project)
-        if category:
-            latest_question_list = Project.objects.filter(project_category__contains=category)
-        else:
-            latest_question_list = Project.objects.order_by('project_name')
-    else:
-        latest_question_list = Project.objects.order_by('project_name')
-
+    # for category dropdown
     project_category_list = set()
     for e in Project.objects.all():
         categories = e.project_category.strip().split(',')
@@ -43,18 +32,30 @@ def index(request):
     project_category_list = sorted(list(project_category_list))
 
 
+    latest_question_list = Project.objects.order_by('project_name')
+    context = {'latest_question_list': latest_question_list,
+                'project_category_list': project_category_list,
+                }
+
     # need to send requested category back to keep category selected
     if request.method == "POST":
+        # here when select dropdown category
+        category = request.POST.get('category_wanted')
+        project = request.POST.get('project_wanted')
+        print("project_wanted is", project)
+        if not category:
+            category = project.split("+")[1]
+        # print(request.POST)
+        if project:
+            project = project.split("+")[0]
+            
+
         if category:
-            context = {'latest_question_list': latest_question_list,
-                       'project_category_list': project_category_list,
-                       # send selected category back
-                       'selected_category': request.POST.get("category_wanted")
-                       }
-        else:
-            context = {'latest_question_list': latest_question_list,
-                       'project_category_list': project_category_list,
-                       }
+            # send selected category back
+            context["selected_category"] = category
+            latest_question_list = Project.objects.filter(project_category__contains=category)
+            context["latest_question_list"] = latest_question_list
+
         if project:
             context["selected_project"] = Project.objects.filter(project_name=project)[0]
             selected_partner = None
@@ -62,16 +63,13 @@ def index(request):
                 projects = partner.projects.all()
                 if context["selected_project"] in projects:
                     selected_partner = partner
-            context["selected_partner"] = partner
+            context["selected_partner"] = selected_partner
             context["labels"] = context["selected_project"].project_category.split(",")
 
-    else:
-        context = {'latest_question_list': latest_question_list,
-                   'project_category_list': project_category_list,
-                   }
 
     # print("context", context)
-    return render(request, 'projects.html', context)
+    print("latest_question_list", latest_question_list)
+    return render(request, 'projects/listing.html', context)
 
 
 def detail(request, project_name):
@@ -94,7 +92,7 @@ def app(request, project_name):
     # check to see if that partner project exists, if so, get the questions for it
     try:
         project = Project.objects.get(project_name=project_name)
-        questions = Question.objects.filter(project = project)
+        questions = Question.objects.filter(project = project).order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist")
 
@@ -141,7 +139,13 @@ def app(request, project_name):
 
         if form.is_valid():
             print("Is valid")
-            a = Answer(student = student, question = project, answer_text = form.cleaned_data['answer_text'])
+
+            try:
+                a = Answer.objects.get(student=student, question=project)
+                a.answer_text = form.cleaned_data['answer_text']
+            except:
+                a = Answer(student = student, question = project, answer_text = form.cleaned_data['answer_text'])
+            
             a.save()
         else:
             print("not valid")
@@ -157,6 +161,7 @@ def app(request, project_name):
     # print(questions)
 
     if request.user.is_authenticated:
+        print(questions)
         return render(request, 'projects/detail.html', {'questions': questions, 'project' : project, 'form' : form})
     else:
         raise Http404("User is not logged in")
