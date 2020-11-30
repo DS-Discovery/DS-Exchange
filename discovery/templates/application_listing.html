@@ -26,47 +26,60 @@
             {% endif %}
     </nav>
 
-    <div class="d-flex flex-column mt-5 ml-5">
-        <div class="d-flex flex-row">
-            <div class="d-flex flex-column">
 
-                <!-- widget that lists clickable application links -->
-                <div class="list-group" id="list-tab" role="tablist">
-                    {% for i in num_apps %}
+    <div class="d-flex flex-row">
+         <div class="col-3 border p-2">
+            <form method="post" novalidate>
+              {% csrf_token %}
+              <div class="list-group">
+                {% for i in num_apps %}
                         {% if i == 1 %}
-                    <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab"><div class="text-center">Application {{i}}</div></a>
+                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
+                        {% elif i == 2 %}
+                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
                         {% else %}
-                    <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab"><div class="text-center">Application {{i}}</div></a>
+                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
                         {% endif %}
-                    {% endfor %}
+                {% endfor %}
+              </div>
+            </form>
+           <!--  <div class="list-group" id="list-tab" role="tablist">
+
+                {% for i in num_apps %}
+                    {% if i == 1 %}
+                <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab"><div class="text-center">Application {{i}}</div></a>
+                    {% else %}
+                <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab"><div class="text-center">Application {{i}}</div></a>
+                    {% endif %}
+                {% endfor %}
+            </div> -->
+        </div>
+
+        <div class="col-9 border p-2">
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Project Name</h5>
                 </div>
-
-                <!-- widget that provides project info -->
-                <div class="list-group mt-5">
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Project Name</h5>
-                        </div>
-                        <p class="mb-1 text-wrap" style="width: 20rem;">{{active_project.project_name}}</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Partner Info</h5>
-                        </div>
-                        <p class="mb-1">blah blah blah</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Project Description</h5>
-                        </div>
-                    <p class="mb-1 text-wrap" style="width: 20rem;">{{active_project.description}}</p>
-                    </a>
-
+                <p>{{active_project.project_name}}</p>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Partner Info</h5>
                 </div>
+                <p>Partner First Name: {{ selected_partner.first_name }}</p>
+                <p>Partner Last Name: {{ selected_partner.last_name }}</p>
+                <p>Partner Email: {{ selected_partner.email_address }}</p>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Project Description</h5>
+                </div>
+            <p>{{active_project.description}}</p>
+            </a>
 
-            </div>
 
         </div>
+
     </div>
 
 </body>
