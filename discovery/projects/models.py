@@ -46,5 +46,5 @@ class Question(models.Model):
     # id = models.CharField(primary_key=True, default = create_id(partner, question_text), max_length = 200)
 
     def __str__(self):
-        return self.project + " - " + self.question_text
+        return str(self.project) + " - " + str(self.question_text)
 

@@ -19,7 +19,28 @@
     <h1>
       {{ question.question_text }} <br>
   </h1>
-      <textarea name="{{ question.id }}" rows=”4″ cols=”20″> </textarea><br>
+      {% if question.question_type == "text" %}
+          "text type"
+          <textarea name="{{ question.id }}" rows=”4″ cols=”20″> </textarea><br>
+      {% endif %}
+
+      {% if question.question_type == "mc" %}
+          "mc type"
+      {% endif %}
+
+      {% if question.question_type == "dropdown" %}
+          "dropdown type"
+          <button name = "{{ question.id }}" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{ question.question_data }}
+            <span class="caret"></span>
+        </button>
+      {% endif %}
+
+      {% if question.question_type == "checkbox" %}
+          "checkbox type"
+      {% endif %}
+
+
+
       <!-- {{ form }} -->
 
 
