@@ -25,12 +25,12 @@ def index(request):
         	context["active_project"] = second_project
         elif selected_application == "third_project":
         	context["active_project"] = third_project
-        selected_partner = None
-        for partner in Partner.objects.all():
-            projects = partner.projects.all()
-            if context["active_project"] in projects:
-                selected_partner = partner
-        context["selected_partner"] = selected_partner
+    selected_partner = None
+    for partner in Partner.objects.all():
+        projects = partner.projects.all()
+        if context["active_project"] in projects:
+            selected_partner = partner
+    context["selected_partner"] = selected_partner
    
     return render(request, "application_listing.html", context=context)
 
