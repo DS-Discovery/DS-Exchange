@@ -22,14 +22,13 @@ if __name__ == "__main__":
     path = "csv/student_sp2020.csv"
     df = pd.read_csv(path)
 
-    # find corresponding Student
-    try:
-        student = Student.objects.get(email_address=row["Email Address"])
-    except ObjectDoesNotExist:
-        continue
 
     for _, row in df.iterrows():
-        # find corresponding Project
+        # find corresponding Student
+        try:
+            student = Student.objects.get(email_address=row["Email Address"])
+        except ObjectDoesNotExist:
+            continue
 
         choices = []
         choices.append(row["1) What is your FIRST choice?"])
@@ -37,6 +36,7 @@ if __name__ == "__main__":
         choices.append(row["3) What is your THIRD choice?"])
 
         for i in range(3):
+            # find corresponding Project
 
             try:
                 project = Project.objects.get(project_name=choices[i])
