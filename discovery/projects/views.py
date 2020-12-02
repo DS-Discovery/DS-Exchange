@@ -117,18 +117,34 @@ def app(request, project_name):
         post = request.POST.copy()
         print(post)
 
+
+        def querydict_to_dict(query_dict):
+            data = {}
+            for key in query_dict.keys():
+                v = query_dict.getlist(key)
+                if len(v) == 1:
+                    v = v[0]
+                data[key] = v
+            return data
+
         is_valid = True
         answer_text = ""
         keys = list(post.keys())
         for k in keys:
             if k == "csrfmiddlewaretoken":
                 continue
+         
             if len(post[k]) == 0:
                 is_valid = False
-            answer_text += str(k) + ". " + post[k] + " "
+            asDict = querydict_to_dict(post)
+            if type(asDict[k]) != list:
+                answer_text += str(k) + ". " + asDict[k] + " "
+            else:
+                answer_text += str(k) + ". " + ";".join(asDict[k]) + " "
             post.pop(k)
 
         answer_text = answer_text.strip()
+ 
         if is_valid:
             post['answer_text'] = answer_text
         print(post)

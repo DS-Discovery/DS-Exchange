@@ -33,6 +33,7 @@ class Question(models.Model):
     ('mc','multiple choice'),
     ('dropdown', 'dropdown'),
     ('checkbox','checkbox'),
+    ('multiselect','multiselect'),
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     question_num = models.IntegerField(default=0)
