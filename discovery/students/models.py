@@ -11,7 +11,14 @@ from projects.models import Project
 
 class Student(models.Model):
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
+    college_choices = (
+    ('College Letters & Science','College Letters & Science'),
+    ('College of Engineering','College of Engineering'),
+    ('College of Chemistry', 'College of Chemistry'),
+    ('College of Environmental Design','College of Environmental Design'),
+    ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
+    ('Haas School of Business','Haas School of Business'),
+    )
     email_address = models.EmailField(max_length=100, primary_key= True) # NEED TO PRIMARY KEY
     first_name = models.CharField(max_length=100, null = True)
     last_name = models.CharField(max_length=100, null = True)

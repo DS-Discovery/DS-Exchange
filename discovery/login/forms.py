@@ -39,6 +39,8 @@ class EditStudentSignupForm(forms.ModelForm):
             'college',
             'major',
             'year',
+            'resume_link',
+            'general_question'
         )
 
 

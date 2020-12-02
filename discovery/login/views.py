@@ -74,6 +74,9 @@ def studentProfileEdit(request):
             student.update(college = form.cleaned_data['college'])
             student.update(major = form.cleaned_data['major'])
             student.update(year = form.cleaned_data['year'])
+            student.update(resume_link = form.cleaned_data['resume_link'])
+            student.update(general_question = form.cleaned_data['general_question'])
+
             return HttpResponseRedirect('/student/profile')
 
     else: 
@@ -162,9 +165,12 @@ def partnerProfileView(request):
     if request.user.is_authenticated:
         email = request.user.email
 
-    context = Partner.objects.get(email_address = email).__dict__
-    print(context)
-    return render(request, 'login/partnerBasic.html', {'context' : context})
+    context = Partner.objects.get(email_address = email)
+    # print(context.__dict__)
+    projects = context.projects.all()
+    print("projects", projects)
+
+    return render(request, 'login/partnerBasic.html', {'context' : context.__dict__, 'projects': projects})
 
 @login_required
 def redirectProfile(request):
