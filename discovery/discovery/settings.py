@@ -163,7 +163,11 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
+<<<<<<< HEAD
 SITE_ID = 1
+=======
+SITE_ID = 7
+>>>>>>> 29f7f03687c641b07e21cc74ae261c6658b09049
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True

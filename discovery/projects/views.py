@@ -10,12 +10,14 @@ from django.http import HttpResponseRedirect
 from django.template.context_processors import csrf
 
 from students.forms import AnswerForm
+from applications.forms import ApplicationForm
 
 # from .models import Student
 from .models import Question
 from students.models import Answer
 from .models import Partner
 from students.models import Student
+from applications.models import Application
 # Create your views here.
 from django.http import HttpResponse
 from django.template import loader
@@ -114,6 +116,7 @@ def app(request, project_name):
         #     print("---------------------")
 
         #modify post request
+
         post = request.POST.copy()
         print(post)
 
@@ -128,45 +131,74 @@ def app(request, project_name):
             return data
 
         is_valid = True
-        answer_text = ""
         keys = list(post.keys())
+        
+        ans_list = []
+        # creating individual answers
         for k in keys:
             if k == "csrfmiddlewaretoken":
                 continue
-         
-            if len(post[k]) == 0:
+            if len(post[k].strip()) == 0:
                 is_valid = False
-            asDict = querydict_to_dict(post)
-            if type(asDict[k]) != list:
-                answer_text += str(k) + ". " + asDict[k] + " "
-            else:
-                answer_text += str(k) + ". " + ";".join(asDict[k]) + " "
-            post.pop(k)
+                break
+            
+            new_ans = request.POST.copy()
+            new_ans_keys = list(new_ans.keys())
+            q_num = 0
+            answer_text = ""
+            for new_k in new_ans_keys:
+                if new_k == "csrfmiddlewaretoken":
+                    continue
+                if new_k == k:
+                    q_num = new_k
+                    # answer_text = post[new_k]
+                    asDict = querydict_to_dict(post)
+                    if type(asDict[k]) != list:
+                        answer_text = asDict[k]
+                    else:
+                        answer_text = ";".join(asDict[k])
+    
+                new_ans.pop(new_k)
 
-        answer_text = answer_text.strip()
- 
+            new_ans['question_num'] = q_num
+            new_ans['answer_text'] = answer_text
+            ans_list.append(new_ans)
+
         if is_valid:
-            post['answer_text'] = answer_text
-        print(post)
-
-        request.POST = post
-
-        form = AnswerForm(request.POST)
-
-        if form.is_valid():
-            print("Is valid")
 
             try:
-                a = Answer.objects.get(student=student, question=project)
-                a.answer_text = form.cleaned_data['answer_text']
+                application = Application.objects.get(student=student, project=project)
             except:
-                a = Answer(student = student, question = project, answer_text = form.cleaned_data['answer_text'])
-            
-            a.save()
+                application = Application(student=student, project=project)
+
+            application.save()
+
+            for post in ans_list:
+                print(post)
+
+                request.POST = post
+
+                form = AnswerForm(request.POST)
+
+                if form.is_valid():
+                    print("Is valid")
+                    
+                    q_num = form.cleaned_data['question_num']
+
+                    try:
+                        a = Answer.objects.get(student=student, application=application, question_num=q_num)
+                        a.answer_text = form.cleaned_data['answer_text']
+                    except:
+                        a = Answer(student=student, application = application, question_num = q_num,
+                        answer_text = form.cleaned_data['answer_text'])
+                    
+                    a.save()
+                else:
+                    print("not valid")
+                    print(form.errors)
+            return HttpResponseRedirect('/submitted')
         else:
-            print("not valid")
-            print(form.errors)
-        return HttpResponseRedirect('/submitted')
+            return HttpResponseRedirect(request.path_info)
     else: # GET
         form = AnswerForm()
 
