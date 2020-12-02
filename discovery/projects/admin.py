@@ -28,9 +28,9 @@ admin.site.register(Partner, PartnerAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     
-    fields = ['project_name', 'organization', 'project_category','student_num', 'description']
+    fields = ['semester', 'year', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
-    list_display = ('project_name', 'project_category')
+    list_display = ('project_name', 'project_category', 'semester', 'year')
     list_filter = ['project_category']
     search_fields = ['project_name']
 

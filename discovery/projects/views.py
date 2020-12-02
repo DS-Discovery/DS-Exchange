@@ -11,6 +11,7 @@ from django.template.context_processors import csrf
 
 from students.forms import AnswerForm
 from applications.forms import ApplicationForm
+from django.contrib.auth.decorators import login_required
 
 # from .models import Student
 from .models import Question
@@ -218,3 +219,21 @@ def app(request, project_name):
 def results(request, question_id):
     response = "You're looking at the results of question %s."
     return HttpResponse(response % question_id)
+
+@login_required
+def partnerProjectView(request, project_name):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    context = Partner.objects.get(email_address = email)
+    projects = context.projects.all()
+    canView = False
+    for project in projects:
+        if project.project_name == project_name:
+            canView = True
+    if canView == False:
+        raise Http404("No permission")
+    project = Project.objects.get(project_name=project_name)
+    questions = Question.objects.filter(project = project).order_by('question_num')
+    return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project})

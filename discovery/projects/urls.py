@@ -7,9 +7,11 @@ urlpatterns = [
     # path('studentApplication', views.studentApplication, name='studentApplication'),
 
     path('<str:project_name>/app', views.app, name='app'),
-    # ex: /projects/5/results/
+    path('<str:project_name>', views.partnerProjectView, name='partnerProjectView'),
+
+
     path('<int:question_id>/results/', views.results, name='results'),
-    # ex: /projects/5/vote/
+
 
     path('specifics/<int:question_id>/', views.detail, name='detail'),
 ]
