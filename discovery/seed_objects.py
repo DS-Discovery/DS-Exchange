@@ -1,0 +1,85 @@
+"""
+seed student, project, application
+objects into local postgres
+"""
+
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "discovery.settings")
+
+import django
+django.setup()
+
+
+from students.models import Student
+from projects.models import Project
+from applications.models import Application
+from django.core.exceptions import ObjectDoesNotExist
+import pandas as pd
+
+student_path = "csv/student_sp2020.csv"
+partner_path = "csv/partner_sp2020.csv"
+
+if __name__ == "__main__":
+    df_student = pd.read_csv(student_path)
+    df_partner = pd.read_csv(partner_path)[:48]
+
+    # make sure all tables are empty
+    Student.objects.all().delete()
+    Project.objects.all().delete()
+    Application.objects.all().delete()
+
+    # seeding students
+    for _, row in df_student.iterrows():
+        # general question field too long for this student
+        if (row["Email Address"] == "saad.jamal@berkeley.edu"):
+            continue
+        student = Student(email_address=row["Email Address"],
+                          first_name=row["Full Name"].split()[0],
+                          last_name=row["Full Name"].split()[-1],
+                          student_id=row["Student ID Number"],
+                          college=row["Which college are you enrolled in?"],
+                          major=row["What is your intended or declared major(s)/minor(s)?"],
+                          year=row["What is your expected graduation year?"],
+                          first_choice=row["1) What is your FIRST choice?"],
+                          second_choice=row["2) What is your SECOND choice?"],
+                          third_choice=row["3) What is your THIRD choice?"],
+                          resume_link=row["Please attach your resume."],
+                          general_question=row["Is there any other information you would like us to consider?"],
+                          )
+        student.save()
+
+    # seeding projects
+    for _, row in df_partner.iterrows():
+        project = Project(organization=row["Organization "],
+                          project_name=row["Project name"],
+                          project_category=row["Project Category"],
+                          description=row[
+                              "Please provide a brief description for your project that we can list on our website."],
+                          )
+        project.save()
+
+    # seeding applications
+    for _, row in df_student.iterrows():
+        # find corresponding Student
+        try:
+            student = Student.objects.get(email_address=row["Email Address"])
+        except ObjectDoesNotExist:
+            continue
+
+        choices = []
+        choices.append(row["1) What is your FIRST choice?"])
+        choices.append(row["2) What is your SECOND choice?"])
+        choices.append(row["3) What is your THIRD choice?"])
+
+        for i in range(3):
+            # find corresponding Project
+            try:
+                project = Project.objects.get(project_name=choices[i])
+                application = Application(student=student,
+                                          project=project,
+                                          rank=i+1,
+                                          status="SENT",
+                                          )
+                application.save()
+            except ObjectDoesNotExist:
+                continue
