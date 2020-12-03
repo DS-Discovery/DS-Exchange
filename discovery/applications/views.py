@@ -28,6 +28,11 @@ def index(request):
     context = {"num_apps": num_apps,
                "active_project": first_project,
     }
+    first_project.status = "Pending Offer"
+    second_project.status = "Pending Offer"
+    third_project.status = "Pending Offer"
+
+    selected_status = None
 
     if request.method == "POST":
         # here when select dropdown category
@@ -38,13 +43,33 @@ def index(request):
         	context["active_project"] = second_project
         elif selected_application == "third_project":
         	context["active_project"] = third_project
+
+
+        selected_status = request.POST.get('selected_status')
+        if selected_status:
+            context["selected_status"] = selected_status
+            context["active_project"].status = selected_status
     selected_partner = None
     for partner in Partner.objects.all():
         projects = partner.projects.all()
         if context["active_project"] in projects:
             selected_partner = partner
     context["selected_partner"] = selected_partner
-   
+    if context["active_project"]:
+        if context["active_project"].status == "Pending Offer":
+            context["available_status"] = ["Accept Offer", "Reject Offer"]
+            context["application_status"] = "Pending Offer"
+        else:
+            context["available_status"] = ["NA"]
+            context["application_status"] = "Submitted"
+    else:
+        context["available_status"] = ["NA"]
+        context["application_status"] = "Submitted"
+
+    if selected_status: 
+        context["application_status"] = context["active_project"].status
+
+    print(context)
     return render(request, "application_listing.html", context=context)
 
 def getApp(request):
