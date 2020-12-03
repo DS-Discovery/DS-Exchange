@@ -132,7 +132,7 @@
                     {% if labels %}
                       <h4>
                         <ul style="list-style-type:none;">
-                          <li><span class="badge badge-pill badge-info">Application Received</span></li>
+                          <li><span class="badge badge-pill badge-info">NA</span></li>
                         </ul>
                       </h4>
                     {% endif %}
@@ -141,6 +141,15 @@
                   <div class="flex-row border p-2">
                     <br>
                     <h4>Action Items: </h4>
+                    
+                    {% if labels %}
+                      <h4>
+                        <ul style="list-style-type:none;">
+                          <li> <a class="nav-link badge badge-pill badge-info" href="{{selected_project.project_name}}/app"> Apply</a></li>
+                        </ul>
+                      </h4>
+                    {% endif %}
+                    
                     <br>
                   </div>
                 </div>
