@@ -28,48 +28,53 @@ def index(request):
     context = {"num_apps": num_apps,
                "active_project": first_project,
     }
-    first_project.status = "Pending Offer"
-    second_project.status = "Pending Offer"
-    third_project.status = "Pending Offer"
 
+    context["active_application"] = None
     selected_status = None
 
     if request.method == "POST":
         # here when select dropdown category
         selected_application = request.POST.get('selected_application')
         if selected_application == "first_project":
-        	context["active_project"] = first_project
+            context["active_project"] = first_project
+            context["active_application"] = all_apps[0]
         elif selected_application == "second_project":
-        	context["active_project"] = second_project
+            context["active_project"] = second_project
+            context["active_application"] = all_apps[1]
         elif selected_application == "third_project":
-        	context["active_project"] = third_project
+            context["active_project"] = third_project
+            context["active_application"] = all_apps[2]
+        else:
+            context["active_project"] = first_project
+            context["active_application"] = all_apps[0]
 
 
         selected_status = request.POST.get('selected_status')
         if selected_status:
             context["selected_status"] = selected_status
-            context["active_project"].status = selected_status
+            context["active_application"].status = selected_status
+            context["active_application"].save()
+
     selected_partner = None
     for partner in Partner.objects.all():
         projects = partner.projects.all()
         if context["active_project"] in projects:
             selected_partner = partner
     context["selected_partner"] = selected_partner
-    if context["active_project"]:
-        if context["active_project"].status == "Pending Offer":
+
+    if context["active_application"]:
+        if context["active_application"].status != "SENT":
             context["available_status"] = ["Accept Offer", "Reject Offer"]
-            context["application_status"] = "Pending Offer"
         else:
             context["available_status"] = ["NA"]
-            context["application_status"] = "Submitted"
     else:
         context["available_status"] = ["NA"]
-        context["application_status"] = "Submitted"
+        context["active_project"] = first_project
+        context["active_application"] = all_apps[0]
 
-    if selected_status: 
-        context["application_status"] = context["active_project"].status
-
-    print(context)
+    # print(context)
+    # if context["active_application"]:
+    #     print(context["active_application"].status)
     return render(request, "application_listing.html", context=context)
 
 def getApp(request):
