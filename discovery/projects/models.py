@@ -27,6 +27,13 @@ class Partner(models.Model):
         return self.email_address
 
 
+class PartnerProjectInfo(models.Model):
+    partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    role = models.CharField(max_length=100)
+
+
+
 class Question(models.Model):
     question_choices = (
     ('text','text'),
@@ -34,7 +41,10 @@ class Question(models.Model):
     ('dropdown', 'dropdown'),
     ('checkbox','checkbox'),
     ('multiselect','multiselect'),
+    ('range','range'),
     )
+    
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     question_num = models.IntegerField(default=0)
     question_text = models.CharField(max_length=200)

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 
 from students.models import Student
 from projects.models import Partner
+from projects.models import PartnerProjectInfo
 
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -167,10 +168,17 @@ def partnerProfileView(request):
 
     context = Partner.objects.get(email_address = email)
     # print(context.__dict__)
-    projects = context.projects.all()
+    # projects = context.projects.all()
+    relationship = PartnerProjectInfo.objects.filter(partner = context)
+   
+    projects = [p.project for p in relationship]
     print("projects", projects)
-
-    return render(request, 'login/partnerBasic.html', {'context' : context.__dict__, 'projects': projects})
+    projectPartnerRoles = {}
+    for p in projects:
+        roles = PartnerProjectInfo.objects.filter(project = p)
+        projectPartnerRoles[p.project_name] = roles
+    print(projectPartnerRoles)
+    return render(request, 'login/partnerBasic.html', {'context' : context.__dict__, 'projects': projects, 'projectPartnerRoles' : projectPartnerRoles})
 
 @login_required
 def redirectProfile(request):

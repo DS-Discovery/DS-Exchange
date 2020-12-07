@@ -4,6 +4,7 @@ from django.contrib import admin
 from .models import Partner
 from .models import Project
 from .models import Question
+from .models import PartnerProjectInfo
 
 
 
@@ -12,17 +13,21 @@ class QuestionInLine(admin.TabularInline):
     model = Question
     extra = 3
 
-
+class PartnerProjectInfoInline(admin.TabularInline):
+    model = PartnerProjectInfo
+    extra = 2
 
 class PartnerAdmin(admin.ModelAdmin):
 
-    fields = [ 'email_address','first_name','last_name', 'projects',]
-    
-    def all_projects(self, obj):
-        return "\n".join([p.project_name for p in obj.projects.all()])
+    fields = [ 'email_address','first_name','last_name',]
+    inlines = [PartnerProjectInfoInline]
+    # def all_projects(self, obj):
+    #     return "\n".join([p.project_name for p in obj.projects.all()])
     # search_fields =['projects',]
-    list_display = ['email_address', 'all_projects', ]
-
+    # list_display = ['email_address', 'all_projects', ]
+    def all_projects(self, obj):
+        return "\n".join([str(p.project) for p in PartnerProjectInfo.objects.filter(partner = obj)])
+    list_display = ['email_address', 'all_projects']
 
 admin.site.register(Partner, PartnerAdmin)
 

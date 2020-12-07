@@ -19,11 +19,11 @@
             </button>
 
             <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
+              <li class="nav-item active"></li>
                 <a class="nav-link" href="../#">Home <span class="sr-only">(current)</span></a>
                 <a class="nav-link" href="/profile">Profile <span class="sr-only">(current)</span></a>
                 <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
-              </li>
+             
             </ul>
 
 
@@ -31,6 +31,7 @@
                 <a href="{% provider_login_url 'google' %}">Login with Google</a>
             {% else %}
                 {{ user.username }}
+                <a class="nav-link" href="/accounts/logout">Logout <span class="sr-only">(current)</span></a>
             {% endif %}
         </nav>
 

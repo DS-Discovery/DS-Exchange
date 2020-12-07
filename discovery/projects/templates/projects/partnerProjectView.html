@@ -13,7 +13,7 @@
 
 
 
-{% load split %}
+{% load helperfuncs %}
 
 <body>
 
@@ -29,6 +29,7 @@
         <a href="{% provider_login_url 'google' %}">Login with Google</a>
     {% else %}
         {{ user.username }}
+        <a class="nav-link" href="/accounts/logout">Logout <span class="sr-only">(current)</span></a>
     {% endif %}
 </nav>
 
@@ -40,6 +41,20 @@
 <p>Project Category - {{ project.project_category }} </p>
 <p>Student Number - {{ project.student_num }} </p>
 <p>Description - {{ project.description }} </p>
+
+
+<h2>Partners</h2>
+
+
+    {% for roles in projectPartnerRoles %}
+
+        <p> First Name {{ roles.partner.first_name }} </p>
+        <p> Last Name {{ roles.partner.last_name }} </p>
+        <p> Email {{ roles.partner.email_address }} </p>
+        <p> Role {{ roles.role }} </p>
+        <br>
+    {% endfor %} 
+
 
 
 <h2>Current Questions</h2>

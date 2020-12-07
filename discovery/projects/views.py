@@ -24,6 +24,7 @@ from django.http import HttpResponse
 from django.template import loader
 from .models import Partner
 from .models import Project
+from .models import PartnerProjectInfo
 
 def index(request):
     # for category dropdown
@@ -236,4 +237,8 @@ def partnerProjectView(request, project_name):
         raise Http404("No permission")
     project = Project.objects.get(project_name=project_name)
     questions = Question.objects.filter(project = project).order_by('question_num')
-    return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project})
+
+
+    projectPartnerRoles = PartnerProjectInfo.objects.filter(project = project)
+
+    return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project, 'projectPartnerRoles': projectPartnerRoles})
