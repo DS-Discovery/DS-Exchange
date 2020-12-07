@@ -1,72 +1,101 @@
-<!DOCTYPE html>
-
 {% load socialaccount %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Application Listing Page</title>
-</head>
-<body>
+<html>
+    <head>
+        <title>Discovery Application Landing Page</title>
+    </head>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border">
-            <a class="navbar-brand" href="#">Discovery Application Portal</a>
+    <body>
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="../#">Discovery Application Portal</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="../#">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/profile">Profile <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
+              </li>
+            </ul>
             {% if not user.is_authenticated %}
                 <a href="{% provider_login_url 'google' %}">Login with Google</a>
             {% else %}
                 {{ user.username }}
             {% endif %}
-    </nav>
+        </nav>
+              <ul class="list-group list-group-horizontal-lg">
+                <li class="list-group-item flex-fill "><h4>Applicant(s)</h4></li>
+                <li class="list-group-item flex-fill"><h4>Final Team</h4></li>
+                <!-- <li class="list-group-item flex-fill"><h4>Interview</h4></li> -->
+              </ul>
+            </div>
 
-    <div class="d-flex flex-column mt-5 ml-5">
-        <div class="d-flex flex-row">
-            <div class="d-flex flex-column">
 
-                <!-- widget that lists clickable application links -->
-                <div class="list-group" id="list-tab" role="tablist">
-                    {% for i in num_apps %}
-                        {% if i == 1 %}
 
-                        <form method="post" name="applicantRequest">
-                            {% csrf_token %}
-                            <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" role="tab" name="applicant" onclick="document.applicantRequest.submit()"><div class="text-center">Applicant {{i}}</div></a>
-                        </form>
+            <div class="d-flex flex-row">
+                 <div class="col-3 border p-2">
+                    <form method="post" novalidate>
+                      {% csrf_token %}
+                      <div class="list-group">
+                        {% if latest_question_list %}
+                            {% for question in latest_question_list %}
+                            <script>
+                              var selected_category = document.getElementById("ddlViewBy").value;
+                            </script>
+                               <button type="submit" class="list-group-item list-group-item-action" name="project_wanted" value="{{question.project_name}}+{{selected_category}}"> {{question.project_name}}</button>
+                            {% endfor %}
                         {% else %}
-                    <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab"><div class="text-center">Applicant {{i}}</div></a>
+                            <p>No applicants are available.</p>
+
                         {% endif %}
-                    {% endfor %}
+                      </div>
+                    </form>
                 </div>
 
-                <!--
+                <div class="col-6 border p-2">
+                  <br>
+                  <h3>Project Specific Questions: </h3>
+                  <p id="demo"></p>
+                  <br>
+                  <h4>{{ selected_project.project_name }} </h4>
 
+                  <!-- <p>Partner First Name: {{ selected_partner.first_name }}</p>
+                  <p>Partner Last Name: {{ selected_partner.last_name }}</p>
+                  <p>Partner Email: {{ selected_partner.email_address }}</p>
+                  <p>Partner Organization: {{ selected_project.organization }}</p>
+                  <p>Student Number: {{ selected_project.student_num }}</p>
+                  <p>Project Description: {{ selected_project.description }}</p> -->
 
-                <div class="list-group mt-5">
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Applicant</h5>
-                        </div>
-                        <p class="mb-1 text-wrap" style="width: 20rem;">{{active_project.project_name}}</p>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Final Team</h5>
-                        </div>
-                    </a>
 
                 </div>
                 -->
 
-            </div>
 
-        </div>
-    </div>
-</body>
+                <div class="col-3 border p-2">
+                  <div class="flex-row border p-2">
+                    <br>
+                    <div>
+                    <h4>Basic Information:</h4>
+                    </div>
+                  </div>
+                  <div class="flex-row border p-2">
+                    <br>
+                    <h4>Action Items: </h4>
+                    <br>
+                  </div>
+                  <div class="flex-row border p-2">
+                    <br>
+                    <h4>Back to Project(s)</h4>
+                    <br>
+                  </div>
+                </div>
+            </div>
+    </body>
 </html>
