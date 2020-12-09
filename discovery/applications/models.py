@@ -1,9 +1,9 @@
 from django.db import models
 from students.models import Student
 from projects.models import Project
-
+# from students.models import tempApplication
 # Create your models here.
-class Application(tempApplication):
+class Application(models.Model):
     #email_address = models.EmailField(max_length=100, primary_key=True)
     #email_address = models.EmailField(max_length=100)
 
