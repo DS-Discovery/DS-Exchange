@@ -24,6 +24,7 @@ from django.http import HttpResponse
 from django.template import loader
 from .models import Partner
 from .models import Project
+from applications.models import Application
 from .models import PartnerProjectInfo
 
 
@@ -101,6 +102,7 @@ def app(request, project_name):
         questions = Question.objects.filter(project = project).order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist")
+    
 
 
     #if this form is submitted, then we want to save the answers
@@ -112,7 +114,13 @@ def app(request, project_name):
             return Http404("Student is not authenticated")
         student = Student.objects.get(email_address = email)
         print(student)
+   
 
+        try:
+            listing = Application.objects.get(email_address = email, project_id = project.id)
+        except Application.DoesNotExist:
+            return Http404("Student already has an application for this project.")
+            
         # for question in questions:
         #     print(question.id)
         #     print(request.POST)
@@ -291,6 +299,7 @@ def partnerlisting(request):
             # context["selected_partner"] = selected_partner
             context["labels"] = context["selected_project"].project_category.split(",")
             context['partnerProjectInfos'] = PartnerProjectInfo.objects.filter(project = context["selected_project"])
+     
             questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
             context['questions'] = questions
             
