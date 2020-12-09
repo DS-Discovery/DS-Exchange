@@ -30,31 +30,23 @@
                 {{ user.username }}
             {% endif %}
         </nav>
+
               <ul class="list-group list-group-horizontal-lg">
-                <li class="list-group-item flex-fill "><h4>Applicant(s)</h4></li>
-                <li class="list-group-item flex-fill"><h4>Final Team</h4></li>
+                <li class="list-group-item flex-fill "><h4 class="text-center">Applicant(s)</h4></li>
+                <li class="list-group-item flex-fill"><h4 class="text-center">Final Team</h4></li>
                 <!-- <li class="list-group-item flex-fill"><h4>Interview</h4></li> -->
               </ul>
-            </div>
-
-
 
             <div class="d-flex flex-row">
                  <div class="col-3 border p-2">
                     <form method="post" novalidate>
                       {% csrf_token %}
                       <div class="list-group">
-                        {% if latest_question_list %}
-                            {% for question in latest_question_list %}
-                            <script>
-                              var selected_category = document.getElementById("ddlViewBy").value;
-                            </script>
-                               <button type="submit" class="list-group-item list-group-item-action" name="project_wanted" value="{{question.project_name}}+{{selected_category}}"> {{question.project_name}}</button>
-                            {% endfor %}
-                        {% else %}
-                            <p>No applicants are available.</p>
 
-                        {% endif %}
+                          {% for i in num_apps %}
+                           <button type="submit" class="list-group-item list-group-item-action" name="selected_applicant" value="{{i}}"> Applicant {{i}}</button>
+                        {% endfor %}
+
                       </div>
                     </form>
                 </div>
@@ -75,26 +67,45 @@
 
 
                 </div>
-                -->
-
 
                 <div class="col-3 border p-2">
-                  <div class="flex-row border p-2">
-                    <br>
-                    <div>
-                    <h4>Basic Information:</h4>
+
+                    <div class="d-flex flex-column border p-2">
+                        <h4 class="border text-center">Basic Information</h4>
+                        <div class="d-flex flex-row align-items-center">
+                            <h5>Name: <small class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</small></h5>
+                        </div>
+                        <div class="d-flex flex-row align-items-center">
+                            <h5>Contact Info: <small class="text-muted">{{curr_student.email_address}}</small></h5>
+                        </div>
+                        <div class="d-flex flex-row align-items-center">
+                            <h5>Major: <small class="text-muted">{{curr_student.major}}</small></h5>
+                        </div>
+                        <div class="d-flex flex-row align-items-center">
+                            <h5>Year: <small class="text-muted">{{curr_student.year}}</small></h5>
+                        </div>
+                        <div class="d-flex flex-row align-items-center">
+                            <a class="btn btn-outline-info" href="{{curr_student.resume_link}}" role="button">Link to Resume</a>
+                        </div>
                     </div>
-                  </div>
-                  <div class="flex-row border p-2">
-                    <br>
-                    <h4>Action Items: </h4>
-                    <br>
-                  </div>
-                  <div class="flex-row border p-2">
-                    <br>
-                    <h4>Back to Project(s)</h4>
-                    <br>
-                  </div>
+
+
+                    <div class="d-flex flex-column border p-2">
+                        <h4 class="border text-center">Action Items</h4>
+                        <div class="d-flex flex-row justify-content-center mb-2">
+                            <button type="button" class="btn btn-outline-success">Interview Schedule</button>
+                        </div>
+                        <div class="d-flex flex-row justify-content-center">
+                            <button type="button" class="btn btn-outline-danger">Reject without Interview</button>
+                        </div>
+                    </div>
+
+
+                    <div class="d-flex flex-column mt-5">
+                        <button type="button" class="btn btn-outline-secondary">Back to Project(s)</button>
+                    </div>
+
+
                 </div>
             </div>
     </body>

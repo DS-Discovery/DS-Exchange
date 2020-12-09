@@ -10,16 +10,17 @@ PROJECT_ID = 249
 
 def index(request):
 
+    applicant_num = 0
     if request.method == "POST":
-        print("posting")
+        applicant_num = int(request.POST.get("selected_applicant")) - 1
 
     project = Project.objects.filter(id=PROJECT_ID)
     applications = Application.objects.filter(project_id=249)
-    student = applications[0].student
+    student = applications[applicant_num].student
 
     context = {
         "num_apps": range(1, len(applications) + 1),
-        "curr_app": applications[0],
+        "curr_app": applications[applicant_num],
         "curr_student": student
     }
 
