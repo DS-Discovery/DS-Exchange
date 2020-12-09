@@ -1,12 +1,25 @@
 from django.shortcuts import render
 from projects.models import Project, Partner
 from applications.models import Application
+from students.models import Student
 
 # default student email for testing
 EMAIL_ADDRESS = "22szavala@berkeley.edu"
 
 def index(request):
-    all_apps = Application.objects.filter(email_address=EMAIL_ADDRESS)
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    else:
+        return Http404("Student is not authenticated")
+    student = Student.objects.get(email_address = email)
+    # print(student)
+
+    # changed from email to student
+    # all_apps = Application.objects.filter(email_address=EMAIL_ADDRESS)
+    all_apps = Application.objects.filter(student = student)
+    print(all_apps)
+
     num_apps = range(1, len(all_apps) + 1)
     
     first_project = Project.objects.get(id=all_apps[0].project_id)

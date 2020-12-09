@@ -117,10 +117,10 @@ def app(request, project_name):
    
 
         try:
-            listing = Application.objects.get(email_address = email, project_id = project.id)
+            listing = Application.objects.get(student = student, project = project)
         except Application.DoesNotExist:
             return Http404("Student already has an application for this project.")
-            
+
         # for question in questions:
         #     print(question.id)
         #     print(request.POST)
