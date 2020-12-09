@@ -26,7 +26,7 @@ class PartnerAdmin(admin.ModelAdmin):
     # search_fields =['projects',]
     # list_display = ['email_address', 'all_projects', ]
     def all_projects(self, obj):
-        return "\n".join([str(p.project) for p in PartnerProjectInfo.objects.filter(partner = obj)])
+        return ";\n".join([str(p.project) for p in PartnerProjectInfo.objects.filter(partner = obj)])
     list_display = ['email_address', 'all_projects']
 
 admin.site.register(Partner, PartnerAdmin)

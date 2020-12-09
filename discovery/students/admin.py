@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Student
 from .models import Answer
+from projects.models import Question
 # from .models import Question
 class StudentAdmin(admin.ModelAdmin):
 
@@ -12,10 +13,20 @@ class StudentAdmin(admin.ModelAdmin):
 
 admin.site.register(Student, StudentAdmin)
 
+
+
+
 class AnswerAdmin(admin.ModelAdmin):
 
-    list_display = ('application', 'question_num')
+    def question_text(self, obj):
+        val = Question.objects.filter(project = obj.application.project, question_num = obj.question_num)
+       
+        return ";\n".join([p.question_text for p in val])
+    list_display = ('application', 'question_num', 'question_text')
+    readonly_fields = ['question_text',]
+
     # list_display = ('email_address', 'question')
+  
 
 
 

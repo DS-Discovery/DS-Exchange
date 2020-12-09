@@ -54,16 +54,3 @@ class EditPartnerSignupForm(forms.ModelForm):
        
             )
 
-
-class EditProjectForm(forms.ModelForm):
-
-    class Meta:
-        model = Project
-        fields = (
-            'project_name',
-            'organization',
-            'project_name',
-            'project_category',
-            'student_num',
-            'description',            
-            )

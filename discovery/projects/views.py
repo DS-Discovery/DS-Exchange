@@ -26,6 +26,8 @@ from .models import Partner
 from .models import Project
 from .models import PartnerProjectInfo
 
+
+from .forms import EditProjectForm
 def index(request):
     # for category dropdown
     project_category_list = set()
@@ -242,3 +244,98 @@ def partnerProjectView(request, project_name):
     projectPartnerRoles = PartnerProjectInfo.objects.filter(project = project)
 
     return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project, 'projectPartnerRoles': projectPartnerRoles})
+
+
+
+
+@login_required
+def partnerlisting(request):
+    # for category dropdown
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    context = Partner.objects.get(email_address = email)
+    roles = PartnerProjectInfo.objects.filter(partner = context)
+    projects = [p.project for p in roles]
+
+    # project_category_list = set()
+    # for e in projects:
+    #     categories = e.project_category.strip().split(',')
+    #     categories = [cat.strip() for cat in categories]
+    #     project_category_list.update(categories)
+    # project_category_list = sorted(list(project_category_list))
+
+
+    latest_question_list = projects
+    context = {'latest_question_list': latest_question_list}
+
+    # need to send requested category back to keep category selected
+    if request.method == "POST":
+        # here when select dropdown category
+        
+        project = request.POST.get('project_wanted')
+        print("project_wanted is", project)
+       
+        if project:
+            project = project.split("+")[0]
+            
+
+      
+        if project:
+            context["selected_project"] = Project.objects.filter(project_name=project)[0]
+            # selected_partner = None
+            # for partner in Partner.objects.all():
+            #     projects = partner.projects.all()
+            #     if context["selected_project"] in projects:
+            #         selected_partner = partner
+            # context["selected_partner"] = selected_partner
+            context["labels"] = context["selected_project"].project_category.split(",")
+            context['partnerProjectInfos'] = PartnerProjectInfo.objects.filter(project = context["selected_project"])
+            questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
+            context['questions'] = questions
+            
+
+    # print("context", context)
+    # print("latest_question_list", latest_question_list)
+    
+    return render(request, 'projects/partnerListing.html', context)
+
+
+@login_required
+def editProjectProfile(request, project_name):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    if request.method == 'POST':
+
+        project = Project.objects.filter(id = request)
+
+        form = EditProjectForm(request.POST)
+        if form.is_valid():
+            project.update(organization = form.cleaned_data['organization'])
+            partner.update(project_name = form.cleaned_data['project_name'])
+            partner.update(project_category = form.cleaned_data['project_category'])
+            partner.update(student_num = form.cleaned_data['student_num'])
+            partner.update(description = form.cleaned_data['description'])
+
+            return HttpResponseRedirect('/project/profile')
+    else: 
+        data = Project.objects.get(project_name=project_name).__dict__
+        form = EditProjectForm(initial=data)
+
+    return render(request, 'projects/projectEdit.html', {'title' : "Project Edit Profile", 'form' : form})
+
+
+@login_required
+def editProjectQuestions(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    if User.objects.filter(email = email, groups__name = "Partner").exists():
+        pass
+    else:
+        return HttpResponse("Invalid credentials")
+
+
+    pass

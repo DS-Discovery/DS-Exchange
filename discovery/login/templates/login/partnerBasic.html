@@ -57,14 +57,15 @@
             </div>
 
             <div class="d-flex flex-row">
-                <!-- <div class="col-3 border p-2">
-
-                </div> -->
-                <div class="col-6">
-                  <br>
+                <!-- <div class="col-3 p-2"> -->
+                  
+                <!-- </div> -->
+                <div class="col-12 p-2">
                   <h3>Basic Information: </h3>
-                  <p id="demo"></p>
                   <br>
+                 
+                  
+            
                   <!-- <h4>Contact Information:</h4>
                   <p>Email Address - {{ context.email_address }} </p>
                   <p>First Name - {{ context.first_name }} </p>
@@ -86,44 +87,44 @@
                   {% endfor %} -->
 
                   {% for project in projects %}
-                
-                  <p>Project Name - {{ project.project_name }} </p>
-                  <p>Organization - {{ project.organization }} </p>
-                  <p>Project Category - {{ project.project_category }} </p>
-                  <!-- <p>Student Number - {{ project.student_num }} </p>
-                  <p>Description - {{ project.description }} </p> -->
+                  
+                        <p>Project Name - {{ project.project_name }} </p>
+                        <p>Organization - {{ project.organization }} </p>
+                        <p>Project Category - {{ project.project_category }} </p>
+                        <!-- <p>Student Number - {{ project.student_num }} </p>
+                        <p>Description - {{ project.description }} </p> -->
+                        
+
+                        {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
+                        <div class="d-flex flex-column">
+                                  {% for roles in partnerProjectInfos %}
+                                  <div class="d-flex flex-column">
+                                    <div class="d-flex flex-row list-group-horizontal-lg p2">
+                                      <div class="col"><p> {{ roles.partner.first_name }} {{ roles.partner.last_name }} </p></div>
+                                      <div class="col"><p>  {{ roles.partner.email_address }} </p></div>
+                                      <div class="col"><p>  {{ roles.role }} </p></div>
+                                    
+                              
 
 
-                  {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
-                    {% for roles in partnerProjectInfos %}
-                    
-                    <p> First Name {{ roles.partner.first_name }} </p>
-                    <p> Last Name {{ roles.partner.last_name }} </p>
-                    <p> Email {{ roles.partner.email_address }} </p>
-                    <p> Role {{ roles.role }} </p>
-                    <br>
-                    {% endfor %} 
-                    
-                  {% endwith %}
+                                    <br>
+                                  </div>
+                                  <!-- <p>{{ roles.partner.first_name}} &#9; {{roles.partner.last_name}}&#9; {{roles.partner.email_address}}&#9; {{roles.role}}</p>  -->
 
-                  <br>
+                                    {% endfor %} 
+                                  </div>
+                                </div>
+                        {% endwith %}
+
+                        <br>
                 {% endfor %} 
-
-
-                  <div>
-
-
-                    
-    
-
 
 
                   </div>
   
-                  
                 </div>
 
-
+              </div>
             
 
 
