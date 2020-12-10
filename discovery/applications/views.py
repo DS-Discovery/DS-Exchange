@@ -62,15 +62,17 @@ def index(request):
             selected_partner = partner
     context["selected_partner"] = selected_partner
 
-    if context["active_application"]:
-        if context["active_application"].status != "SENT":
-            context["available_status"] = ["Accept Offer", "Reject Offer"]
-        else:
-            context["available_status"] = ["NA"]
-    else:
-        context["available_status"] = ["NA"]
+    if not context["active_application"]:
         context["active_project"] = first_project
         context["active_application"] = all_apps[0]
+    if context["active_application"].status != "SENT":
+        context["available_status"] = ["Accept Offer", "Reject Offer"]
+    else:
+        context["available_status"] = ["NA"]
+    # else:
+    #     context["available_status"] = ["NA"]
+    #     context["active_project"] = first_project
+    #     context["active_application"] = all_apps[0]
 
     # print(context)
     # if context["active_application"]:
