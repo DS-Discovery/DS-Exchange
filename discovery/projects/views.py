@@ -116,10 +116,12 @@ def app(request, project_name):
         print(student)
    
         # neeed to check if student already submitted app before
-        # try:
-        #     listing = Application.objects.get(student = student, project = project)
-        # except Application.DoesNotExist:
-        #     return Http404("Student already has no application")
+
+        count = Application.objects.filter(student = student, project = project).count()
+
+        if count > 0:
+            raise Http404("Student already has an application submitted")
+   
 
 
 
