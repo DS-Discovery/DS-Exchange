@@ -98,6 +98,43 @@
                 </div>
             <p>{{active_project.description}}</p>
             </a>
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Application Status</h5>
+                </div>
+            <p>
+                <h4>
+                    <ul style="list-style-type:none;">
+                      <li><span class="badge badge-pill badge-info">{{active_application.status}}</span></li>
+                    </ul>
+                </h4>
+            </p>
+            </a>
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Action</h5>
+                </div>
+            <p>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <select name = "selected_status" class="form-control" onChange="form.submit();">
+                    {% if available_status %}
+                        {% for status in available_status %}
+                            {% if selected_status == status %}
+                                <option class="dropdown-item" value="{{status}}" selected>{{status}}</option>
+                            {% elif status == "NA" %}
+                                <option class="dropdown-item" value="{{status}}" selected>{{status}}</option>
+                            {% else %} 
+                                <option class="dropdown-item" value="{{status}}">{{status}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p>No status is available.</p>
+                    {% endif %}
+
+                    </select>
+                </form>
+            </a>
 
 
         </div>
