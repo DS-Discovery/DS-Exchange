@@ -2,6 +2,9 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 class Project(models.Model):
 
@@ -59,4 +62,24 @@ class Question(models.Model):
 
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
+
+@receiver(post_save, sender=Project)
+def init_new_project(instance, created, raw, **kwargs):
+    if created and not raw:
+
+        skills = ["Python", "R", "SQL", "Tableau/Looker", "Data Visualization", 
+                    "Data Manipulation", "Text Analysis", "Machine Learning/Deep Learning", 
+                    "Geospatial Data, Tools and Libraries", "Web Development (Front-end, Back-end, Full stack)", 
+                    "Mobile App Development", "Cloud Computing"]
+
+        for i, e in enumerate(skills):
+
+            Question.objects.create(
+                project = instance,
+                question_num = i + 1,
+                question_text = "Please rate your technical experience with {}.".format(e),
+                question_type = 'dropdown',
+                question_data = "No experience;Beginner;Familiar;Intermediate;Advanced"
+
+            )
 
