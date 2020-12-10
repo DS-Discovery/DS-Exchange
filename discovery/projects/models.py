@@ -72,6 +72,8 @@ def init_new_project(instance, created, raw, **kwargs):
                     "Geospatial Data, Tools and Libraries", "Web Development (Front-end, Back-end, Full stack)", 
                     "Mobile App Development", "Cloud Computing"]
 
+                    
+
         for i, e in enumerate(skills):
 
             Question.objects.create(

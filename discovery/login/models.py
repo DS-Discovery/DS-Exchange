@@ -9,6 +9,7 @@ from allauth.socialaccount.signals import pre_social_login
 from allauth.account.utils import perform_login
 from django.dispatch import receiver
 from allauth.account.signals import user_signed_up
+
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def populate_user(self, request, sociallogin, data):
@@ -19,6 +20,8 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             pass
 
         return user
+
+
 
 
 @receiver(user_signed_up)
