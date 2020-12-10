@@ -26,7 +26,8 @@ class StudentSignupForm(forms.ModelForm):
             'college',
             'major',
             'year',
-            )
+            *model.default_skills.keys(),
+        )
 
 
 class EditStudentSignupForm(forms.ModelForm):
@@ -40,7 +41,8 @@ class EditStudentSignupForm(forms.ModelForm):
             'major',
             'year',
             'resume_link',
-            'general_question'
+            'general_question',
+            *model.default_skills.keys(),
         )
 
 

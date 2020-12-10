@@ -6,7 +6,7 @@ from django.utils import timezone
 # Partner = apps.get_model('projects', 'Partner')
 from django.contrib.auth.models import User
 
-from projects.models import Project
+from ..projects.models import Project
 
 
 class Student(models.Model):
@@ -19,6 +19,21 @@ class Student(models.Model):
     ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
     ('Haas School of Business','Haas School of Business'),
     )
+
+    skill_levels = (
+        "", # no experience
+        "No experience",
+        "Experience",
+        # etc.
+    )
+
+    default_skills = {
+        "R": "",
+        "Python": "",
+        "data visualization": "",
+        # etc.
+    }
+
     email_address = models.EmailField(max_length=100, primary_key= True) # NEED TO PRIMARY KEY
     first_name = models.CharField(max_length=100, null = True)
     last_name = models.CharField(max_length=100, null = True)
@@ -33,6 +48,14 @@ class Student(models.Model):
 
     resume_link = models.CharField(max_length=200, null = True, blank=True)
     general_question = models.CharField(max_length=1000, null = True, blank=True)
+
+    _skills = models.JSONField(default=default_skills.copy, null=False)
+
+    @property
+    def skills(self):
+        d = self.default_skills.copy()
+        d.update(self._skills)
+        return d
 
     def __str__(self):
         return self.email_address
