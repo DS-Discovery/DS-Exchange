@@ -10,6 +10,9 @@ from allauth.account.utils import perform_login
 from django.dispatch import receiver
 from allauth.account.signals import user_signed_up
 
+from django.contrib.auth.management import create_permissions
+
+
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def populate_user(self, request, sociallogin, data):
@@ -29,6 +32,11 @@ def populateGroup(sender, user, **kwargs):
         user = User.objects.get(email=user.email)
   
         query = Partner.objects.filter(email_address=user.email)
+
+
+        Group.objects.get_or_create(name='Partner')
+        Group.objects.get_or_create(name='Student')
+        
         if len(query) > 0:
             partner = Group.objects.get(name = 'Partner')
             user.groups.add(partner)
