@@ -57,11 +57,17 @@
               <div class="list-group">
                 {% for i in num_apps %}
                         {% if i == 1 %}
+<<<<<<< HEAD
                     <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
                         {% elif i == 2 %}
                     <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
                         {% else %}
                     <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
+=======
+                            <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" name=""><div class="text-center">Application {{i}}</div></a>
+                        {% else %}
+                            <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" role="tab"><div class="text-center">Application {{i}}</div></a>
+>>>>>>> 9e7a55370f7b67383aa4955c9c8431a208573c5c
                         {% endif %}
                 {% endfor %}
               </div>
