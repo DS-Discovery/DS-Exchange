@@ -71,7 +71,7 @@
   </h6>
       {% if question.question_type == "text" %}
           <!-- "text type" -->
-          <textarea name="{{ question.question_num }}" rows=”4″ cols=”20″ required> </textarea><br>
+          <textarea class="form-group w-50" name="{{ question.question_num }}" rows=”4″ cols=”20″ required> </textarea><br>
       {% endif %}
 
       {% if question.question_type == "mc" %}
@@ -176,7 +176,7 @@
 
 
 </script>
-<input type="submit" onClick="return confirm('Are you sure you want to submit?')" value="Submit">
+<input type="submit" onClick="return confirm('Are you sure you want to submit? Once you submit, you cannot edit your response.')" value="Submit">
 </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

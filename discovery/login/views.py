@@ -41,9 +41,12 @@ def studentSignup(request):
             college = form.cleaned_data['college']
             major = form.cleaned_data['major']
             year = form.cleaned_data['year']
+            resume_link = form.cleaned_data['resume_link']
+            general_question = form.cleaned_data['general_question']
 
+            
             s = Student(email_address = email, first_name = first_name, last_name = last_name,
-                         student_id = sid, college = college, major = major, year = year)
+                         student_id = sid, college = college, major = major, year = year, resume_link= resume_link, general_question = general_question)
             # print(s)
             s.save()
 

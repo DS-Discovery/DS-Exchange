@@ -13,12 +13,13 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from django.db import transaction
-
+from django.forms import ModelForm, Textarea, TextInput
 class StudentSignupForm(forms.ModelForm):
 
     class Meta:
         model = Student
         # fields = "__all__"
+        # general_question = forms.CharField(label = "Why are you interested in the Discovery program? What do you hope to gain?")
         fields = (
             'first_name',
             'last_name',
@@ -26,13 +27,22 @@ class StudentSignupForm(forms.ModelForm):
             'college',
             'major',
             'year',
+            'resume_link',
+            'general_question'
             )
+        labels = {
+            'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
+        }
+        widgets = {
+            'general_question': Textarea(attrs={'class': 'form-control'})
+            }
 
 
 class EditStudentSignupForm(forms.ModelForm):
 
     class Meta:
         model = Student
+        # general_question = forms.CharField(label = "Why are you interested in the Discovery program? What do you hope to gain?")
         fields = (
             'first_name',
             'last_name',
@@ -42,8 +52,13 @@ class EditStudentSignupForm(forms.ModelForm):
             'resume_link',
             'general_question'
         )
+        labels = {
+            'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
+        }
 
-
+        widgets = {
+            'general_question': Textarea(attrs={'class': 'form-control'})
+            }
 class EditPartnerSignupForm(forms.ModelForm):
 
     class Meta:

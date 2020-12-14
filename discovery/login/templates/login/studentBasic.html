@@ -7,8 +7,10 @@
 
 <html>
     <head>
-        <title>Discovery Application Landing Page</title>
-    </head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <title>Profile Page</title>
+      </head>
+      
 
     <body>
 
@@ -58,26 +60,32 @@
                 <!-- <div class="col-3 border p-2">
 
                 </div> -->
-                <div class="col-6">
+                <div class="col-6 p-10">
                   <br>
-                  <h3>Basic Information: </h3>
+                  <h3>Basic Information </h3>
+                  <br>
                   <p id="demo"></p>
-                  <br>
+                  
+                  <h5>Personal Info: </h5>
+                  <p> <strong>First Name: </strong> {{ context.first_name }} </p>
+                  <p><strong>Last Name: </strong> {{ context.last_name }}</p>
+                  <p><strong>Email: </strong> {{ context.email_address }}</p>
+                  <p><strong>SID: </strong> {{ context.student_id }}</p>
+                  <p><strong>Major:  </strong>{{ context.major }}</p>
+                  <p><strong>Year: </strong> {{ context.year }}</p>
+                  <p><strong>College:  </strong>{{ context.college }}</p>
+                <br>
+                  <h5>Application Info: </h5>
+                  <p><strong>First Choice: </strong> {{ context.first_choice }}</p>
+                  <p><strong>Second Choice:  </strong>{{ context.second_choice }}</p>
+                  <p><strong>Third Choice: </strong> {{ context.third_choice }}</p>
 
-                  <h4>First Name - {{ context.first_name }} </h4>
-                  <p>Last Name: {{ context.last_name }}</p>
-                  <p>Email: {{ context.email_address }}</p>
-                  <p>SID: {{ context.student_id }}</p>
-                  <p>Major: {{ context.major }}</p>
-                  <p>Year: {{ context.year }}</p>
-                  <p>College: {{ context.college }}</p>
-                  <p>First Choice: {{ context.first_choice }}</p>
-                  <p>Second Choice: {{ context.second_choice }}</p>
-                  <p>Third Choice: {{ context.third_choice }}</p>
-
-                  <p>Resume Link: {{ context.resume_link }}</p>
-                  <p>General Interest Statement: {{ context.general_question }}</p>
-                  <button onclick="location.href = '/student/edit'">Edit Profile</button>
+                  <p><strong>Resume Link: </strong> {{ context.resume_link }}</p>
+                  <p><strong>General Interest Statement:  </strong><br>{{ context.general_question }}</p>
+  
+                  <!-- <button onclick="location.href = '/student/edit'">Edit Profile</button> -->
+                  <input type=button value="Edit Profile" onClick="location.href = '/student/edit'"> 
+    
 
                 </div>
 
