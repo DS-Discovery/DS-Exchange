@@ -80,7 +80,7 @@
 
           {% with question.question_data|split:";" as options %}
             {% for radio in options %}
-              <input type="radio" name="{{ question.question_num }}" value ="{{radio}}" required>{{ radio }}
+              <input type="radio" name="{{ question.question_num }}" value ="{{radio}}" required> {{ radio }}
             {% endfor %}
           {% endwith %}
       
@@ -111,7 +111,7 @@
         
             {% for option in options %}
             
-              <input type="checkbox" name="{{ question.question_num }}" value ="{{option}}">{{ option }}
+              <input type="checkbox" name="{{ question.question_num }}" value ="{{option}}"> {{ option }}
             {% endfor %}
      
      
