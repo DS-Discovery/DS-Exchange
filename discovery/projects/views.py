@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import render
 import datetime
 import operator
-
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -111,7 +111,17 @@ def app(request, project_name):
     student = Student.objects.get(email_address = email)
 
     if student.first_choice and student.second_choice and student.third_choice:
-        raise Http404("Student has applied to 3 applications")
+        # raise Http404("Student has applied to 3 applications")
+        messages.info(request, 'You have already applied to 3 projects.')
+        return HttpResponseRedirect('/projects')
+
+
+    count = Application.objects.filter(student = student, project = project).count()
+
+    if count > 0:
+        # raise Http404("Student already has an application submitted")
+        messages.info(request, 'You have already applied to this project.')
+        return HttpResponseRedirect('/projects')
 
     #if this form is submitted, then we want to save the answers
     if request.method == 'POST':
@@ -126,8 +136,9 @@ def app(request, project_name):
         count = Application.objects.filter(student = student, project = project).count()
 
         if count > 0:
-            raise Http404("Student already has an application submitted")
-   
+            # raise Http404("Student already has an application submitted")
+            messages.info(request, 'You have already applied to this project.')
+            return HttpResponseRedirect('/projects')
 
 
 
@@ -228,9 +239,11 @@ def app(request, project_name):
             elif not student.third_choice:
                 studentUpdater.update(third_choice = project.project_name)
             else:
-                raise Http404("Student has applied to 3 applications")
+                # raise Http404("Student has applied to 3 applications")
+                messages.info(request, 'You have already applied to 3 projects.')
+                return HttpResponseRedirect('/projects')
 
-
+            messages.info(request, 'Your application has been submitted successfully!')
             return HttpResponseRedirect('/projects')
         else:
             return HttpResponseRedirect(request.path_info)
