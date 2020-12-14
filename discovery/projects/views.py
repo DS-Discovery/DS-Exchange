@@ -102,18 +102,24 @@ def app(request, project_name):
         questions = Question.objects.filter(project = project).order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist")
-    
 
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    else:
+        return Http404("Student is not authenticated")
+    student = Student.objects.get(email_address = email)
+
+    if student.first_choice and student.second_choice and student.third_choice:
+        raise Http404("Student has applied to 3 applications")
 
     #if this form is submitted, then we want to save the answers
     if request.method == 'POST':
-        email = None
-        if request.user.is_authenticated:
-            email = request.user.email
-        else:
-            return Http404("Student is not authenticated")
-        student = Student.objects.get(email_address = email)
-        print(student)
+
+        # student = Student.objects.get(email_address = email)
+        # print(student)
+
+
    
         # neeed to check if student already submitted app before
 
@@ -212,7 +218,20 @@ def app(request, project_name):
                 else:
                     print("not valid")
                     print(form.errors)
-            return HttpResponseRedirect('/submitted')
+
+
+            studentUpdater = Student.objects.filter(email_address = email)
+            if not student.first_choice:
+                studentUpdater.update(first_choice = project.project_name)
+            elif not student.second_choice:
+                studentUpdater.update(second_choice = project.project_name)
+            elif not student.third_choice:
+                studentUpdater.update(third_choice = project.project_name)
+            else:
+                raise Http404("Student has applied to 3 applications")
+
+
+            return HttpResponseRedirect('/projects')
         else:
             return HttpResponseRedirect(request.path_info)
     else: # GET
