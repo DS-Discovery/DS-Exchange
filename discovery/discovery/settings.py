@@ -52,6 +52,7 @@ if not DEBUG:
 
 ALLOWED_HOSTS = [
     'discovery-application.azurewebsites.net',
+    "127.0.0.1",
 ]
 
 
@@ -116,11 +117,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'discovery_db',
-        'USER': 'postgres',
+        # 'USER': 'postgres',
+        'USER': os.environ["DBUSER"] if "DBUSER" in os.environ else "postgres",
         # comment out own password before pushing to master
-        'PASSWORD': 'root',
+        'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
         # 'PASSWORD':,
-        'HOST': '127.0.0.1',
+        # 'HOST': '127.0.0.1',
+        'HOST': os.environ["DBHOST"] if "DBHOST" in os.environ else "127.0.0.1",
         'PORT': '5432',
     }
 }
