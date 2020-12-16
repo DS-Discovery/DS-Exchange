@@ -10,14 +10,14 @@ import django
 django.setup()
 
 
-from students.models import Student
-from projects.models import Project
-from applications.models import Application
+from .students.models import Student
+from .projects.models import Project
+from .applications.models import Application
 from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 
-student_path = "csv/student_sp2020.csv"
-partner_path = "csv/partner_sp2020.csv"
+student_path = "discovery/student_sp2020.csv"
+partner_path = "discovery/partner_sp2020.csv"
 
 if __name__ == "__main__":
     df_student = pd.read_csv(student_path)
