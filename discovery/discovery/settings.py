@@ -148,13 +148,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-"""
-STATIC_ROOT = os.path.join(BASE_DIR, 'root')
-STATICFILES_DIR = [
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'boot'),
+# """
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    # STATIC_ROOT,
+    BASE_DIR / 'static',
+    # BASE_DIR / 'static' / 'css',
+    # os.path.join(BASE_DIR, 'static'),
+    # os.path.join(BASE_DIR, 'boot'),
 ]
-"""
+# """
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
