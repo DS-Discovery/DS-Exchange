@@ -21,7 +21,7 @@ urlpatterns = [
     path('students/', include('students.urls')),
     path('projects/', include('projects.urls')),
     #path('', include('pages.urls')),
-    path('', TemplateView.as_view(template_name="login/index.html")),
+    path('', TemplateView.as_view(template_name="home.html")),
     path('', include('login.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
