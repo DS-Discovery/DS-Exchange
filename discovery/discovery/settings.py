@@ -26,6 +26,30 @@ SECRET_KEY = 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
+            }
+        },
+        'handlers': {
+            'logfile': {
+                'class': 'logging.handlers.WatchedFileHandler',
+                'filename': 'D:\home\site\wwwroot\discovery-application.log'
+            }
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['logfile'],
+                'level': 'ERROR',
+                'propagate': False,
+            }
+        }
+    }
+
 ALLOWED_HOSTS = [
     'discovery-application.azurewebsites.net',
 ]
