@@ -26,7 +26,9 @@ SECRET_KEY = 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'https://discovery-application.azurewebsites.net/',
+]
 
 
 # Application definition

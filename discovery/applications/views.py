@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, Http404
 from projects.models import Project, Partner
 from applications.models import Application
 from students.models import Student
