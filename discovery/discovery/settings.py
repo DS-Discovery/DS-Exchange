@@ -38,7 +38,7 @@ if not DEBUG:
         'handlers': {
             'logfile': {
                 'class': 'logging.handlers.WatchedFileHandler',
-                'filename': '/home/site/wwwroot/discovery-application.log'
+                'filename': '/home/site/wwwroot/app-logs.log'
             }
         },
         'loggers': {
@@ -168,17 +168,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # """
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATICFILES_DIRS = [
-#     # STATIC_ROOT,
-#     BASE_DIR / 'static',
-#     # BASE_DIR / 'static' / 'css',
-#     # os.path.join(BASE_DIR, 'static'),
-#     # os.path.join(BASE_DIR, 'boot'),
-# ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+WHITENOISE_MANIFEST_STRICT = True
+WHITENOISE_USE_FINDERS = True
+
+STATICFILES_DIRS = [
+    # STATIC_ROOT,
+    BASE_DIR / 'static',
+    # BASE_DIR / 'static' / 'css',
+    # os.path.join(BASE_DIR, 'static'),
+    # os.path.join(BASE_DIR, 'boot'),
+]
 # """
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
