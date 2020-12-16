@@ -38,7 +38,7 @@ if not DEBUG:
         'handlers': {
             'logfile': {
                 'class': 'logging.handlers.WatchedFileHandler',
-                'filename': 'D:\home\site\wwwroot\discovery-application.log'
+                'filename': '/home/site/wwwroot/discovery-application.log'
             }
         },
         'loggers': {
@@ -112,16 +112,6 @@ WSGI_APPLICATION = 'discovery.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-"""
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': BASE_DIR / 'db.sqlite3',
-     }
-}
-"""
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -186,7 +176,6 @@ STATICFILES_DIRS = [
 # """
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -207,7 +196,6 @@ ACCOUNT_LOGOUT_ON_GET = True #url accounts/logout
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 SOCIALACCOUNT_AUTO_SIGNUP = True
-
 
 SIGNUP_REDIRECT_URL = '/profile'
 LOGIN_REDIRECT_URL = '/profile'
