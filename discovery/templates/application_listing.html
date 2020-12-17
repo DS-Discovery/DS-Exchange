@@ -17,13 +17,13 @@
             {% csrf_token %}
             <div class="list-group">
             {% for i in num_apps %}
-                    {% if i == 1 %}
-                        <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
-                    {% elif i == 2 %}
-                        <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
-                    {% else %}
-                        <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
-                    {% endif %}
+                {% if i == 1 %}
+                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
+                {% elif i == 2 %}
+                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
+                {% else %}
+                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
+                {% endif %}
             {% endfor %}
             </div>
         </form>

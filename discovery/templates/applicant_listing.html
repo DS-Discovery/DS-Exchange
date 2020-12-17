@@ -1,111 +1,83 @@
-{% load socialaccount %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+{% extends 'base.html' %}
 
-<html>
-    <head>
-        <title>Discovery Application Landing Page</title>
-    </head>
+{% block content %}
 
-    <body>
+<div class="d-flex flex-row justify-content-center align-items-center border p-2">
+    <ul class="list-group list-group-horizontal-lg">
+        <li class="list-group-item flex-fill"><h4 class="text-center">Applicant(s)</h4></li>
+        <div class="mt-3"></div>
+        <li class="list-group-item flex-fill"><h4 class="text-center">Final Team</h4></li>
+    </ul>
+</div>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="../#">Discovery Application Portal</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<div class="d-flex flex-row">
+    <div class="col-3 border p-2">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="list-group">
 
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="../#">Home <span class="sr-only">(current)</span></a>
-                <a class="nav-link" href="/profile">Profile <span class="sr-only">(current)</span></a>
-                <a class="nav-link" href="/projects">Projects <span class="sr-only">(current)</span></a>
-              </li>
-            </ul>
-            {% if not user.is_authenticated %}
-                <a href="{% provider_login_url 'google' %}">Login with Google</a>
-            {% else %}
-                {{ user.username }}
-            {% endif %}
-        </nav>
+            {% for i in num_apps %}
+                <button type="submit" class="list-group-item list-group-item-action" name="selected_applicant" value="{{i}}"> Applicant {{i}}</button>
+            {% endfor %}
 
-              <ul class="list-group list-group-horizontal-lg">
-                <li class="list-group-item flex-fill "><h4 class="text-center">Applicant(s)</h4></li>
-                <li class="list-group-item flex-fill"><h4 class="text-center">Final Team</h4></li>
-                <!-- <li class="list-group-item flex-fill"><h4>Interview</h4></li> -->
-              </ul>
-
-            <div class="d-flex flex-row">
-                 <div class="col-3 border p-2">
-                    <form method="post" novalidate>
-                      {% csrf_token %}
-                      <div class="list-group">
-
-                          {% for i in num_apps %}
-                           <button type="submit" class="list-group-item list-group-item-action" name="selected_applicant" value="{{i}}"> Applicant {{i}}</button>
-                        {% endfor %}
-
-                      </div>
-                    </form>
-                </div>
-
-                <div class="col-6 border p-2">
-                  <h3>Project Specific Questions: </h3>
-                  <p id="demo"></p>
-                  <br>
-                  <h4>{{ selected_project.project_name }} </h4>
-
-                  <!-- <p>Partner First Name: {{ selected_partner.first_name }}</p>
-                  <p>Partner Last Name: {{ selected_partner.last_name }}</p>
-                  <p>Partner Email: {{ selected_partner.email_address }}</p>
-                  <p>Partner Organization: {{ selected_project.organization }}</p>
-                  <p>Student Number: {{ selected_project.student_num }}</p>
-                  <p>Project Description: {{ selected_project.description }}</p> -->
-
-
-                </div>
-
-                <div class="col-3 border p-2">
-
-                    <div class="d-flex flex-column border p-2">
-                        <h4 class="border text-center">Basic Information</h4>
-                        <div class="d-flex flex-row align-items-center">
-                            <h5>Name: <small class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</small></h5>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                            <h5>Contact Info: <small class="text-muted">{{curr_student.email_address}}</small></h5>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                            <h5>Major: <small class="text-muted">{{curr_student.major}}</small></h5>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                            <h5>Graduation Year: <small class="text-muted">{{curr_student.year}}</small></h5>
-                        </div>
-                        <div class="d-flex flex-row align-items-center">
-                            <a class="btn btn-outline-info" href="{{curr_student.resume_link}}" role="button">Link to Resume</a>
-                        </div>
-                    </div>
-
-
-                    <div class="d-flex flex-column border p-2">
-                        <h4 class="border text-center">Action Items</h4>
-                        <div class="d-flex flex-row justify-content-center mb-2">
-                            <button type="button" class="btn btn-outline-success">Interview Schedule</button>
-                        </div>
-                        <div class="d-flex flex-row justify-content-center">
-                            <button type="button" class="btn btn-outline-danger">Reject without Interview</button>
-                        </div>
-                    </div>
-
-
-                    <div class="d-flex flex-column mt-5">
-                        <button type="button" class="btn btn-outline-secondary">Back to Project(s)</button>
-                    </div>
-
-
-                </div>
             </div>
-    </body>
-</html>
+        </form>
+    </div>
+
+    <div class="col-6 border p-2">
+        <h3>Project Specific Questions: </h3>
+            <!-- <p id="demo"></p>
+            <br> -->
+        <h4>{{ selected_project.project_name }} </h4>
+    </div>
+
+    <div class="col-3 border p-2">
+
+        <div class="d-flex flex-column border p-2">
+            <h4 class="border text-center">Basic Information</h4>
+            
+            <div class="d-flex flex-row align-items-center">
+                <h5>Name: <small class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</small></h5>
+            </div>
+            
+            <div class="d-flex flex-row align-items-center">
+                <h5>Contact Info: <small class="text-muted">{{curr_student.email_address}}</small></h5>
+            </div>
+            
+            <div class="d-flex flex-row align-items-center">
+                <h5>Major: <small class="text-muted">{{curr_student.major}}</small></h5>
+            </div>
+            
+            <div class="d-flex flex-row align-items-center">
+                <h5>Graduation Year: <small class="text-muted">{{curr_student.year}}</small></h5>
+            </div>
+            
+            <div class="d-flex flex-row align-items-center">
+                <a class="btn btn-outline-info" href="{{curr_student.resume_link}}" role="button">Link to Resume</a>
+            </div>
+            
+    </div>
+
+
+    <div class="d-flex flex-column border p-2">
+        <h4 class="border text-center">Action Items</h4>
+        
+        <div class="d-flex flex-row justify-content-center mb-2">
+            <button type="button" class="btn btn-outline-success">Interview Schedule</button>
+        </div>
+        
+        <div class="d-flex flex-row justify-content-center">
+            <button type="button" class="btn btn-outline-danger">Reject without Interview</button>
+        </div>
+    </div>
+
+
+    <div class="d-flex flex-column mt-5">
+        <button type="button" class="btn btn-outline-secondary">Back to Project(s)</button>
+    </div>
+
+
+    </div>
+</div>
+
+{% endblock %}
