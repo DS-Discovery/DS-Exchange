@@ -63,25 +63,25 @@ class Question(models.Model):
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
 
-@receiver(post_save, sender=Project)
-def init_new_project(instance, created, raw, **kwargs):
-    if created and not raw:
+# @receiver(post_save, sender=Project)
+# def init_new_project(instance, created, raw, **kwargs):
+#     if created and not raw:
 
-        skills = ["Python", "R", "SQL", "Tableau/Looker", "Data Visualization", 
-                    "Data Manipulation", "Text Analysis", "Machine Learning/Deep Learning", 
-                    "Geospatial Data, Tools and Libraries", "Web Development (Front-end, Back-end, Full stack)", 
-                    "Mobile App Development", "Cloud Computing"]
+#         skills = ["Python", "R", "SQL", "Tableau/Looker", "Data Visualization", 
+#                     "Data Manipulation", "Text Analysis", "Machine Learning/Deep Learning", 
+#                     "Geospatial Data, Tools and Libraries", "Web Development (Front-end, Back-end, Full stack)", 
+#                     "Mobile App Development", "Cloud Computing"]
 
                     
 
-        for i, e in enumerate(skills):
+#         for i, e in enumerate(skills):
 
-            Question.objects.create(
-                project = instance,
-                question_num = i + 1,
-                question_text = "Please rate your technical experience with {}.".format(e),
-                question_type = 'dropdown',
-                question_data = "No experience;Beginner;Familiar;Intermediate;Advanced"
+#             Question.objects.create(
+#                 project = instance,
+#                 question_num = i + 1,
+#                 question_text = "Please rate your technical experience with {}.".format(e),
+#                 question_type = 'dropdown',
+#                 question_data = "No experience;Beginner;Familiar;Intermediate;Advanced"
 
-            )
+#             )
 
