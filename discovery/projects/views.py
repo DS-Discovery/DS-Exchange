@@ -50,11 +50,11 @@ def index(request):
         category = request.GET.get('category_wanted')
         project = request.GET.get('project_wanted')
         print("project_wanted is", project)
-        if not category:
-            category = project.split("+")[1]
+        # if not category:
+        #     category = project.split("+")[1]
         # print(request.POST)
-        if project:
-            project = project.split("+")[0]
+        # if project:
+        #     project = project.split("+")[0]
             
 
         if category:
@@ -65,9 +65,12 @@ def index(request):
 
         if project:
             context["selected_project"] = Project.objects.filter(project_name=project)[0]
+            # breakpoint()
+            print(context["selected_project"])
             selected_partner = None
             for partner in Partner.objects.all():
-                projects = partner.projects.all()
+                projects = [p.project for p in partner.partnerprojectinfo_set.all()]
+                print(projects)
                 if context["selected_project"] in projects:
                     selected_partner = partner
             context["selected_partner"] = selected_partner
