@@ -29,7 +29,9 @@ class StudentSignupForm(forms.ModelForm):
             'year',
             'resume_link',
             'general_question'
-            )
+            *model.default_skills.keys(),
+        )
+
         labels = {
             'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
         }
@@ -50,7 +52,8 @@ class EditStudentSignupForm(forms.ModelForm):
             'major',
             'year',
             'resume_link',
-            'general_question'
+            'general_question',
+            *model.default_skills.keys(),
         )
         labels = {
             'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),

@@ -81,16 +81,23 @@ def studentProfileEdit(request):
             student.update(resume_link = form.cleaned_data['resume_link'])
             student.update(general_question = form.cleaned_data['general_question'])
 
+            skills = student.skills
+            for skill in skills:
+                skills[skill] = form.cleaned_data.get(skill, "")
+
+            student.update(_skills = skills)
+
             return HttpResponseRedirect('/student/profile')
 
     else: 
-        data = Student.objects.get(email_address = email).__dict__
+        student = Student.objects.get(email_address = email)
+        data = student.__dict__
         form = EditStudentSignupForm(initial = data)
 
 
 
 
-    return render(request, 'account/studentProfileEdit.html', {'title' : "Student Edit Profile", 'form' : form})
+    return render(request, 'account/studentProfileEdit.html', {'title' : "Student Edit Profile", 'form' : form, 'student': student})
 
 @login_required
 def studentProfileView(request):

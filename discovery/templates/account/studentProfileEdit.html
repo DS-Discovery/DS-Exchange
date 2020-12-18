@@ -78,6 +78,16 @@
                         </div>
                     {% endfor %}
                       </table>
+
+                      {% for skill, level in student.skills.items() %}
+
+                        <select name="{{ skill }}" id="">
+                            {% for skill_level in student.skill_levels %}
+                                <option value="{{ skill_level }}"{% if level == skill_level %} selected{% endif %}>{{ skill_level }}</option>
+                            {% endfor %}
+                        </select>
+                      
+                      {% endfor %}
                       <input type=button value="Back" onClick="javascript:history.go(-1);"> 
                       <input type="submit" value="Submit">
                     </form>
