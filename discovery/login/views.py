@@ -73,6 +73,8 @@ def studentProfileEdit(request):
         form = EditStudentSignupForm(request.POST)
         if form.is_valid():
 
+            breakpoint()
+
             student.update(first_name = form.cleaned_data['first_name'])
             student.update(last_name = form.cleaned_data['last_name'])
             student.update(college = form.cleaned_data['college'])
@@ -81,7 +83,7 @@ def studentProfileEdit(request):
             student.update(resume_link = form.cleaned_data['resume_link'])
             student.update(general_question = form.cleaned_data['general_question'])
 
-            skills = student.skills
+            skills = student[0].skills
             for skill in skills:
                 skills[skill] = form.cleaned_data.get(skill, "")
 
@@ -97,7 +99,9 @@ def studentProfileEdit(request):
 
 
 
-    return render(request, 'account/studentProfileEdit.html', {'title' : "Student Edit Profile", 'form' : form, 'student': student})
+        return render(request, 'account/studentProfileEdit.html', {
+            'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items()
+        })
 
 @login_required
 def studentProfileView(request):
@@ -110,9 +114,11 @@ def studentProfileView(request):
         return HttpResponseRedirect("/student/signup")
 
 
-    context = Student.objects.get(email_address = email).__dict__
+    student = Student.objects.get(email_address = email)
+    context = student.__dict__
     # print(context)
-    return render(request, 'login/studentBasic.html', {'context' : context})
+    # breakpoint()
+    return render(request, 'login/studentBasic.html', {'context' : context, "skills_tups": student.skills.items()})
 
 @login_required
 def partnerProfileEdit(request):

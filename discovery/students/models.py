@@ -5,35 +5,38 @@ from django.utils import timezone
 from applications.models import Application
 from django.contrib.auth.models import User
 
-from ..projects.models import Project
+from projects.models import Project
 
 
-
-
-class Student(models.Model):
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    college_choices = (
-    ('College Letters & Science','College Letters & Science'),
-    ('College of Engineering','College of Engineering'),
-    ('College of Chemistry', 'College of Chemistry'),
-    ('College of Environmental Design','College of Environmental Design'),
-    ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
-    ('Haas School of Business','Haas School of Business'),
-    )
-
-    skill_levels = (
-        "", # no experience
-        "No experience",
-        "Experience",
-        # etc.
-    )
-
-    default_skills = {
+def get_default_skills():
+    return {
         "R": "",
         "Python": "",
         "data visualization": "",
         # etc.
     }
+
+class Student(models.Model):
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
+    college_choices = (
+        ('College Letters & Science','College Letters & Science'),
+        ('College of Engineering','College of Engineering'),
+        ('College of Chemistry', 'College of Chemistry'),
+        ('College of Environmental Design','College of Environmental Design'),
+        ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
+        ('Haas School of Business','Haas School of Business'),
+    )
+
+    skill_levels_options = {
+        "": "",
+        "NE": "No experience",
+        "E": "Experience",
+    }
+    
+    skill_levels = skill_levels_options.items()
+
+    default_skills = get_default_skills()
+    
 
     email_address = models.EmailField(max_length=100, primary_key= True) # NEED TO PRIMARY KEY
     first_name = models.CharField(max_length=100, null = True)
@@ -50,12 +53,14 @@ class Student(models.Model):
     resume_link = models.CharField(max_length=200, null = True, blank=True)
     general_question = models.CharField(max_length=1000, null = True, blank=True)
 
-    _skills = models.JSONField(default=default_skills.copy, null=False)
+    _skills = models.JSONField(default=get_default_skills, null=False)
 
     @property
     def skills(self):
         d = self.default_skills.copy()
         d.update(self._skills)
+        for s in d:
+            d[s] = self.skill_levels_options[d[s]]
         return d
 
     def __str__(self):

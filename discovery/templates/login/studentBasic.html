@@ -27,6 +27,21 @@
             <p><strong>Year: </strong> {{ context.year }}</p>
             <p><strong>College:  </strong>{{ context.college }}</p>
             <br>
+
+            <h5>Skills: </h5>
+
+            <table>
+                {% for skill, level in skills_tups %}
+
+                    <tr>
+                        <th>{{ skill }}</th>
+                        <td>{{ level }}</td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+
+            <br>
             
             <h5>Application Info: </h5>
             <p><strong>First Choice: </strong> {{ context.first_choice }}</p>

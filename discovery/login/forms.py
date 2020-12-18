@@ -13,8 +13,9 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from django.db import transaction
-from django.forms import ModelForm, Textarea, TextInput
+from django.forms import ModelForm, Textarea, TextInput, ChoiceField
 class StudentSignupForm(forms.ModelForm):
+    # skills = JSONField()
 
     class Meta:
         model = Student
@@ -28,8 +29,8 @@ class StudentSignupForm(forms.ModelForm):
             'major',
             'year',
             'resume_link',
-            'general_question'
-            *model.default_skills.keys(),
+            'general_question',
+            # *model.default_skills.keys(),
         )
 
         labels = {
@@ -39,8 +40,15 @@ class StudentSignupForm(forms.ModelForm):
             'general_question': Textarea(attrs={'class': 'form-control'})
             }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for s, l in self.instance.skills.items():
+            self.fields[s] = ChoiceField(choices=Student.skill_levels)
+            self.fields[s].initial = self.instance.skills[s]
+
 
 class EditStudentSignupForm(forms.ModelForm):
+    # skills = JSONField()
 
     class Meta:
         model = Student
@@ -52,9 +60,10 @@ class EditStudentSignupForm(forms.ModelForm):
             'major',
             'year',
             'resume_link',
-            'general_question',
-            *model.default_skills.keys(),
+            'general_question', 
+            # *model.default_skills.keys(),
         )
+
         labels = {
             'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
         }
@@ -62,6 +71,14 @@ class EditStudentSignupForm(forms.ModelForm):
         widgets = {
             'general_question': Textarea(attrs={'class': 'form-control'})
             }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for s, l in self.instance.skills.items():
+            self.fields[s] = ChoiceField(choices=Student.skill_levels)
+            self.fields[s].initial = self.instance.skills[s]
+
+
 class EditPartnerSignupForm(forms.ModelForm):
 
     class Meta:

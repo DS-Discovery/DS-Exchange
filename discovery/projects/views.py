@@ -274,9 +274,11 @@ def partnerProjectView(request, project_name):
         email = request.user.email
 
     context = Partner.objects.get(email_address = email)
-    projects = context.projects.all()
+    # projects = context.projects.all()
+    # breakpoint()
     canView = False
-    for project in projects:
+    for ppi in context.partnerprojectinfo_set.all():
+        project = ppi.project
         if project.project_name == project_name:
             canView = True
     if canView == False:
