@@ -45,10 +45,10 @@ def index(request):
                 }
 
     # need to send requested category back to keep category selected
-    if request.method == "POST":
+    if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
         # here when select dropdown category
-        category = request.POST.get('category_wanted')
-        project = request.POST.get('project_wanted')
+        category = request.GET.get('category_wanted')
+        project = request.GET.get('project_wanted')
         print("project_wanted is", project)
         if not category:
             category = project.split("+")[1]
