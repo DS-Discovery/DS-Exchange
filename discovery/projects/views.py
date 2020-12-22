@@ -74,8 +74,8 @@ def index(request):
             context["labels"] = context["selected_project"].project_category.split(",")
 
 
-    # print("context", context)
-    print("latest_question_list", latest_question_list)
+    print("context", context)
+    # print("latest_question_list", latest_question_list)
     return render(request, 'projects/listing.html', context)
 
 
