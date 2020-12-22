@@ -33,6 +33,39 @@ if __name__ == "__main__":
         # general question field too long for this student
         if (row["Email Address"] == "saad.jamal@berkeley.edu"):
             continue
+
+        skills = []
+        responses = [
+            row["What is your experience with the following programming languages, tools, and skills? [Python]"],
+            row["What is your experience with the following programming languages, tools, and skills? [R]"],
+            row["What is your experience with the following programming languages, tools, and skills? [Data Vizualization (Pyplot, Seaborn, etc.)]"],
+        ]
+
+        for resp in responses:
+            if resp == "No experience":
+                skills.append("NE")
+            elif resp == "Beginner (I can do a few operations)":
+                skills.append("BE")
+            elif resp == "Familiar (I have developed at least one project)":
+                skills.append("FA")
+            elif resp == "Intermediate (Multiple semesters of experience)":
+                skills.append("IN")
+            elif resp == "Advanced (I would feel comfortable teaching the subject)":
+                skills.append("AD")
+            else:
+                skills.append("")
+
+        R_skill = skills[0]
+        python_skill = skills[1]
+        data_viz_skill = skills[2]
+
+        _skills = {
+            "R": R_skill,
+            "Python": python_skill,
+            "data visualization": data_viz_skill,
+        }
+
+
         student = Student(email_address=row["Email Address"],
                           first_name=row["Full Name"].split()[0],
                           last_name=row["Full Name"].split()[-1],
@@ -45,6 +78,7 @@ if __name__ == "__main__":
                           third_choice=row["3) What is your THIRD choice?"],
                           resume_link=row["Please attach your resume."],
                           general_question=row["Is there any other information you would like us to consider?"],
+                          _skills=_skills,
                           )
         student.save()
 

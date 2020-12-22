@@ -30,7 +30,10 @@ class Student(models.Model):
     skill_levels_options = {
         "": "",
         "NE": "No experience",
-        "E": "Experience",
+        "BE": "Beginner",
+        "FA": "Familiar",
+        "IN": "Intermediate",
+        "AD": "Advanced",
     }
     
     skill_levels = skill_levels_options.items()

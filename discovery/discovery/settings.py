@@ -122,7 +122,7 @@ DATABASES = {
         # 'USER': 'postgres',
         'USER': os.environ["DBUSER"] if "DBUSER" in os.environ else "postgres",
         # comment out own password before pushing to master
-        'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
+        'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "Mangojango88!",
         # 'PASSWORD':,
         # 'HOST': '127.0.0.1',
         'HOST': os.environ["DBHOST"] if "DBHOST" in os.environ else "127.0.0.1",
