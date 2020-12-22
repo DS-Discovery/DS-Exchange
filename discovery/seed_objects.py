@@ -11,13 +11,13 @@ django.setup()
 
 
 from students.models import Student
-from projects.models import Project
+from projects.models import Project, Partner
 from applications.models import Application
 from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 
-student_path = "csv/student_sp2020.csv"
-partner_path = "csv/partner_sp2020.csv"
+student_path = "student_sp2020.csv"
+partner_path = "partner_sp2020.csv"
 
 if __name__ == "__main__":
     df_student = pd.read_csv(student_path)
@@ -57,6 +57,24 @@ if __name__ == "__main__":
                               "Please provide a brief description for your project that we can list on our website."],
                           )
         project.save()
+
+        try:
+          partner_object, created = Partner.objects.get_or_create(  
+              email_address=row['Email Address'], 
+              first_name = row['First name'], 
+              last_name = row['Last name']  
+          ) 
+          # if not created: 
+          #     partner_object.first_name = row['First name'] 
+          #     partner_object.last_name = row['Last name'] 
+          partner_object.projects.add(project) 
+
+
+          print("partner_object", partner_object) 
+          print("partner_created", created) 
+        except:
+          pass
+      
 
     # seeding applications
     for _, row in df_student.iterrows():
