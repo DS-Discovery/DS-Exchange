@@ -167,11 +167,12 @@
                   </div>
                   <div class="flex-row border p-2">
                     <br>
-                    <h4>Project Status: </h4>
+                    <h4>Total Number of Applicants: </h4>
                     {% if labels %}
                       <h4>
                         <ul style="list-style-type:none;">
-                          <li><span class="badge badge-pill badge-info">NA</span></li>
+                          <!-- <li><span class="badge badge-pill badge-info">NA</span></li> -->
+                          <li><span class="badge badge-pill badge-info">{{count}}</span></li>
                         </ul>
                       </h4>
                     {% endif %}
@@ -184,7 +185,7 @@
                     {% if labels %}
                       <h4>
                         <ul style="list-style-type:none;">
-                          <li> <a class="nav-link badge badge-pill badge-info" href="{{selected_project.project_name}}/app"> Apply</a></li>
+                          <li> <a class="nav-link badge badge-pill badge-info" href="{{selected_project.project_name}}/app"> Applicant Listing</a></li>
                         </ul>
                       </h4>
                     {% endif %}
