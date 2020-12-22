@@ -6,7 +6,7 @@ from applications.models import Application
 # Create your views here.
 
 # default project
-PROJECT_ID = 249
+PROJECT_ID = 35
 
 def index(request):
 
@@ -15,7 +15,9 @@ def index(request):
         applicant_num = int(request.POST.get("selected_applicant")) - 1
 
     project = Project.objects.filter(id=PROJECT_ID)
-    applications = Application.objects.filter(project_id=249)
+    applications = Application.objects.filter(project_id=PROJECT_ID)
+    print("HELLO")
+    print(applications)
     student = applications[applicant_num].student
 
     context = {
