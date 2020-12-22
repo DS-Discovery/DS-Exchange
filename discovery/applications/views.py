@@ -7,24 +7,34 @@ from students.models import Student
 EMAIL_ADDRESS = "22szavala@berkeley.edu"
 
 def index(request):
-    email = None
+    # email = EMAIL_ADDRESS
     if request.user.is_authenticated:
         email = request.user.email
     else:
         return Http404("Student is not authenticated")
+    email = EMAIL_ADDRESS # set to default
     student = Student.objects.get(email_address = email)
-    # print(student)
+    print("student", student)
 
     # changed from email to student
     # all_apps = Application.objects.filter(email_address=EMAIL_ADDRESS)
+    first_project, second_project, third_project = None, None, None
     all_apps = Application.objects.filter(student = student)
-    print(all_apps)
+    print("all_apps", all_apps)
+    if len(all_apps) == 3:
+        first_project = Project.objects.get(id=all_apps[0].project_id)
+        second_project = Project.objects.get(id=all_apps[1].project_id)
+        third_project = Project.objects.get(id=all_apps[2].project_id)
+    elif len(all_apps) == 2:
+        first_project = Project.objects.get(id=all_apps[0].project_id)
+        second_project = Project.objects.get(id=all_apps[1].project_id)
+    elif len(all_apps) == 1:
+        first_project = Project.objects.get(id=all_apps[0].project_id)
+
 
     num_apps = range(1, len(all_apps) + 1)
     
-    first_project = Project.objects.get(id=all_apps[0].project_id)
-    second_project = Project.objects.get(id=all_apps[1].project_id)
-    third_project = Project.objects.get(id=all_apps[2].project_id)
+   
     context = {"num_apps": num_apps,
                "active_project": first_project,
     }
