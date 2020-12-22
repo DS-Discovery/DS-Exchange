@@ -176,5 +176,6 @@ def redirectProfile(request):
     if request.user.is_authenticated:
         email = request.user.email
     if User.objects.filter(email = email, groups__name = "Partner").exists():
-        return HttpResponseRedirect('/partner/profile')
+        # return HttpResponseRedirect('/partner/profile')
+        return HttpResponseRedirect('/projects/partnerlisting')
     return HttpResponseRedirect('/student/profile')
