@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'discovery_db',
         'USER': 'postgres',
         # comment out own password before pushing to master
-        'PASSWORD': 'root',
+        'PASSWORD': 'Mangojango88!',
         # 'PASSWORD':,
         'HOST': '127.0.0.1',
         'PORT': '5432',
