@@ -34,6 +34,59 @@
     <div class="col-3 border p-2">
 
         <div class="d-flex flex-column border p-2">
+            <h4 class="border text-center">Skill Filters</h4>
+
+
+                <div class="mt-1">
+                    <form method="GET" novalidate>
+                        {% csrf_token %}
+                        <select name="skill_wanted" class="form-control mb-2" onChange="form.submit();">
+                            {% for skill in skills %}
+                                {% if skill_wanted == skill %}
+                                    <option class="dropdown-item" value="{{skill}}" selected>{{skill}}</option>
+                                {% else %}
+                                    <option class="dropdown-item" value="{{skill}}">{{skill}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+
+                        {% if skill_wanted != "None" %}
+                            <select name="level_wanted" class="form-control" onChange="form.submit();">
+                                {% for level in levels %}
+                                    {% if level_wanted == level %}
+                                        <option class="dropdown-item" value="{{level}}" selected>{{level}}</option>
+                                    {% else %}
+                                        <option class="dropdown-item" value="{{level}}">{{level}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+
+                    </form>
+                </div>
+
+                <!--
+                <div class="mt-1">
+                    <form method="GET" novalidate>
+                        {% csrf_token %}
+                        {% if skill_wanted != "None" %}
+                            <select name="level_wanted" class="form-control" onChange="form.submit();">
+                                {% for level in levels %}
+                                    {% if level_wanted == level %}
+                                        <option class="dropdown-item" value="{{level}}" selected>{{level}}</option>
+                                    {% else %}
+                                        <option class="dropdown-item" value="{{level}}">{{level}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    </form>
+                </div>
+                -->
+
+        </div>
+
+        <div class="d-flex flex-column border p-2">
             <h4 class="border text-center">Basic Information</h4>
             
             <div class="d-flex flex-row align-items-center">
