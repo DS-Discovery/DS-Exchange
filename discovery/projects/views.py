@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.template.context_processors import csrf
+from django.core.exceptions import ObjectDoesNotExist
 
 from students.forms import AnswerForm
 from applications.forms import ApplicationForm
@@ -286,7 +287,10 @@ def partnerProjectView(request, project_name):
     if request.user.is_authenticated:
         email = request.user.email
 
-    context = Partner.objects.get(email_address = email)
+    try:
+        context = Partner.objects.get(email_address = email)
+    except ObjectDoesNotExist:
+        raise Http404("you are not a partner")
     # projects = context.projects.all()
     # breakpoint()
     canView = False
@@ -294,7 +298,7 @@ def partnerProjectView(request, project_name):
         project = ppi.project
         if project.project_name == project_name:
             canView = True
-    if canView == False:
+    if not canView:
         raise Http404("No permission")
     project = Project.objects.get(project_name=project_name)
     questions = Question.objects.filter(project = project).order_by('question_num')

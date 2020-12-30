@@ -1,15 +1,27 @@
 from django.shortcuts import render
 from students.models import Student
-from projects.models import Project
+from projects.models import Partner, Project
 from applications.models import Application
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import Http404
 
 # Create your views here.
 
-# default project
-PROJECT_ID = 98
+# # default project
+# PROJECT_ID = 98
 
-
+@login_required
 def index(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    try:
+        partner = Partner.objects.get(email_address = email)
+    except ObjectDoesNotExist:
+        raise Http404("you are not a partner")
+
     skills = list(Student.default_skills.keys())
     skills.insert(0, "None")
     levels = list(Student.skill_levels_options.values())
@@ -28,9 +40,15 @@ def index(request):
         applicant_num = int(request.POST.get("selected_applicant")) - 1
 
     #project = Project.objects.filter(id=PROJECT_ID)
+    # projects
+    # TODO: this needs to handle partners w/ multiple projects
+    for ppi in partner.partnerprojectinfo_set.all():
+        project = ppi.project
+
+    # project = Project.objects.get(project_name=project_name)
 
     if skill_wanted == "None":
-        applications = Application.objects.filter(project_id=PROJECT_ID)
+        applications = Application.objects.filter(project_id=project.id)
     else:
         print("skill_wanted: ", skill_wanted)
         print("level_wanted: ", level_wanted)
@@ -39,11 +57,9 @@ def index(request):
         for short in Student.skill_levels_options:
             if Student.skill_levels_options[short] == level_wanted:
                 print(short)
-                applications = Application.objects.filter(project_id=PROJECT_ID).filter(
+                applications = Application.objects.filter(project_id=project.id).filter(
                     student___skills__contains={skill_wanted: short})
                 break
-    #print("hi")
-    #print(applications)
 
     if not applications:
         student = None
