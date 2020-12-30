@@ -43,7 +43,7 @@
 
                     {% with question.question_data|split:";" as options %}
                         
-                        <select name="{{ question.question_num }}" required>
+                        <select name="{{ question.question_num }}" class="custom-select" required>
                             <option value=""></option>
                             {% for option in options %}
                                 <option value="{{ option }}">{{ option }}</option>
@@ -73,7 +73,7 @@
                         <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script> -->
 
-                        <select multiple name="{{ question.question_num }}">
+                        <select class="custom-select" multiple name="{{ question.question_num }}">
                             {% for option in options %}
                                 <option value="{{ option }}">{{ option }}</option>
                             {% endfor %}
