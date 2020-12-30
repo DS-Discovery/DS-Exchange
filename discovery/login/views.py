@@ -73,7 +73,7 @@ def studentProfileEdit(request):
         form = EditStudentSignupForm(request.POST)
         if form.is_valid():
 
-            breakpoint()
+            # breakpoint()
 
             student.update(first_name = form.cleaned_data['first_name'])
             student.update(last_name = form.cleaned_data['last_name'])

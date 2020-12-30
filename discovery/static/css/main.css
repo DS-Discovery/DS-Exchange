@@ -1,0 +1,24 @@
+/* Various CSS alterations for the application */
+
+/* for application text questions */
+.application-question textarea {
+    min-width: 450px;
+    width: 65%;
+    height: 175px;
+    resize: none;
+    padding: 5px 10px;
+}
+
+/* for application range questions */
+.application-question input[type="range"] {
+    width: 300px;
+}
+
+/* for application select questions */
+.application-question select {
+    min-width: 400px;
+}
+/* for application multiselect questions */
+.application-question select[multiple] {
+    min-height: 120px;
+}

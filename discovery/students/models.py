@@ -63,7 +63,10 @@ class Student(models.Model):
         d = self.default_skills.copy()
         d.update(self._skills)
         for s in d:
-            d[s] = self.skill_levels_options[d[s]]
+            try:
+                d[s] = self.skill_levels_options[d[s]]
+            except KeyError:
+                d[s] = ""
         return d
 
     def __str__(self):

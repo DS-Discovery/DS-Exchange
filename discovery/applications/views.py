@@ -4,7 +4,7 @@ from applications.models import Application
 from students.models import Student
 
 # default student email for testing
-EMAIL_ADDRESS = "22szavala@berkeley.edu"
+# EMAIL_ADDRESS = "22szavala@berkeley.edu"
 
 def index(request):
     # email = EMAIL_ADDRESS
@@ -12,7 +12,7 @@ def index(request):
         email = request.user.email
     else:
         return Http404("Student is not authenticated")
-    email = EMAIL_ADDRESS # set to default
+    # email = EMAIL_ADDRESS # set to default
     student = Student.objects.get(email_address = email)
     print("student", student)
 

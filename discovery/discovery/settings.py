@@ -122,7 +122,7 @@ DATABASES = {
         # 'USER': 'postgres',
         'USER': os.environ["DBUSER"] if "DBUSER" in os.environ else "postgres",
         # comment out own password before pushing to master
-        'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "Mangojango88!",
+        'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
         # 'PASSWORD':,
         # 'HOST': '127.0.0.1',
         'HOST': os.environ["DBHOST"] if "DBHOST" in os.environ else "127.0.0.1",
@@ -191,7 +191,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = 1
+SITE_ID = 2
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
