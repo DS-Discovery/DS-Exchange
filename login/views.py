@@ -179,3 +179,7 @@ def redirectProfile(request):
         # return HttpResponseRedirect('/partner/profile')
         return HttpResponseRedirect('/projects/partnerlisting')
     return HttpResponseRedirect('/student/profile')
+
+
+def google_auth_redirect(request):
+    return redirect("/accounts/google/login")

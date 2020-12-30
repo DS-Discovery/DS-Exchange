@@ -7,11 +7,8 @@ urlpatterns = [
     path('student/profile', views.studentProfileView, name='studentProfileView'),
     path('partner/profile', views.partnerProfileView, name='partnerProfileView'),
     path('profile/', views.redirectProfile, name='redirectProfile'),
-    
     path('student/signup', views.studentSignup, name='studentSignup'),
     path('student/edit', views.studentProfileEdit, name='partnerProfileEdit'),
     path('partner/edit', views.partnerProfileEdit, name='partnerProfileEdit'),
-        
-
-
+    path('login', views.google_auth_redirect, name='google_auth_redirect'),
 ]

@@ -210,6 +210,9 @@ SIGNUP_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 
+# for login_required decorate
+LOGIN_URL = ''
+
 SOCIALACCOUNT_ADAPTER = "login.models.CustomSocialAccountAdapter"
 # SOCIALACCOUNT_FORMS = {
 #     'signup': 'login.forms.StudentSignupForm'

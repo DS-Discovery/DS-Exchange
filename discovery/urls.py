@@ -18,16 +18,12 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('students/', include('students.urls')),
-    path('projects/', include('projects.urls')),
-    #path('', include('pages.urls')),
     path('', TemplateView.as_view(template_name="home.html")),
     path('', include('login.urls')),
+    path('students/', include('students.urls')),
+    path('projects/', include('projects.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    # path('accounts/social/signup', include('allauth.urls')),
     path('applications/', include('applications.urls')),
-    path('applicantListing/', include('applicantListing.urls'))
-
-
+    # path('applicantListing/', include('applicantListing.urls')),
 ]
