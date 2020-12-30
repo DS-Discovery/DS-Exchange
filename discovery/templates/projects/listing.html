@@ -1,7 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+        
+        {% if "signed" in message|safe %} 
+        
+      {% else %}
+      <ul class="messages">
+      <br>
+      <h6>Alert:</h6>
 
+          <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+          {% endif %}
+        </ul>
+        {% endfor %}
+
+
+    {% endif %}
 <div class="d-flex flex-column">
     <div class="d-flex flex-row justify-content-center align-items-center border p-2">
         <ul class="list-group list-group-horizontal-lg">
@@ -112,6 +128,19 @@
                 <h4>
                     <ul style="list-style-type:none;">
                         <li><span class="badge badge-pill badge-info">NA</span></li>
+                    </ul>
+                </h4>
+            {% endif %}
+            <br>
+        </div>
+
+        <div class="flex-row border p-2">
+            <br>
+            <h4>Number of Applicants: </h4>
+            {% if labels %}
+                <h4>
+                    <ul style="list-style-type:none;">
+                        <li><span class="badge badge-pill badge-info">{{num_applicants}}</span></li>
                     </ul>
                 </h4>
             {% endif %}

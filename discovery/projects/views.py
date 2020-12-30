@@ -31,6 +31,16 @@ from .models import PartnerProjectInfo
 from .forms import EditProjectForm
 def index(request):
     # for category dropdown
+
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    studentExists = Student.objects.filter(email_address = email).exists()
+
+    if not studentExists:
+        return HttpResponseRedirect("/student/signup")
+
+
     project_category_list = set()
     for e in Project.objects.all():
         categories = e.project_category.strip().split(',')
@@ -76,7 +86,7 @@ def index(request):
             context["selected_partner"] = selected_partner
             context["labels"] = context["selected_project"].project_category.split(",")
 
-
+            context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
     print("context", context)
     # print("latest_question_list", latest_question_list)
     return render(request, 'projects/listing.html', context)
@@ -205,7 +215,7 @@ def app(request, project_name):
             try:
                 application = Application.objects.get(student=student, project=project)
             except:
-                application = Application(student=student, project=project)
+                 application = Application(student=student, project=project, status = "Sent")
 
             application.save()
 
@@ -343,7 +353,7 @@ def partnerlisting(request):
      
             questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
             context['questions'] = questions
-            
+            context["count"] = len(Application.objects.filter(project =  context["selected_project"]))
 
     # print("context", context)
     # print("latest_question_list", latest_question_list)
