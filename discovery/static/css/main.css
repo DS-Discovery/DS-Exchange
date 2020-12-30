@@ -18,6 +18,7 @@
 .application-question select {
     min-width: 400px;
 }
+
 /* for application multiselect questions */
 .application-question select[multiple] {
     min-height: 120px;
