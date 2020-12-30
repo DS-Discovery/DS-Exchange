@@ -40,7 +40,7 @@
                 <div class="mt-1">
                     <form method="GET" novalidate>
                         {% csrf_token %}
-                        <select name="skill_wanted" class="form-control mb-2" onChange="form.submit();">
+                        <select name="skill_wanted" class="custom-select mb-2" onChange="form.submit();">
                             {% for skill in skills %}
                                 {% if skill_wanted == skill %}
                                     <option class="dropdown-item" value="{{skill}}" selected>{{skill}}</option>
@@ -51,7 +51,7 @@
                         </select>
 
                         {% if skill_wanted != "None" %}
-                            <select name="level_wanted" class="form-control" onChange="form.submit();">
+                            <select name="level_wanted" class="custom-select" onChange="form.submit();">
                                 {% for level in levels %}
                                     {% if level_wanted == level %}
                                         <option class="dropdown-item" value="{{level}}" selected>{{level}}</option>
