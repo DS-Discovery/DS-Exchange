@@ -292,8 +292,6 @@ def partnerProjectView(request, project_name):
     return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project, 'projectPartnerRoles': projectPartnerRoles})
 
 
-
-
 @login_required
 def partnerlisting(request):
     # for category dropdown
