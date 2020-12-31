@@ -25,3 +25,8 @@ def index(indexable, i):
 def id(obj):
     return obj.id
 
+
+@register.filter
+def addclass(field, css):
+    return field.as_widget(attrs={"class":css})
+

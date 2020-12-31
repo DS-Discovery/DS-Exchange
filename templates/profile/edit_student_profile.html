@@ -1,29 +1,53 @@
 {% extends 'base.html' %}
+{% load helperfuncs %}
 
 {% block content %}
 
+<h3>Edit Profile</h3>
+
 <div class="d-flex flex-column">
-    <div class="d-flex flex-row">
-        <div class="col-6">
-            
-            <h1>{{title}}</h1>
+    <div class="col-8">
 
-            <form action="" method="post" class="mb-5">
-                {% csrf_token %}
-                <table>
-                {% for field in form %}
-                    <div class="form-group">
-                        <b>{{ field.label_tag }}</b> <br>{{ field }}
-                    </div>
-                {% endfor %}
-                </table>
+        <form action="" method="post" class="mb-5">
+            {% csrf_token %}
+            <table>
+            {% for field in form %}
+                <div class="form-group">
+                    <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
+                </div>
+            {% endfor %}
+            </table>
 
-                <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);"> 
-                <input class="btn btn-light" type="submit" value="Submit">
-            </form>
+            <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);"> 
+            <input class="btn btn-light" type="submit" value="Submit">
+        </form>
 
-        </div>
     </div>
 </div>
+
+<script>
+    // This inserts a character remaining warning on the textarea
+    const maxChars = 2000;
+    const textareaElem = $("textarea[name='general_question']");
+    const charRemainingString  = " characters remaining";
+    textareaElem.after("<p class='text-right muted' id='chars-remaining'>" + (maxChars - textareaElem.val().length) + charRemainingString + "</p>");
+    textareaElem.keyup(() => {
+        $("#chars-remaining").text((maxChars - textareaElem.val().length) + charRemainingString);
+        if (this.val().length > maxChars) {
+            this.val(this.val().substring(0,maxChars));
+        }
+    })
+
+    // This inserts info about selecting skill levels
+    const skillLevelSpiel = "<p class='my-2'>Please enter you skill level in each of the technologies or techniques below.</p>";
+    $("select").first().parent().before(skillLevelSpiel);
+
+    // This allows the student's skills to be preselected when editing their profile
+    {% for skill in student.skills %}
+        {% with student.skills|index:skill as skillLevel %}
+            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
+        {% endwith %}
+    {% endfor %}
+</script>
 
 {% endblock %}

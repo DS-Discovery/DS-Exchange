@@ -9,6 +9,10 @@
     padding: 5px 10px;
 }
 
+textarea.form-control {
+    resize: none;
+}
+
 /* for application range questions */
 .application-question input[type="range"] {
     width: 300px;

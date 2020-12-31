@@ -35,9 +35,10 @@ class StudentSignupForm(forms.ModelForm):
         labels = {
             'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
         }
+
         widgets = {
             'general_question': Textarea(attrs={'class': 'form-control'})
-            }
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,7 +70,7 @@ class EditStudentSignupForm(forms.ModelForm):
 
         widgets = {
             'general_question': Textarea(attrs={'class': 'form-control'})
-            }
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -85,6 +86,5 @@ class EditPartnerSignupForm(forms.ModelForm):
         fields = (
             'first_name',
             'last_name',
-       
-            )
+        )
 

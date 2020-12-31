@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -73,6 +75,14 @@ def edit_student_profile(request):
             student.update(_skills = skills)
 
             return redirect('/profile')
+        
+        else:
+            messages.info(
+                request, 
+                'Your application was invalid and could not be processed. If this error persists, '
+                'please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.'
+            )
+            return redirect('/profile')
 
     else: 
         student = Student.objects.get(email_address = email)
@@ -80,7 +90,8 @@ def edit_student_profile(request):
         form = EditStudentSignupForm(initial = data)
 
         return render(request, 'profile/edit_student_profile.html', {
-            'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items()
+            'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items(),
+            'skills_json': json.dumps(student.skills)
         })
 
 
@@ -97,8 +108,6 @@ def view_student_profile(request):
 
     student = Student.objects.get(email_address = email)
     context = student.__dict__
-
-    print(len(messages.get_messages(request)))
 
     return render(request, 'profile/student_profile.html', {'context' : context, "skills_tups": student.skills.items()})
 

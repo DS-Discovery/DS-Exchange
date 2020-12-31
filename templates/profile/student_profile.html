@@ -17,10 +17,30 @@
 
 </div>
 
+<hr>
+
+<div class="p-2 d-flex flex-column align-items-center">
+
+    <a type="button" class="btn btn-outline-info" href="/profile/edit">Edit Profile</a>
+
+</div>
+
 {% endblock %}
 
 
 {% block second_column %}
+
+<div class="p-2 my-1">
+
+<h5>General Interest Statement</h5>
+
+<p>{{ context.general_question }}</p>
+
+</div>
+
+<hr>
+
+<div class="p-2 my-1">
 
 <h5>Skills</h5>
 
@@ -39,6 +59,8 @@
     {% endfor %}
 </table>
 
+</div>
+
 
 <!-- <h5>Application Info: </h5>
 <p><strong>First Choice: </strong> {{ context.first_choice }}</p>
@@ -46,10 +68,6 @@
 <p><strong>Third Choice: </strong> {{ context.third_choice }}</p> -->
 
 
-<h5>General Interest Statement</h5>
 
-<p>{{ context.general_question }}</p>
-
-<a class="btn btn-light" href="/profile/edit">Edit Profile</a>
 
 {% endblock %}

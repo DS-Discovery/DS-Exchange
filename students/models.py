@@ -34,6 +34,8 @@ class Student(models.Model):
         "IN": "Intermediate",
         "AD": "Advanced",
     }
+
+    skill_levels_inverse = {v: k for k, v in skill_levels_options.items()}
     
     skill_levels = skill_levels_options.items()
 
@@ -52,7 +54,7 @@ class Student(models.Model):
     third_choice = models.CharField(max_length=1000, null=True, blank=True)
 
     resume_link = models.CharField(max_length=200, null = True, blank=True)
-    general_question = models.CharField(max_length=1000, null = True, blank=True)
+    general_question = models.CharField(max_length=2000, null = True, blank=True)
 
     _skills = models.JSONField(default=get_default_skills, null=False)
 
