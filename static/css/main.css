@@ -31,3 +31,10 @@ textarea.form-control {
 .application-question select[multiple] {
     min-height: 120px;
 }
+
+/* editing some bootstrap colors */
+.list-group-item.active {
+    /* bootstrap info is #17A2B8 */
+    background-color: rgba(23, 162, 184, 0.7);
+    border-color: rgba(23, 162, 184, 0.7);
+}
