@@ -16,7 +16,7 @@
 <form method="get" novalidate>
     {% csrf_token %}
     
-    <div class="list-group list-group-flush">
+    <div class="list-group list-group-flush" id="app-list">
 
         {% for i in num_apps %}
             <button 
@@ -30,12 +30,25 @@
     </div>
 </form>
 
+<script>
+    // scrolls to the active application
+    $(window).ready(() => {
+        $("#app-list button.active").get(0).scrollIntoView();
+    });
+</script>
+
 {% endblock %}
 
 
 {% block second_column %}
 
 <div class="p-2 my-1">
+
+    <h5>General Interest Statement</h5>
+
+    <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
+
+    <p>{{ curr_app.student.general_question }}</p>
 
     <h5>Application Questions</h5>
 

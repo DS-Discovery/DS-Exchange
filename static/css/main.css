@@ -1,5 +1,9 @@
 /* Various CSS alterations for the application */
 
+.text-sm {
+    font-size: 14px;
+}
+
 /* for application text questions */
 .application-question textarea {
     min-width: 450px;
@@ -41,4 +45,9 @@ textarea.form-control {
 
 .form-control:disabled, .custom-select:disabled {
     background-color: rgba(233, 236, 239, 0.4)
+}
+
+/* for two- and three-column views */
+div.column-pane {
+    overflow: scroll;
 }

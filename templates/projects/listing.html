@@ -6,7 +6,7 @@
     
     {% csrf_token %}
     
-    <div class="list-group list-group-flush">
+    <div class="list-group list-group-flush" id="project-list">
         {% if latest_question_list %}
             {% for question in latest_question_list %}
                 <!-- <script>
@@ -29,6 +29,13 @@
     {% endif %}
 
 </form>
+
+<script>
+    // scrolls to the active project
+    $(window).ready(() => {
+        $("#project-list button.active").get(0).scrollIntoView();
+    });
+</script>
 
 {% endblock %}
 

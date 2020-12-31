@@ -4,7 +4,7 @@ const bottomFillOffset = 10;
 function fillPage() {
     if ($(fillPageQuery).length == 1) {
         var el = $(fillPageQuery);
-        el.height($(document).height() - el.offset().top - bottomFillOffset);
+        el.height($(window).height() - el.offset().top - bottomFillOffset);
     }
 }
 
