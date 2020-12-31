@@ -3,14 +3,19 @@
 {% block first_column %}
 
 <form method="get" novalidate>
+    
     {% csrf_token %}
-    <div class="list-group">
+    
+    <div class="list-group list-group-flush">
         {% if latest_question_list %}
             {% for question in latest_question_list %}
-                <script>
+                <!-- <script>
                     var selected_category = document.getElementById("ddlViewBy").value;
-                </script>
-                <button type="submit" class="list-group-item list-group-item-action" name="project_wanted" value="{{question.project_name}}">
+                </script> -->
+                <button 
+                    type="submit" class="list-group-item list-group-item-action {% if selected_project.project_name == question.project_name %} active {% endif %}" 
+                    name="project_wanted" value="{{question.project_name}}"
+                >
                     {{question.project_name}}
                 </button>
             {% endfor %}
@@ -18,9 +23,11 @@
             <p>No projects are available.</p>
         {% endif %}
     </div>
+
     {% if selected_category %}
         <input type="text" name="category_wanted" value="{{ selected_category }}" hidden>
     {% endif %}
+
 </form>
 
 {% endblock %}
@@ -29,8 +36,7 @@
 {% block second_column %}
 
 {% if selected_project.project_name %}
-    <h3>Project Info: </h3>
-    <br>
+    <!-- <h3>Project Info: </h3> -->
     <h4>{{ selected_project.project_name }} </h4>
 
     <p>Partner First Name: {{ selected_partner.first_name }}</p>
