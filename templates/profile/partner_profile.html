@@ -7,17 +7,34 @@
 
     <div class="d-flex flex-row">
         
-        <div class="col-12 p-2">
-            <h3>Basic Information: </h3><br>
+        <div class="col-12 p-2 mt-3">
 
-            {% for project in projects %}
+            <h5>Personal Information</h5>
+
+            <p><strong>Name:</strong> {{ partner.first_name }} {{ partner.last_name }}</p>
+            <p><strong>Email:</strong> {{ partner.email_address }}</p>
+
+            <h5 class="mt-5">Projects</h5>
+
+            <div class="list-group list-group-flush">
+
+                {% for project in projects %}
             
-                <p>Project Name - {{ project.project_name }} </p>
+            
+                <div class="list-group-item">
+
+                    <strong>{{ project.project_name }}</strong> ({{ project.organization }})<br>
+                    {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
+                        <em>Role:</em> {{ partnerProjectInfos.role }}
+                    {% endwith %}
+
+                </div>
+                <!-- <p>Project Name - {{ project.project_name }} </p>
                 <p>Organization - {{ project.organization }} </p>
                 <p>Project Category - {{ project.project_category }} </p>
                 
 
-                {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
+                
                     <div class="d-flex flex-column">
                         
                         {% for roles in partnerProjectInfos %}
@@ -34,12 +51,13 @@
                         {% endfor %} 
 
                     </div>
-                {% endwith %}
                 
-                <br>
+                
+                <br> -->
 
             {% endfor %} 
 
+            </div>
 
         </div>
 
