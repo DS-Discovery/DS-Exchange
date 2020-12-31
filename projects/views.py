@@ -4,9 +4,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
 
-from applications.models import Application
-from students.forms import AnswerForm
-from students.models import Answer, Student
+from applications.forms import AnswerForm
+from applications.models import Answer, Application
+from students.models import Student
 
 from .forms import EditProjectForm
 from .models import Partner, PartnerProjectInfo, Project, Question

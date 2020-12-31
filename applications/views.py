@@ -1,10 +1,11 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import Http404, redirect, render
 
-from applications.models import Application
+from applications.models import Answer, Application
 from projects.models import Partner, Project
-from students.models import Answer, Student
+from students.models import Student
 
 
 @login_required
@@ -182,3 +183,40 @@ def list_project_applicants(request):
     print(context)
 
     return render(request, 'applications/review_applicants.html', context)
+
+
+@login_required
+def update_application_status(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    try:
+        partner = Partner.objects.get(email_address = email)
+    except ObjectDoesNotExist:
+        messages.info(request, "You do not have permission to access this page.")
+        return redirect("/")
+
+    if request.method == "GET":
+        return Http404("This is a POST-only route.")
+
+    print(request.POST)
+
+    application_id = request.POST.get("application_id")
+    new_status = request.POST.get("new_status")
+    if application_id is None or new_status not in [t[0] for t in Application.ApplicationStatus.choices]:
+        messages.info(request, "Improperly formed request. Please try again.")
+        return redirect("/applications")
+
+    application = Application.objects.get(id=application_id)
+
+    partner_projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
+    if application.project not in partner_projects:
+        messages.info(request, "You do not have permission to update this application.")
+        return redirect("/applications")
+
+    application.status = new_status
+    application.save()
+
+    messages.info(request, "Application status successfully updated.")
+    return redirect("/applications")

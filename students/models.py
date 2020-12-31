@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
-from applications.models import Application
+from applications.models import Answer, Application
 from projects.models import Project, Question
 
 
@@ -71,13 +71,3 @@ class Student(models.Model):
 
     def __str__(self):
         return self.email_address
-
-
-class Answer(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE) # PRIMARY KEY
-    application = models.ForeignKey(Application, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answer_text = models.CharField(max_length=1000)
-    
-    def __str__(self):
-        return self.answer_text
