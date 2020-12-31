@@ -255,7 +255,7 @@ def apply(request, project_name):
 
     if request.user.is_authenticated:
         print(questions)
-        return render(request, 'projects/detail.html', {'questions': questions, 'project' : project, 'form' : form})
+        return render(request, 'projects/application.html', {'questions': questions, 'project' : project, 'form' : form})
     else:
         raise Http404("User is not logged in")
 

@@ -53,8 +53,10 @@
             {% endfor %}
         {% endif %}
 
-        {% block content %}
-            replace meeeeeeeee
+        {% block additional_nav %}
+            {% block content %}
+                replace meeeeeeeee
+            {% endblock %}
         {% endblock %}
 
     </div>
