@@ -80,6 +80,10 @@ def list_student_applications(request):
     else:
         context["available_status"] = ["NA"]
 
+    if context["active_application"] is not None:
+        answers = Answer.objects.filter(student=student, application=context["active_application"])
+        context["questions_and_answers"] = zip([a.question for a in answers], answers)
+
     return render(request, "applications/student_applications.html", context=context)
 
 

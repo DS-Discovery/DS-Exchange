@@ -28,26 +28,9 @@
 
 {% else %}
 
-    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">Project Name</h5>
-        </div>
-        <p>{{active_project.project_name}}</p>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">Partner Info</h5>
-        </div>
-        <p>Partner First Name: {{ selected_partner.first_name }}</p>
-        <p>Partner Last Name: {{ selected_partner.last_name }}</p>
-        <p>Partner Email: {{ selected_partner.email_address }}</p>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">Project Description</h5>
-        </div>
-    <p>{{active_project.description}}</p>
-    </a>
+    <h4><a href="/projects?project_wanted={{ active_project.project_name }}">{{ active_project.project_name }}</a></h4>
+
+    {% include 'applications/question_responses.html' %}
 
 {% endif %}
 
