@@ -20,10 +20,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import update_session_auth_hash
 
 
-def index(request):
-    return HttpResponse("Login View")
-
-
 @login_required
 def student_signup(request):
     email = None
@@ -58,7 +54,7 @@ def student_signup(request):
 
     else: 
         form = StudentSignupForm()
-        return render(request, 'prfile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
+        return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
 
 
 @login_required

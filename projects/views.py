@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import datetime
 import operator
 from django.contrib import messages
@@ -30,43 +30,39 @@ from .models import PartnerProjectInfo
 
 
 from .forms import EditProjectForm
-def index(request):
+
+
+@login_required
+def list_projects(request):
     # for category dropdown
 
     email = None
     if request.user.is_authenticated:
         email = request.user.email
-    studentExists = Student.objects.filter(email_address = email).exists()
+    # student_exists = Student.objects.filter(email_address = email).exists()
 
-    if not studentExists:
-        return HttpResponseRedirect("/student/signup")
-
+    if email is None:
+        return redirect('/profile/login')
 
     project_category_list = set()
     for e in Project.objects.all():
         categories = e.project_category.strip().split(',')
         categories = [cat.strip() for cat in categories]
         project_category_list.update(categories)
+
     project_category_list = sorted(list(project_category_list))
-
-
     latest_question_list = Project.objects.order_by('project_name')
-    context = {'latest_question_list': latest_question_list,
-                'project_category_list': project_category_list,
-                }
+    context = {
+        'latest_question_list': latest_question_list,
+        'project_category_list': project_category_list,
+    }
 
     # need to send requested category back to keep category selected
     if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
+        
         # here when select dropdown category
         category = request.GET.get('category_wanted')
         project = request.GET.get('project_wanted')
-        print("project_wanted is", project)
-        # if not category:
-        #     category = project.split("+")[1]
-        # print(request.POST)
-        # if project:
-        #     project = project.split("+")[0]
-            
 
         if category:
             # send selected category back
@@ -76,39 +72,38 @@ def index(request):
 
         if project:
             context["selected_project"] = Project.objects.filter(project_name=project)[0]
-            # breakpoint()
-            print(context["selected_project"])
+            
             selected_partner = None
             for partner in Partner.objects.all():
                 projects = [p.project for p in partner.partnerprojectinfo_set.all()]
-                print(projects)
                 if context["selected_project"] in projects:
                     selected_partner = partner
+            
             context["selected_partner"] = selected_partner
             context["labels"] = context["selected_project"].project_category.split(",")
 
             context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
-    print("context", context)
-    # print("latest_question_list", latest_question_list)
+
     return render(request, 'projects/listing.html', context)
 
 
-def detail(request, project_name):
-    try:
-        project = Project.objects.get(project_name=project_name)
-        print(project, project_name)
-        # print([e.project_name for e in Partner.objects.all()])
-        questions = Question.objects.filter(project = project)
-        # questions = question.objects.get(project_name = project)
+# def detail(request, project_name):
+#     try:
+#         project = Project.objects.get(project_name=project_name)
+#         print(project, project_name)
+#         # print([e.project_name for e in Partner.objects.all()])
+#         questions = Question.objects.filter(project = project)
+#         # questions = question.objects.get(project_name = project)
 
-    except Question.DoesNotExist:
-        raise Http404("Question does not exist")
-    return render(request, 'project.html', {'project': project})
+#     except Question.DoesNotExist:
+#         raise Http404("Question does not exist")
+#     return render(request, 'project.html', {'project': project})
 
 
-def app(request, project_name):
-        # this view shows the project name as well as the project questions
-        # need to add user authentication
+@login_required
+def apply(request, project_name):
+    # this view shows the project name as well as the project questions
+    # need to add user authentication
 
     # check to see if that partner project exists, if so, get the questions for it
     try:
@@ -121,21 +116,29 @@ def app(request, project_name):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        return Http404("Student is not authenticated")
-    student = Student.objects.get(email_address = email)
+        messages.info("You must be logged in to apply to a project")
+        return redirect('/')
+    
+    try:
+        student = Student.objects.get(email_address = email)
+    except ObjectDoesNotExist:
+        if Partner.objects.filter(email_address = email).count() > 0:
+            messages.info(request, "You must be a student to apply to projects.")
+            return redirect("/projects")
+        else:
+            messages.info(request, "You have not yet signed up. Please complete the signup form to continue.")
+            return redirect("/profile/signup")
 
     if student.first_choice and student.second_choice and student.third_choice:
-        # raise Http404("Student has applied to 3 applications")
         messages.info(request, 'You have already applied to 3 projects.')
-        return HttpResponseRedirect('/projects')
-
+        return redirect('/projects')
 
     count = Application.objects.filter(student = student, project = project).count()
 
     if count > 0:
         # raise Http404("Student already has an application submitted")
         messages.info(request, 'You have already applied to this project.')
-        return HttpResponseRedirect('/projects')
+        return redirect('/projects')
 
     #if this form is submitted, then we want to save the answers
     if request.method == 'POST':
