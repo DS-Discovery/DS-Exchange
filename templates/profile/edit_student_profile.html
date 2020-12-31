@@ -5,8 +5,8 @@
 <div class="d-flex flex-column">
     <div class="d-flex flex-row">
         <div class="col-6">
+            
             <h1>{{title}}</h1>
-
 
             <form action="" method="post" class="mb-5">
                 {% csrf_token %}
@@ -18,33 +18,12 @@
                 {% endfor %}
                 </table>
 
-                <!-- <table>
-                    {% for skill, level in skills_tups %}
-
-                        <tr>
-                            <th>{{ skill }}</th>
-                            <td>
-                                <div class="form-group">
-                                    <select name="skills[{{ skill }}]" id="">
-                                        {% for _, skill_level in student.skill_levels %}
-                                            <option value="{{ skill_level }}"{% if level == skill_level %} selected{% endif %}>{{ skill_level }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </td>
-                        </tr>
-
-                    {% endfor %}
-                </table> -->
-
                 <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);"> 
                 <input class="btn btn-light" type="submit" value="Submit">
             </form>
 
         </div>
-
     </div>
-
 </div>
 
 {% endblock %}
