@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import Http404, redirect, render
 
 from applications.models import Answer, Application
@@ -14,7 +15,7 @@ def list_student_applications(request):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        return Http404("Student is not authenticated")
+        return HttpResponseForbidden("User is not authenticated")
     # email = EMAIL_ADDRESS # set to default
     try:
         student = Student.objects.get(email_address = email)
@@ -110,7 +111,7 @@ def list_project_applicants(request):
     try:
         partner = Partner.objects.get(email_address = email)
     except ObjectDoesNotExist:
-        raise Http404("you are not a partner")
+        raise HttpResponseForbidden("User is not a partner.")
 
     projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
     project_wanted = request.GET.get("project_wanted")
@@ -211,7 +212,7 @@ def update_application_status(request):
         return redirect("/")
 
     if request.method == "GET":
-        return Http404("This is a POST-only route.")
+        return HttpResponseBadRequest("This is a POST-only route.")
 
     print(request.POST)
 
