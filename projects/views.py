@@ -1,35 +1,15 @@
-from django.http import Http404
-from django.shortcuts import render, redirect
-import datetime
-import operator
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.http import HttpResponseRedirect
-from django.template.context_processors import csrf
-from django.core.exceptions import ObjectDoesNotExist
-
-from students.forms import AnswerForm
-from applications.forms import ApplicationForm
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404, Http404, render, redirect
+from django.template.context_processors import csrf
 
-# from .models import Student
-from .models import Question
-from students.models import Answer
-from .models import Partner
-from students.models import Student
 from applications.models import Application
-# Create your views here.
-from django.http import HttpResponse
-from django.template import loader
-from .models import Partner
-from .models import Project
-from applications.models import Application
-from .models import PartnerProjectInfo
-
+from students.forms import AnswerForm
+from students.models import Answer, Student
 
 from .forms import EditProjectForm
+from .models import Partner, PartnerProjectInfo, Project, Question
 
 
 @login_required
@@ -155,7 +135,7 @@ def apply(request, project_name):
         if count > 0:
             # raise Http404("Student already has an application submitted")
             messages.info(request, 'You have already applied to this project.')
-            return HttpResponseRedirect('/projects')
+            return redirect('/projects')
 
 
 
@@ -258,12 +238,12 @@ def apply(request, project_name):
             else:
                 # raise Http404("Student has applied to 3 applications")
                 messages.info(request, 'You have already applied to 3 projects.')
-                return HttpResponseRedirect('/projects')
+                return redirect('/projects')
 
             messages.info(request, 'Your application has been submitted successfully!')
-            return HttpResponseRedirect('/projects')
+            return redirect('/projects')
         else:
-            return HttpResponseRedirect(request.path_info)
+            return redirect(request.path_info)
     else: # GET
         form = AnswerForm()
 
@@ -280,9 +260,9 @@ def apply(request, project_name):
         raise Http404("User is not logged in")
 
 
-def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
+# def results(request, question_id):
+#     response = "You're looking at the results of question %s."
+#     return HttpResponse(response % question_id)
 
 @login_required
 def partnerProjectView(request, project_name):
@@ -386,7 +366,7 @@ def partnerlisting(request):
 #             partner.update(student_num = form.cleaned_data['student_num'])
 #             partner.update(description = form.cleaned_data['description'])
 
-#             return HttpResponseRedirect('/project/profile')
+#             return redirect('/project/profile')
 #     else: 
 #         data = Project.objects.get(project_name=project_name).__dict__
 #         form = EditProjectForm(initial=data)

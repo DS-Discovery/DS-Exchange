@@ -1,23 +1,12 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.http import HttpResponse
 
 from students.models import Student
-from projects.models import Partner
-from projects.models import PartnerProjectInfo
+from projects.models import Partner, PartnerProjectInfo
 
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-from allauth.account.views import SignupView
-
-from .forms import StudentSignupForm
-
-from .forms import EditStudentSignupForm
-from .forms import EditPartnerSignupForm
-from django.http import HttpResponse, HttpResponseRedirect
-
-from django.contrib.auth import update_session_auth_hash
+from .forms import EditPartnerSignupForm, EditStudentSignupForm, StudentSignupForm
 
 
 @login_required
@@ -30,7 +19,7 @@ def student_signup(request):
 
     if len(student) > 0:
         messages.info(request, 'You have already signed up.')
-        return HttpResponseRedirect('/profile')
+        return redirect('/profile')
 
     if request.method == 'POST':
         form = StudentSignupForm(request.POST)
@@ -50,7 +39,7 @@ def student_signup(request):
 
             s.save()
 
-            return HttpResponseRedirect('/profile')
+            return redirect('/profile')
 
     else: 
         form = StudentSignupForm()
@@ -83,7 +72,7 @@ def edit_student_profile(request):
 
             student.update(_skills = skills)
 
-            return HttpResponseRedirect('/profile')
+            return redirect('/profile')
 
     else: 
         student = Student.objects.get(email_address = email)
@@ -104,7 +93,7 @@ def view_student_profile(request):
     student_exists = Student.objects.filter(email_address = email).exists()
 
     if not student_exists:
-        return HttpResponseRedirect("/profile/signup")
+        return redirect("/profile/signup")
 
     student = Student.objects.get(email_address = email)
     context = student.__dict__
@@ -129,7 +118,7 @@ def view_student_profile(request):
 #             partner.update(first_name = form.cleaned_data['first_name'])
 #             partner.update(last_name = form.cleaned_data['last_name'])
 
-#             return HttpResponseRedirect('/partner/profile')
+#             return redirect('/partner/profile')
 
 #     else: 
 #         data = Partner.objects.get(email_address = email).__dict__

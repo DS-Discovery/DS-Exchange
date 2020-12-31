@@ -1,10 +1,8 @@
-import datetime
-
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from applications.models import Application
-from django.contrib.auth.models import User
 
+from applications.models import Application
 from projects.models import Project
 
 
@@ -15,6 +13,7 @@ def get_default_skills():
         "data visualization": "",
         # etc.
     }
+
 
 class Student(models.Model):
     # user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -39,7 +38,6 @@ class Student(models.Model):
     skill_levels = skill_levels_options.items()
 
     default_skills = get_default_skills()
-    
 
     email_address = models.EmailField(max_length=100, primary_key= True) # NEED TO PRIMARY KEY
     first_name = models.CharField(max_length=100, null = True)
@@ -88,7 +86,6 @@ class Answer(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
     question_num = models.IntegerField()
     answer_text = models.CharField(max_length=1000)
+    
     def __str__(self):
         return self.answer_text
-
-

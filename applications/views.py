@@ -1,12 +1,11 @@
-from django.shortcuts import render, Http404
-from projects.models import Project, Partner
-from applications.models import Application
-from students.models import Student
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import Http404, render
 
-# default student email for testing
-# EMAIL_ADDRESS = "22szavala@berkeley.edu"
+from applications.models import Application
+from projects.models import Partner, Project
+from students.models import Student
+
 
 @login_required
 def index(request):

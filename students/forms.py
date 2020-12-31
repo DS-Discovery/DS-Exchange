@@ -1,11 +1,8 @@
-import datetime
-
 from django import forms
-
+from django.utils.translation import ugettext_lazy as _
 
 from .models import Answer
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+
 
 class AnswerForm(forms.ModelForm):
     class Meta:

@@ -1,9 +1,9 @@
 import datetime
 
 from django.db import models
-from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 class Project(models.Model):
@@ -17,6 +17,7 @@ class Project(models.Model):
     description = models.CharField(max_length=5000)
     def __str__(self):
         return self.project_name
+
 
 class Partner(models.Model):
     email_address = models.EmailField(primary_key=True)
@@ -36,7 +37,6 @@ class PartnerProjectInfo(models.Model):
     role = models.CharField(max_length=100)
 
 
-
 class Question(models.Model):
     question_choices = (
     ('text','text'),
@@ -46,7 +46,6 @@ class Question(models.Model):
     ('multiselect','multiselect'),
     ('range','range'),
     )
-    
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     question_num = models.IntegerField(default=0)
@@ -54,34 +53,5 @@ class Question(models.Model):
     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
     question_data =  models.CharField(max_length=1000, null=True, blank=True)
 
-    # def create_id(partner, question_text):
-    #     return hash(str(partner) + str(question_text))
-    #
-    #
-    # id = models.CharField(primary_key=True, default = create_id(partner, question_text), max_length = 200)
-
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
-
-# @receiver(post_save, sender=Project)
-# def init_new_project(instance, created, raw, **kwargs):
-#     if created and not raw:
-
-#         skills = ["Python", "R", "SQL", "Tableau/Looker", "Data Visualization", 
-#                     "Data Manipulation", "Text Analysis", "Machine Learning/Deep Learning", 
-#                     "Geospatial Data, Tools and Libraries", "Web Development (Front-end, Back-end, Full stack)", 
-#                     "Mobile App Development", "Cloud Computing"]
-
-                    
-
-#         for i, e in enumerate(skills):
-
-#             Question.objects.create(
-#                 project = instance,
-#                 question_num = i + 1,
-#                 question_text = "Please rate your technical experience with {}.".format(e),
-#                 question_type = 'dropdown',
-#                 question_data = "No experience;Beginner;Familiar;Intermediate;Advanced"
-
-#             )
-

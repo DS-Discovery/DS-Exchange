@@ -1,16 +1,15 @@
-
-from django.db import models
-from students.models import Student
-from projects.models import Partner
-from django.contrib.auth.models import User
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from django.contrib.auth.models import Group
-from allauth.socialaccount.signals import pre_social_login
-from allauth.account.utils import perform_login
-from django.dispatch import receiver
-from allauth.account.signals import user_signed_up
-
 from django.contrib.auth.management import create_permissions
+from django.contrib.auth.models import User, Group
+from django.db import models
+from django.dispatch import receiver
+
+from allauth.account.utils import perform_login
+from allauth.account.signals import user_signed_up
+from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.socialaccount.signals import pre_social_login
+
+from projects.models import Partner
+from students.models import Student
 
 
 class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -23,8 +22,6 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             pass
 
         return user
-
-
 
 
 @receiver(user_signed_up)
@@ -44,8 +41,3 @@ def populateGroup(sender, user, **kwargs):
             student = Group.objects.get(name = 'Student')
             user.groups.add(student)
         user.save()
-
-
-
-
-
