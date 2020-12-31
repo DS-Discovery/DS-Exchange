@@ -1,0 +1,194 @@
+{% extends 'three_column_view.html' %}
+{% load helperfuncs %}
+
+<!-- TODO -->
+
+<div class="d-flex flex-row justify-content-center align-items-center border p-2">
+    <ul class="list-group list-group-horizontal-lg">
+        <li class="list-group-item flex-fill"><h4 class="text-center">Applicants</h4></li>
+        <div class="mt-3"></div>
+        <li class="list-group-item flex-fill"><h4 class="text-center">Final Team</h4></li>
+    </ul>
+</div>
+
+{% block first_column %}
+
+<form method="get" novalidate>
+    {% csrf_token %}
+
+    <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
+
+    <input type="text" name="skill_wanted" value="{{ skill_wanted }}" hidden>
+
+    <input type="text" name="level_wanted" value="{{ level_wanted }}" hidden>
+    
+    <div class="list-group list-group-flush" id="app-list">
+
+        {% for i in num_apps %}
+            {% with applications|index:i as app %}
+                <button 
+                    type="submit" 
+                    class="list-group-item list-group-item-action {% if applications|index:i|id == curr_app|id %} active {% endif %}" 
+                    name="selected_applicant" 
+                    value="{{ applications|index:i|id }}"
+                ><!-- Applicant {{ i|add:1 }}</button> -->{{ app.student.name }}</button>
+            {% endwith %}
+        {% endfor %}
+
+    </div>
+</form>
+
+<script>
+    // scrolls to the active application
+    $(window).ready(() => {
+        $("#app-list button.active").get(0).scrollIntoView();
+    });
+</script>
+
+{% endblock %}
+
+
+{% block second_column %}
+
+<div class="p-2 my-1">
+
+    {% if curr_app is not None %}
+
+        <h5>General Interest Statement</h5>
+
+        <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
+
+        <p>{{ curr_app.student.general_question }}</p>
+
+        <h5>Application Questions</h5>
+
+        {% include 'applications/question_responses.html' %}
+
+    {% else %}
+
+        <p>Please select an applicant on the left.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+
+{% block third_column %}
+
+<div class="my-1 mt-2">
+    <h5 class="text-center">Project</h5>
+
+    <form method="GET" novalidate>
+
+        {% csrf_token %}
+        
+        <select name="project_wanted" class="custom-select mb-2" onChange="form.submit();">
+            {% for project in projects %}
+                    <option class="dropdown-item" value="{{ project.id }}" {% if project_wanted == project %} selected {% endif %}>{{ project.project_name }}</option>
+            {% endfor %}
+        </select>
+
+    </form>
+
+    <hr>
+    
+    <h5 class="text-center">Skill Filters</h5>
+
+    <form method="GET" novalidate>
+
+        {% csrf_token %}
+
+        <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
+        
+        <select name="skill_wanted" class="custom-select mb-2" onChange="form.submit();">
+            {% for skill in skills %}
+                    <option class="dropdown-item" value="{{skill}}" {% if skill_wanted == skill %} selected {% endif %}>{{skill}}</option>
+            {% endfor %}
+        </select>
+
+        {% if skill_wanted != "None" %}
+            <select name="level_wanted" class="custom-select" onChange="form.submit();">
+                {% for level in levels %}
+                    <option class="dropdown-item" value="{{level}}" {% if level_wanted == level %} selected {% endif %}>{{level}}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+
+    </form>
+</div>
+
+<hr>
+
+{% if curr_app is not None %}
+
+    <div class="d-flex flex-column my-1">
+        <h5 class="text-center">Basic Information</h5>
+        
+        <div class="d-flex flex-column my-1">
+            <p>Name: <span class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</span></p>
+            <p>Email: <span class="text-muted">{{curr_student.email_address}}</span></p>
+            <p>Major: <span class="text-muted">{{curr_student.major}}</span></p>
+            <p>Graduation Year: <span class="text-muted">{{curr_student.year}}</span></p>
+        </div>
+        
+        <div class="d-flex flex-column align-items-center">
+            <a class="btn btn-outline-info" href="{{ curr_student.resume_link }}" role="button" target="_blank" rel="noopener noreferrer">Resume</a>
+        </div>
+        
+    </div>
+
+    <hr>
+
+    <div class="d-flex flex-column my-1">
+
+        <h5 class="text-center">Action Items</h5>
+
+        <div class="my-1">
+
+            <form action="status" method="POST" id="new-status-form">
+                {% csrf_token %}
+
+                <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
+
+                <input type="text" hidden name="application_id" value="{{ curr_app.id }}">
+
+                <input type="text" hidden name="new_status" value="{{ curr_app.status }}" id="new-status">
+
+                <input type="text" name="skill_wanted" value="{{ skill_wanted }}" hidden>
+
+                <input type="text" name="level_wanted" value="{{ level_wanted }}" hidden>
+
+                {% for short in curr_app.app_status_choices %}
+                    {% if short != "SUB" %}
+                        <div class="d-flex flex-row justify-content-center mb-2">
+                            <button 
+                                type="button" 
+                                class="btn {% if short == curr_app.status %} btn-info {% else %} btn-outline-info {% endif %}" 
+                                id="btn-{{ short }}"
+                                {% if short == curr_app.status %} disabled {% endif %}
+                                onclick="updateStatusAndSubmit('{{ short }}')"
+                            >{{ curr_app.app_status_choices|index:short }}</button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        function updateStatusAndSubmit(newStatus) {
+            if (!$("#btn-" + newStatus).prop("disabled")) {
+                $("#new-status").val(newStatus);
+                $("#new-status-form").submit();
+            }
+        }
+    </script>
+
+{% endif %}
+
+{% endblock %}

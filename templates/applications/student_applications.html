@@ -1,0 +1,47 @@
+{% extends 'two_column_view.html' %}
+{% load helperfuncs %}
+
+{% block first_column %}
+
+<div class="p-1">
+
+    <form method="GET" novalidate>
+        {% csrf_token %}
+        <div class="list-group list-group-flush">
+            {% for i in num_apps %}
+                    <button 
+                        type="submit" 
+                        class="list-group-item list-group-item-action {% if i == selected_application %} active {% endif %}" 
+                        name="selected_application" 
+                        value="{{ i }}"
+                    >{{ projects|index:i|get_attr:"project_name" }}</button>
+            {% endfor %}
+        </div>
+    </form>
+
+</div>
+
+{% endblock %}
+
+
+{% block second_column %}
+
+<div class="p-2">
+
+    {% if num_apps|length == 0 %}
+
+        <p>You  haven't applied to any projects yet. You can apply to projects <a href="/projects">here</a>.</p>
+
+    {% else %}
+
+        <!-- <h4><a href="/projects?project_wanted={{ active_project.project_name }}">{{ active_project.project_name }}</a></h4> -->
+
+        <h5>Application Questions: </h5>
+
+        {% include 'applications/question_responses.html' %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

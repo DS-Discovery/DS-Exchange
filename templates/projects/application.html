@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load helperfuncs %}
+
+{% block content %}
+
+<div class=" p-2">
+    <h2> Application for {{project}} </h2>
+
+    <form class="mb-5" method="post">
+
+        <p>Please make sure your responses are finalized as you will not be able to edit your responses once you submit.</p>
+        
+        {% csrf_token %}
+
+        {% for question in questions.all %}
+
+            <div class="application-question m-3">
+                <h6>{{ question.question_text }}</h6>
+            
+                <!-- "text type" -->
+                {% if question.question_type == "text" %}
+                    <textarea 
+                        class="form-group" 
+                        name="{{ question.id }}" 
+                        placeholder="Your response here." 
+                        required
+                    ></textarea>
+                {% endif %}
+
+                <!-- "mc type" -->
+                {% if question.question_type == "mc" %}
+
+                    {% with question.question_data|split:";" as options %}
+                        {% for radio in options %}
+                            <input type="radio" name="{{ question.id }}" value ="{{radio}}" required> {{ radio }}<br>
+                        {% endfor %}
+                    {% endwith %}
+
+                {% endif %}
+
+                <!-- "dropdown type" -->
+                {% if question.question_type == "dropdown" %}
+
+                    {% with question.question_data|split:";" as options %}
+                        
+                        <select name="{{ question.id }}" class="custom-select" required>
+                            <option value=""></option>
+                            {% for option in options %}
+                                <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+
+                    {% endwith %}
+
+                {% endif %}
+
+                <!-- "checkbox type" -->
+                {% if question.question_type == "checkbox" %}
+
+                    {% with question.question_data|split:";" as options %}
+                        {% for option in options %}
+                            <input type="checkbox" name="{{ question.id }}" value ="{{ option }}"> {{ option }}<br>
+                        {% endfor %}
+                    {% endwith %}
+
+                {% endif %}
+
+                <!-- "multiselect type" -->
+                {% if question.question_type == "multiselect" %}
+
+
+                    {% with question.question_data|split:";" as options %}
+                        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script> -->
+
+                        <select class="custom-select" multiple name="{{ question.id }}">
+                            {% for option in options %}
+                                <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+
+                    {% endwith %}
+
+
+                {% endif %}
+
+                <!-- "range type" -->
+                {% if question.question_type == "range" %}
+
+                    <script>
+                        function updateSlider(slideAmount) {
+                            slideAmount = parseInt(slideAmount);  // to prevent an syntax error below due to template syntax
+                            var sliderDiv = document.getElementById("sliderAmount");
+                            sliderDiv.innerHTML = slideAmount;
+                        };
+                    </script>
+
+                    {% with question.question_data|split:";" as options %}
+                        <input 
+                            name="{{ question.id }}" 
+                            type="range" min="{{ options|getIx:0 }}" 
+                            max="{{ options|getIx:1 }}" step="1" value="{{ options|getIx:0 }}" 
+                            onchange="updateSlider(this.value)"
+                        >
+                        <span id="sliderAmount"></span>
+                        <script>updateSlider("{{ options|getIx:0 }}")</script>
+                    {% endwith %}
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+        <input type="button" class="btn btn-light" value="Back" onClick="javascript:history.go(-1);"> 
+        <input type="submit" class="btn btn-light" onClick="return confirm('Are you sure you want to submit? Once you submit, you cannot edit your response.')" value="Submit">
+    </form>
+</div>
+
+{% endblock %}
