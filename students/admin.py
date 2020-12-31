@@ -6,20 +6,15 @@ from projects.models import Question
 # from .models import Question
 class StudentAdmin(admin.ModelAdmin):
 
-    list_display = ('email_address', 'first_name', 'last_name')
-
-
-
+    list_display = ['last_name', 'first_name', 'student_id', 'email_address', ]
+    ordering = list_display.copy()
 
 admin.site.register(Student, StudentAdmin)
-
-
 
 
 class AnswerAdmin(admin.ModelAdmin):
 
     def question_text(self, obj):
-        # val = Question.objects.filter(project = obj.application.project, question = obj.question)
         val = [obj.question]
        
         return ";\n".join([p.question_text for p in val])
@@ -27,16 +22,4 @@ class AnswerAdmin(admin.ModelAdmin):
     list_display = ('application', 'question_id', 'question_text')
     readonly_fields = ['question_text',]
 
-    # list_display = ('email_address', 'question')
-  
-
-
-
-
 admin.site.register(Answer, AnswerAdmin)
-
-
-# class QuestionAdmin(admin.ModelAdmin):
-#     list_display = ('question_text', 'partner')
-# admin.site.register(Question, QuestionAdmin)
-# admin.site.register(Question)
