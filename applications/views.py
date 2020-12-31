@@ -112,6 +112,19 @@ def list_project_applicants(request):
     except ObjectDoesNotExist:
         raise Http404("you are not a partner")
 
+    projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
+    project_wanted = request.GET.get("project_wanted")
+    if project_wanted is not None:
+        project_wanted = Project.objects.get(id=project_wanted)
+        if project_wanted not in projects:
+            messages.info("You do not have permission to view this project.")
+            return redirect("/applications")
+    else:
+        if len(projects) == 0:
+            messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
+            return redirect("/")
+        project_wanted = projects[0]
+
     skills = list(Student.default_skills.keys())
     skills.insert(0, "None")
     levels = list(Student.skill_levels_options.values())
@@ -130,16 +143,16 @@ def list_project_applicants(request):
     if request.GET.get("selected_applicant"):
         selected_applicant = request.GET.get("selected_applicant")
 
-    #project = Project.objects.filter(id=PROJECT_ID)
-    # projects
-    # TODO: this needs to handle partners w/ multiple projects
-    for ppi in partner.partnerprojectinfo_set.all():
-        project = ppi.project
+    # #project = Project.objects.filter(id=PROJECT_ID)
+    # # projects
+    # # TODO: this needs to handle partners w/ multiple projects
+    # for ppi in partner.partnerprojectinfo_set.all():
+    #     project = ppi.project
 
     # project = Project.objects.get(project_name=project_name)
 
     if skill_wanted == "None":
-        applications = Application.objects.filter(project_id=project.id).order_by("created_at")
+        applications = Application.objects.filter(project_id=project_wanted.id).order_by("created_at")
     
     else:
         print("skill_wanted:", skill_wanted)
@@ -148,7 +161,7 @@ def list_project_applicants(request):
         for short in Student.skill_levels_options:
             if Student.skill_levels_options[short] == level_wanted:
                 print(short)
-                applications = Application.objects.filter(project_id=project.id).filter(
+                applications = Application.objects.filter(project_id=project_wanted.id).filter(
                     student___skills__contains={skill_wanted: short}
                 )
                 break
@@ -173,6 +186,8 @@ def list_project_applicants(request):
         "levels": levels,
         "level_wanted": level_wanted,
         "applications": applications,
+        "projects": projects,
+        "project_wanted": project_wanted,
     }
 
     if curr_app is not None:
@@ -217,4 +232,7 @@ def update_application_status(request):
     application.save()
 
     messages.info(request, "Application status successfully updated.")
-    return redirect("/applications")
+    return redirect(
+        f"/applications?selected_applicant={application.id}&project_wanted={application.project.id}"
+        f"&skill_wanted={request.POST.get('skill_wanted')}&level_wanted={request.POST.get('level_wanted')}"
+    )

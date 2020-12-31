@@ -50,4 +50,5 @@ textarea.form-control {
 /* for two- and three-column views */
 div.column-pane {
     overflow: scroll;
+    overflow-x: hidden;
 }

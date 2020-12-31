@@ -15,16 +15,24 @@
 
 <form method="get" novalidate>
     {% csrf_token %}
+
+    <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
+
+    <input type="text" name="skill_wanted" value="{{ skill_wanted }}" hidden>
+
+    <input type="text" name="level_wanted" value="{{ level_wanted }}" hidden>
     
     <div class="list-group list-group-flush" id="app-list">
 
         {% for i in num_apps %}
-            <button 
-                type="submit" 
-                class="list-group-item list-group-item-action {% if applications|index:i|id == curr_app|id %} active {% endif %}" 
-                name="selected_applicant" 
-                value="{{ applications|index:i|id }}"
-            >Applicant {{ i|add:1 }}</button>
+            {% with applications|index:i as app %}
+                <button 
+                    type="submit" 
+                    class="list-group-item list-group-item-action {% if applications|index:i|id == curr_app|id %} active {% endif %}" 
+                    name="selected_applicant" 
+                    value="{{ applications|index:i|id }}"
+                ><!-- Applicant {{ i|add:1 }}</button> -->{{ app.student.name }}</button>
+            {% endwith %}
         {% endfor %}
 
     </div>
@@ -44,15 +52,23 @@
 
 <div class="p-2 my-1">
 
-    <h5>General Interest Statement</h5>
+    {% if curr_app is not None %}
 
-    <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
+        <h5>General Interest Statement</h5>
 
-    <p>{{ curr_app.student.general_question }}</p>
+        <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
 
-    <h5>Application Questions</h5>
+        <p>{{ curr_app.student.general_question }}</p>
 
-    {% include 'applications/question_responses.html' %}
+        <h5>Application Questions</h5>
+
+        {% include 'applications/question_responses.html' %}
+
+    {% else %}
+
+        <p>Please select an applicant on the left.</p>
+
+    {% endif %}
 
 </div>
 
@@ -62,12 +78,29 @@
 {% block third_column %}
 
 <div class="my-1 mt-2">
+    <h5 class="text-center">Project</h5>
 
+    <form method="GET" novalidate>
+
+        {% csrf_token %}
+        
+        <select name="project_wanted" class="custom-select mb-2" onChange="form.submit();">
+            {% for project in projects %}
+                    <option class="dropdown-item" value="{{ project.id }}" {% if project_wanted == project %} selected {% endif %}>{{ project.project_name }}</option>
+            {% endfor %}
+        </select>
+
+    </form>
+
+    <hr>
+    
     <h5 class="text-center">Skill Filters</h5>
 
     <form method="GET" novalidate>
 
         {% csrf_token %}
+
+        <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
         
         <select name="skill_wanted" class="custom-select mb-2" onChange="form.submit();">
             {% for skill in skills %}
@@ -117,9 +150,15 @@
             <form action="status" method="POST" id="new-status-form">
                 {% csrf_token %}
 
+                <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
+
                 <input type="text" hidden name="application_id" value="{{ curr_app.id }}">
 
                 <input type="text" hidden name="new_status" value="{{ curr_app.status }}" id="new-status">
+
+                <input type="text" name="skill_wanted" value="{{ skill_wanted }}" hidden>
+
+                <input type="text" name="level_wanted" value="{{ level_wanted }}" hidden>
 
                 {% for short in curr_app.app_status_choices %}
                     {% if short != "SUB" %}
