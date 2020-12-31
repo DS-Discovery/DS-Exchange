@@ -38,29 +38,24 @@
 
 {% block third_column %}
 
-<h4 class="border text-center">Skill Filters</h4>
+<div class="my-1">
 
-<div class="mt-1">
+    <h5 class="text-center">Skill Filters</h5>
+
     <form method="GET" novalidate>
+
         {% csrf_token %}
+        
         <select name="skill_wanted" class="custom-select mb-2" onChange="form.submit();">
             {% for skill in skills %}
-                {% if skill_wanted == skill %}
-                    <option class="dropdown-item" value="{{skill}}" selected>{{skill}}</option>
-                {% else %}
-                    <option class="dropdown-item" value="{{skill}}">{{skill}}</option>
-                {% endif %}
+                    <option class="dropdown-item" value="{{skill}}" {% if skill_wanted == skill %} selected {% endif %}>{{skill}}</option>
             {% endfor %}
         </select>
 
         {% if skill_wanted != "None" %}
             <select name="level_wanted" class="custom-select" onChange="form.submit();">
                 {% for level in levels %}
-                    {% if level_wanted == level %}
-                        <option class="dropdown-item" value="{{level}}" selected>{{level}}</option>
-                    {% else %}
-                        <option class="dropdown-item" value="{{level}}">{{level}}</option>
-                    {% endif %}
+                    <option class="dropdown-item" value="{{level}}" {% if level_wanted == level %} selected {% endif %}>{{level}}</option>
                 {% endfor %}
             </select>
         {% endif %}
@@ -68,46 +63,47 @@
     </form>
 </div>
 
-<div class="d-flex flex-column border p-2">
-    <h4 class="border text-center">Basic Information</h4>
+<hr>
+
+<div class="d-flex flex-column p-2">
+    <h5 class="text-center">Basic Information</h5>
     
-    <div class="d-flex flex-row align-items-center">
-        <h5>Name: <small class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</small></h5>
+    <div class="d-flex flex-column my-1">
+        <p>Name: <span class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</span></p>
+        <p>Email: <span class="text-muted">{{curr_student.email_address}}</span></p>
+        <p>Major: <span class="text-muted">{{curr_student.major}}</span></p>
+        <p>Graduation Year: <span class="text-muted">{{curr_student.year}}</span></p>
     </div>
     
-    <div class="d-flex flex-row align-items-center">
-        <h5>Contact Info: <small class="text-muted">{{curr_student.email_address}}</small></h5>
-    </div>
-    
-    <div class="d-flex flex-row align-items-center">
-        <h5>Major: <small class="text-muted">{{curr_student.major}}</small></h5>
-    </div>
-    
-    <div class="d-flex flex-row align-items-center">
-        <h5>Graduation Year: <small class="text-muted">{{curr_student.year}}</small></h5>
-    </div>
-    
-    <div class="d-flex flex-row align-items-center">
-        <a class="btn btn-outline-info" href="{{curr_student.resume_link}}" role="button" target="_blank" rel="noopener noreferrer">Link to Resume</a>
+    <div class="d-flex flex-column align-items-center">
+        <a class="btn btn-outline-info" href="{{ curr_student.resume_link }}" role="button" target="_blank" rel="noopener noreferrer">Resume</a>
     </div>
     
 </div>
 
-<div class="d-flex flex-column border p-2">
-    <h4 class="border text-center">Action Items</h4>
+<hr>
 
-    <div class="d-flex flex-row justify-content-center mb-2">
-        <button type="button" class="btn btn-outline-success">Interview Schedule</button>
+<div class="d-flex flex-column p-2 my-1">
+
+    <h5 class="text-center">Action Items</h5>
+
+    <div class="my-1">
+
+        <div class="d-flex flex-row justify-content-center mb-2">
+            <button type="button" class="btn btn-outline-success">Interview Schedule</button>
+        </div>
+
+        <div class="d-flex flex-row justify-content-center">
+            <button type="button" class="btn btn-outline-danger">Reject without Interview</button>
+        </div>
+
     </div>
 
-    <div class="d-flex flex-row justify-content-center">
-        <button type="button" class="btn btn-outline-danger">Reject without Interview</button>
-    </div>
 </div>
 
-
+<!-- 
 <div class="d-flex flex-column mt-5">
     <button type="button" class="btn btn-outline-secondary">Back to Project(s)</button>
-</div>
+</div> -->
 
 {% endblock %}
