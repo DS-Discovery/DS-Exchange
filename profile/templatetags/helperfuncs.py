@@ -14,3 +14,14 @@ def split(value, key):
 @register.filter(name='getIx')
 def getIx(h, key):
     return h[key]
+
+
+@register.filter
+def index(indexable, i):
+    return indexable[i]
+
+
+@register.filter
+def id(obj):
+    return obj.id
+

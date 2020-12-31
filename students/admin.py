@@ -19,10 +19,12 @@ admin.site.register(Student, StudentAdmin)
 class AnswerAdmin(admin.ModelAdmin):
 
     def question_text(self, obj):
-        val = Question.objects.filter(project = obj.application.project, question_num = obj.question_num)
+        # val = Question.objects.filter(project = obj.application.project, question = obj.question)
+        val = [obj.question]
        
         return ";\n".join([p.question_text for p in val])
-    list_display = ('application', 'question_num', 'question_text')
+
+    list_display = ('application', 'question_id', 'question_text')
     readonly_fields = ['question_text',]
 
     # list_display = ('email_address', 'question')

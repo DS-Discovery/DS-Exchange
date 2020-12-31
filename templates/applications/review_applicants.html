@@ -1,5 +1,5 @@
 {% extends 'three_column_view.html' %}
-{% load index %}
+{% load helperfuncs %}
 
 <!-- TODO -->
 
@@ -38,6 +38,8 @@
 <div class="mx-2 my-3">
 
     <h5>Application Questions: </h5>
+
+    {% include 'applications/question_responses.html' %}
 
 </div>
 

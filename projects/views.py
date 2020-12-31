@@ -88,7 +88,7 @@ def apply(request, project_name):
     # check to see if that partner project exists, if so, get the questions for it
     try:
         project = Project.objects.get(project_name=project_name)
-        questions = Question.objects.filter(project = project).order_by('question_num')
+        questions = Question.objects.filter(project = project)#.order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist")
 
@@ -129,7 +129,6 @@ def apply(request, project_name):
 
    
         # neeed to check if student already submitted app before
-
         count = Application.objects.filter(student = student, project = project).count()
 
         if count > 0:
@@ -150,7 +149,6 @@ def apply(request, project_name):
         post = request.POST.copy()
         print(post)
 
-
         def querydict_to_dict(query_dict):
             data = {}
             for key in query_dict.keys():
@@ -161,14 +159,15 @@ def apply(request, project_name):
             return data
 
         is_valid = True
-        keys = list(post.keys())
+        question_ids = list(post.keys())
         
         ans_list = []
         # creating individual answers
-        for k in keys:
-            if k == "csrfmiddlewaretoken":
+        for q_id in question_ids:
+            if q_id == "csrfmiddlewaretoken":
                 continue
-            if len(post[k].strip()) == 0:
+            
+            if len(post[q_id].strip()) == 0:
                 is_valid = False
                 break
             
@@ -179,20 +178,22 @@ def apply(request, project_name):
             for new_k in new_ans_keys:
                 if new_k == "csrfmiddlewaretoken":
                     continue
-                if new_k == k:
+                if new_k == q_id:
                     q_num = new_k
                     # answer_text = post[new_k]
                     asDict = querydict_to_dict(post)
-                    if type(asDict[k]) != list:
-                        answer_text = asDict[k]
+                    if type(asDict[q_id]) != list:
+                        answer_text = asDict[q_id]
                     else:
-                        answer_text = ";".join(asDict[k])
+                        answer_text = ";".join(asDict[q_id])
     
                 new_ans.pop(new_k)
 
-            new_ans['question_num'] = q_num
+            new_ans['question'] = Question.objects.get(id=q_num)
             new_ans['answer_text'] = answer_text
             ans_list.append(new_ans)
+
+        print(ans_list)
 
         if is_valid:
 
@@ -213,21 +214,25 @@ def apply(request, project_name):
                 if form.is_valid():
                     print("Is valid")
                     
-                    q_num = form.cleaned_data['question_num']
+                    question = form.cleaned_data['question']
 
                     try:
-                        a = Answer.objects.get(student=student, application=application, question_num=q_num)
+                        a = Answer.objects.get(student=student, application=application, question=question)
                         a.answer_text = form.cleaned_data['answer_text']
+                    
                     except:
-                        a = Answer(student=student, application = application, question_num = q_num,
-                        answer_text = form.cleaned_data['answer_text'])
+                        a = Answer(
+                            student=student, application = application, question = question, 
+                            answer_text = form.cleaned_data['answer_text']
+                        )
                     
                     a.save()
+
                 else:
                     print("not valid")
                     print(form.errors)
 
-
+            # TODO: allow students to update rank
             studentUpdater = Student.objects.filter(email_address = email)
             if not student.first_choice:
                 studentUpdater.update(first_choice = project.project_name)
@@ -235,15 +240,22 @@ def apply(request, project_name):
                 studentUpdater.update(second_choice = project.project_name)
             elif not student.third_choice:
                 studentUpdater.update(third_choice = project.project_name)
-            else:
-                # raise Http404("Student has applied to 3 applications")
-                messages.info(request, 'You have already applied to 3 projects.')
-                return redirect('/projects')
+            # else:
+            #     # raise Http404("Student has applied to 3 applications")
+            #     messages.info(request, 'You have already applied to 3 projects.')
+            #     return redirect('/projects')
 
             messages.info(request, 'Your application has been submitted successfully!')
             return redirect('/projects')
+        
         else:
+            messages.info(
+                request, 
+                'Your application was invalid and could not be processed. If this error persists, '
+                'please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.'
+            )
             return redirect(request.path_info)
+    
     else: # GET
         form = AnswerForm()
 

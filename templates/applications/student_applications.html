@@ -5,15 +5,15 @@
 <form method="post" novalidate>
     {% csrf_token %}
     <div class="list-group">
-    {% for i in num_apps %}
-        {% if i == 1 %}
-            <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
-        {% elif i == 2 %}
-            <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
-        {% else %}
-            <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
-        {% endif %}
-    {% endfor %}
+        {% for i in num_apps %}
+            {% if i == 1 %}
+                <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{ i }}</button>
+            {% elif i == 2 %}
+                <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{ i }}</button>
+            {% else %}
+                <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{ i }}</button>
+            {% endif %}
+        {% endfor %}
     </div>
 </form>
 
@@ -23,8 +23,11 @@
 {% block second_column %}
 
 {% if num_apps|length == 0 %}
+
     <p>You  haven't applied to any projects yet. You can apply to projects <a href="/projects">here</a>.</p>
+
 {% else %}
+
     <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1">Project Name</h5>

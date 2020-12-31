@@ -4,7 +4,7 @@ from django.shortcuts import Http404, redirect, render
 
 from applications.models import Application
 from projects.models import Partner, Project
-from students.models import Student
+from students.models import Answer, Student
 
 
 @login_required
@@ -124,8 +124,8 @@ def list_project_applicants(request):
         applications = Application.objects.filter(project_id=project.id)
     
     else:
-        print("skill_wanted: ", skill_wanted)
-        print("level_wanted: ", level_wanted)
+        print("skill_wanted:", skill_wanted)
+        print("level_wanted:", level_wanted)
 
         for short in Student.skill_levels_options:
             if Student.skill_levels_options[short] == level_wanted:
@@ -141,12 +141,10 @@ def list_project_applicants(request):
     
     else:
         student = Application.objects.get(id=selected_applicant).student
-        print(student._skills)
         curr_app = Application.objects.get(id=selected_applicant)
-    
-    # print(Student.skills)
-    # for name, value in Student.skills.attributes().items():
-    # print(name, value)
+        print("curr_app:", curr_app)
+
+        answers = Answer.objects.filter(student=student, application=curr_app)
 
     context = {
         "num_apps": range(len(applications)),
@@ -158,5 +156,12 @@ def list_project_applicants(request):
         "level_wanted": level_wanted,
         "applications": applications,
     }
+
+    if curr_app is not None:
+        context.update({
+            "questions_and_answers": zip([a.question for a in answers], answers),
+        })
+
+    print(context)
 
     return render(request, 'applications/review_applicants.html', context)
