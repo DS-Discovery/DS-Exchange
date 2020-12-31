@@ -1,18 +1,18 @@
 {% extends 'two_column_view.html' %}
+{% load helperfuncs %}
 
 {% block first_column %}
 
-<form method="post" novalidate>
+<form method="GET" novalidate>
     {% csrf_token %}
     <div class="list-group">
         {% for i in num_apps %}
-            {% if i == 1 %}
-                <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{ i }}</button>
-            {% elif i == 2 %}
-                <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{ i }}</button>
-            {% else %}
-                <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{ i }}</button>
-            {% endif %}
+                <button 
+                    type="submit" 
+                    class="list-group-item list-group-item-action {% if i == selected_application %} active {% endif %}" 
+                    name="selected_application" 
+                    value="{{ i }}"
+                >{{ projects|index:i|get_attr:"project_name" }}</button>
         {% endfor %}
     </div>
 </form>
@@ -28,7 +28,9 @@
 
 {% else %}
 
-    <h4><a href="/projects?project_wanted={{ active_project.project_name }}">{{ active_project.project_name }}</a></h4>
+    <!-- <h4><a href="/projects?project_wanted={{ active_project.project_name }}">{{ active_project.project_name }}</a></h4> -->
+
+    <h5>Application Questions: </h5>
 
     {% include 'applications/question_responses.html' %}
 

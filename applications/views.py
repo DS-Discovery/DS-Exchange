@@ -31,58 +31,71 @@ def list_student_applications(request):
         second_project = Project.objects.get(id=all_apps[1].project_id)
     if len(all_apps) > 0:
         first_project = Project.objects.get(id=all_apps[0].project_id)
+        no_apps = False
+    else:
+        no_apps = True
 
-    num_apps = list(range(1, len(all_apps) + 1))
+    num_apps = list(range(0, len(all_apps)))
    
     context = {
         "num_apps": num_apps,
         "active_project": first_project,
+        "projects": [a.project for a in all_apps],
     }
 
-    context["active_application"] = None
-    selected_status = None
+    if not no_apps:
 
-    if request.method == "POST":
-        # here when select dropdown category
-        selected_application = request.POST.get('selected_application')
-        if selected_application == "first_project":
+        context["active_application"] = None
+        selected_status = None
+
+        # if request.method == "POST":
+            # here when select dropdown category
+        selected_application = request.GET.get('selected_application')
+        if selected_application is not None:
+            selected_application = int(selected_application)
+        else:
+            selected_application = 0
+        
+        context["selected_application"] = selected_application
+        if selected_application == 0:
             context["active_project"] = first_project
             context["active_application"] = all_apps[0]
-        elif selected_application == "second_project":
+        elif selected_application == 1:
             context["active_project"] = second_project
             context["active_application"] = all_apps[1]
-        elif selected_application == "third_project":
+        elif selected_application == 2:
             context["active_project"] = third_project
             context["active_application"] = all_apps[2]
         else:
             context["active_project"] = first_project
             context["active_application"] = all_apps[0]
 
+            # selected_status = request.POST.get('selected_status')
+            # if selected_status:
+            #     context["selected_status"] = selected_status
+            #     context["active_application"].status = selected_status
+            #     context["active_application"].save()
 
-        selected_status = request.POST.get('selected_status')
-        if selected_status:
-            context["selected_status"] = selected_status
-            context["active_application"].status = selected_status
-            context["active_application"].save()
+        # selected_partner = None
+        # for partner in Partner.objects.all():
+        #     projects = partner.projects.all()
+        #     if context["active_project"] in projects:
+        #         selected_partner = partner
+        # context["selected_partner"] = selected_partner
 
-    selected_partner = None
-    for partner in Partner.objects.all():
-        projects = partner.projects.all()
-        if context["active_project"] in projects:
-            selected_partner = partner
-    context["selected_partner"] = selected_partner
+        if not context["active_application"] and all_apps:
+            context["active_project"] = first_project
+            context["active_application"] = all_apps[0]
+        
+        if context["active_application"] and context["active_application"].status != "SENT":
+            context["available_status"] = ["Accept Offer", "Reject Offer"]
+        
+        else:
+            context["available_status"] = ["NA"]
 
-    if not context["active_application"] and all_apps:
-        context["active_project"] = first_project
-        context["active_application"] = all_apps[0]
-    if context["active_application"] and context["active_application"].status != "SENT":
-        context["available_status"] = ["Accept Offer", "Reject Offer"]
-    else:
-        context["available_status"] = ["NA"]
-
-    if context["active_application"] is not None:
-        answers = Answer.objects.filter(student=student, application=context["active_application"])
-        context["questions_and_answers"] = zip([a.question for a in answers], answers)
+        if context["active_application"] is not None:
+            answers = Answer.objects.filter(student=student, application=context["active_application"])
+            context["questions_and_answers"] = zip([a.question for a in answers], answers)
 
     return render(request, "applications/student_applications.html", context=context)
 

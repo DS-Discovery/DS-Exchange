@@ -30,3 +30,7 @@ def id(obj):
 def addclass(field, css):
     return field.as_widget(attrs={"class":css})
 
+
+@register.filter
+def get_attr(obj, attr):
+    return getattr(obj, attr)

@@ -211,7 +211,7 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 
 # for login_required decorate
-LOGIN_URL = ''
+LOGIN_URL = '/profile/login'
 
 SOCIALACCOUNT_ADAPTER = "profile.models.CustomSocialAccountAdapter"
 # SOCIALACCOUNT_FORMS = {
