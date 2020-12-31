@@ -1,92 +1,51 @@
-{% extends 'base.html' %}
+{% extends 'two_column_view.html' %}
 
-{% block content %}
+{% block first_column %}
 
-<div class="d-flex flex-row fill-page">
-    <div class="col-3 border p-2">
-        <form method="post" novalidate>
-            {% csrf_token %}
-            <div class="list-group">
-            {% for i in num_apps %}
-                {% if i == 1 %}
-                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
-                {% elif i == 2 %}
-                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
-                {% else %}
-                    <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
-                {% endif %}
-            {% endfor %}
-            </div>
-        </form>
-    </div>
-
-    <div class="col-9 border p-2">
-        {% if num_apps|length == 0 %}
-            <p>You  haven't applied to any projects yet. You can apply to projects <a href="/projects">here</a>.</p>
+<form method="post" novalidate>
+    {% csrf_token %}
+    <div class="list-group">
+    {% for i in num_apps %}
+        {% if i == 1 %}
+            <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="first_project"> Application {{i}}</button>
+        {% elif i == 2 %}
+            <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="second_project"> Application {{i}}</button>
         {% else %}
-            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">Project Name</h5>
-                </div>
-                <p>{{active_project.project_name}}</p>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">Partner Info</h5>
-                </div>
-                <p>Partner First Name: {{ selected_partner.first_name }}</p>
-                <p>Partner Last Name: {{ selected_partner.last_name }}</p>
-                <p>Partner Email: {{ selected_partner.email_address }}</p>
-            </a>
-            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">Project Description</h5>
-                </div>
-            <p>{{active_project.description}}</p>
-            </a>
-
+            <button type="submit" class="list-group-item list-group-item-action" name="selected_application" value="third_project"> Application {{i}}</button>
         {% endif %}
-        <!-- <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">Application Status</h5>
-            </div>
-        <p>
-            <h4>
-                <ul style="list-style-type:none;">
-                    <li><span class="badge badge-pill badge-info">{{active_application.status}}</span></li>
-                </ul>
-            </h4>
-        </p>
-        </a>
-        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">Action</h5>
-            </div>
-        <p>
-            <form method="post" novalidate>
-                {% csrf_token %}
-                <select name = "selected_status" class="form-control" onChange="form.submit();">
-                {% if available_status %}
-                    {% for status in available_status %}
-                        {% if selected_status == status %}
-                            <option class="dropdown-item" value="{{status}}" selected>{{status}}</option>
-                        {% elif status == "NA" %}
-                            <option class="dropdown-item" value="{{status}}" selected>{{status}}</option>
-                        {% else %} 
-                            <option class="dropdown-item" value="{{status}}">{{status}}</option>
-                        {% endif %}
-                    {% endfor %}
-                {% else %}
-                    <p>No status is available.</p>
-                {% endif %}
-
-                </select>
-            </form>
-        </a> -->
-
-
+    {% endfor %}
     </div>
+</form>
 
-</div>
+{% endblock %}
+
+
+{% block second_column %}
+
+{% if num_apps|length == 0 %}
+    <p>You  haven't applied to any projects yet. You can apply to projects <a href="/projects">here</a>.</p>
+{% else %}
+    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">Project Name</h5>
+        </div>
+        <p>{{active_project.project_name}}</p>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">Partner Info</h5>
+        </div>
+        <p>Partner First Name: {{ selected_partner.first_name }}</p>
+        <p>Partner Last Name: {{ selected_partner.last_name }}</p>
+        <p>Partner Email: {{ selected_partner.email_address }}</p>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">Project Description</h5>
+        </div>
+    <p>{{active_project.description}}</p>
+    </a>
+
+{% endif %}
 
 {% endblock %}
