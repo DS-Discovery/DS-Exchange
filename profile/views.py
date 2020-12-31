@@ -118,30 +118,6 @@ def view_student_profile(request):
     return render(request, 'profile/student_profile.html', {'context' : context, "skills_tups": student.skills.items()})
 
 
-# @login_required
-# def partnerProfileEdit(request):
-#     email = None
-#     if request.user.is_authenticated:
-#         email = request.user.email
-
-#     if request.method == 'POST':
-#         partner = Partner.objects.filter(email_address = email)
-
-#         form = EditPartnerSignupForm(request.POST)
-#         if form.is_valid():
-
-#             partner.update(first_name = form.cleaned_data['first_name'])
-#             partner.update(last_name = form.cleaned_data['last_name'])
-
-#             return redirect('/partner/profile')
-
-#     else: 
-#         data = Partner.objects.get(email_address = email).__dict__
-#         form = EditPartnerSignupForm(initial=data)
-
-#     return render(request, 'profile/edit_partner_profile.html', {'title' : "Partner Edit Profile", 'form' : form})
-
-
 @login_required
 def view_partner_profile(request):
     email = None
