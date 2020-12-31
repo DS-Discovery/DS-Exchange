@@ -26,7 +26,7 @@ def student_signup(request):
     if request.method == 'POST':
         form = StudentSignupForm(request.POST)
         if form.is_valid():
-            
+
             s = Student(
                 email_address = email, 
                 first_name = form.cleaned_data['first_name'], 
@@ -38,6 +38,12 @@ def student_signup(request):
                 resume_link= form.cleaned_data['resume_link'], 
                 general_question = form.cleaned_data['general_question']
             )
+
+            skills = s.skills
+            for skill in skills:
+                skills[skill] = form.cleaned_data.get(skill, "")
+
+            s._skills = skills
 
             s.save()
 
