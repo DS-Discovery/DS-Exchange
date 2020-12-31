@@ -96,7 +96,7 @@ def apply(request, project_name):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        messages.info("You must be logged in to apply to a project")
+        messages.info("You must be logged in to apply to a project.")
         return redirect('/')
     
     try:
@@ -109,7 +109,9 @@ def apply(request, project_name):
             messages.info(request, "You have not yet signed up. Please complete the signup form to continue.")
             return redirect("/profile/signup")
 
-    if student.first_choice and student.second_choice and student.third_choice:
+    count = Application.objects.filter(student = student).count()
+
+    if count > 2:
         messages.info(request, 'You have already applied to 3 projects.')
         return redirect('/projects')
 
@@ -122,29 +124,6 @@ def apply(request, project_name):
 
     #if this form is submitted, then we want to save the answers
     if request.method == 'POST':
-
-        # student = Student.objects.get(email_address = email)
-        # print(student)
-
-
-   
-        # neeed to check if student already submitted app before
-        count = Application.objects.filter(student = student, project = project).count()
-
-        if count > 0:
-            # raise Http404("Student already has an application submitted")
-            messages.info(request, 'You have already applied to this project.')
-            return redirect('/projects')
-
-
-
-        # for question in questions:
-        #     print(question.id)
-        #     print(request.POST)
-        #     print(request.POST[str(question.id)])
-        #     print("---------------------")
-
-        #modify post request
 
         post = request.POST.copy()
         print(post)
