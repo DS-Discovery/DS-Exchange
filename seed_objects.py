@@ -130,7 +130,7 @@ if __name__ == "__main__":
                 application = Application(student=student,
                                           project=project,
                                           rank=i+1,
-                                          status="SENT",
+                                          status="SUB",
                                           )
                 application.save()
             except ObjectDoesNotExist:

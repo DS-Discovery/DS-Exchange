@@ -179,7 +179,7 @@ def apply(request, project_name):
             try:
                 application = Application.objects.get(student=student, project=project)
             except:
-                 application = Application(student=student, project=project, status = "Sent")
+                 application = Application(student=student, project=project, status = "SUB")
 
             application.save()
 

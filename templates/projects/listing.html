@@ -17,9 +17,7 @@
                     class="list-group-item list-group-item-action {% if selected_project.project_name == question.project_name %} active {% endif %}" 
                     name="project_wanted" 
                     value="{{question.project_name}}"
-                >
-                    {{question.project_name}}
-                </button>
+                >{{ question.project_name }}</button>
             {% endfor %}
         {% else %}
             <p>No projects are available.</p>
@@ -41,7 +39,12 @@
 
     {% if selected_project.project_name %}
         <!-- <h3>Project Info: </h3> -->
-        <p>Project Description: {{ selected_project.description }}</p>
+
+        <h5>{{ selected_project.project_name }}</h5>
+
+        <p class="mt-4"><strong>Project Description</strong></p>
+
+        <p>{{ selected_project.description }}</p>
         
     {% else %}
         <p>No project selected.</p>
@@ -108,11 +111,9 @@
     <div class="flex-row my-1">
         <h5 class="text-center">Project Info</h5>
 
-        <p><strong>{{ selected_project.project_name }}</strong></p>
-
-        <div class="d-flex flex-row align-items-start mb-3">
+        <div class="d-flex flex-row flex-wrap align-items-start mb-3">
             {% for label in labels %}
-                <span class="badge badge-pill badge-info mr-1">{{ label }}</span>
+                <span class="badge badge-pill badge-info mr-1 mt-1">{{ label }}</span>
             {% endfor %}
         </div>
 
