@@ -159,7 +159,7 @@ def get_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
-    if User.objects.filter(email = email, groups__name = "Partner").exists():
+    if Partner.objects.filter(email_address = email).exists():
         return view_partner_profile(request)
     return view_student_profile(request)
 
