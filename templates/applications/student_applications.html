@@ -3,37 +3,45 @@
 
 {% block first_column %}
 
-<form method="GET" novalidate>
-    {% csrf_token %}
-    <div class="list-group">
-        {% for i in num_apps %}
-                <button 
-                    type="submit" 
-                    class="list-group-item list-group-item-action {% if i == selected_application %} active {% endif %}" 
-                    name="selected_application" 
-                    value="{{ i }}"
-                >{{ projects|index:i|get_attr:"project_name" }}</button>
-        {% endfor %}
-    </div>
-</form>
+<div class="p-1">
+
+    <form method="GET" novalidate>
+        {% csrf_token %}
+        <div class="list-group list-group-flush">
+            {% for i in num_apps %}
+                    <button 
+                        type="submit" 
+                        class="list-group-item list-group-item-action {% if i == selected_application %} active {% endif %}" 
+                        name="selected_application" 
+                        value="{{ i }}"
+                    >{{ projects|index:i|get_attr:"project_name" }}</button>
+            {% endfor %}
+        </div>
+    </form>
+
+</div>
 
 {% endblock %}
 
 
 {% block second_column %}
 
-{% if num_apps|length == 0 %}
+<div class="p-2">
 
-    <p>You  haven't applied to any projects yet. You can apply to projects <a href="/projects">here</a>.</p>
+    {% if num_apps|length == 0 %}
 
-{% else %}
+        <p>You  haven't applied to any projects yet. You can apply to projects <a href="/projects">here</a>.</p>
 
-    <!-- <h4><a href="/projects?project_wanted={{ active_project.project_name }}">{{ active_project.project_name }}</a></h4> -->
+    {% else %}
 
-    <h5>Application Questions: </h5>
+        <!-- <h4><a href="/projects?project_wanted={{ active_project.project_name }}">{{ active_project.project_name }}</a></h4> -->
 
-    {% include 'applications/question_responses.html' %}
+        <h5>Application Questions: </h5>
 
-{% endif %}
+        {% include 'applications/question_responses.html' %}
+
+    {% endif %}
+
+</div>
 
 {% endblock %}

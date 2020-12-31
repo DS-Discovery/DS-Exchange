@@ -12,7 +12,7 @@
             <!-- "text type" -->
             {% if question.question_type == "text" %}
                 <textarea 
-                    class="form-group" 
+                    class="form-group form-control" 
                     name="{{ question.question_num }}" 
                     placeholder="Your response here." 
                     required
@@ -104,6 +104,7 @@
                 {% with question.question_data|split:";" as options %}
                     <input 
                         name="{{ question.question_num }}" 
+                        class="form-control"
                         type="range" min="{{ options|getIx:0 }}" 
                         max="{{ options|getIx:1 }}" step="1" 
                         value="answer.answer_text" 
