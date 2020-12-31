@@ -365,41 +365,41 @@ def partnerlisting(request):
     return render(request, 'projects/partnerListing.html', context)
 
 
-@login_required
-def editProjectProfile(request, project_name):
-    email = None
-    if request.user.is_authenticated:
-        email = request.user.email
+# @login_required
+# def editProjectProfile(request, project_name):
+#     email = None
+#     if request.user.is_authenticated:
+#         email = request.user.email
 
-    if request.method == 'POST':
+#     if request.method == 'POST':
 
-        project = Project.objects.filter(id = request)
+#         project = Project.objects.filter(id = request)
 
-        form = EditProjectForm(request.POST)
-        if form.is_valid():
-            project.update(organization = form.cleaned_data['organization'])
-            partner.update(project_name = form.cleaned_data['project_name'])
-            partner.update(project_category = form.cleaned_data['project_category'])
-            partner.update(student_num = form.cleaned_data['student_num'])
-            partner.update(description = form.cleaned_data['description'])
+#         form = EditProjectForm(request.POST)
+#         if form.is_valid():
+#             project.update(organization = form.cleaned_data['organization'])
+#             partner.update(project_name = form.cleaned_data['project_name'])
+#             partner.update(project_category = form.cleaned_data['project_category'])
+#             partner.update(student_num = form.cleaned_data['student_num'])
+#             partner.update(description = form.cleaned_data['description'])
 
-            return HttpResponseRedirect('/project/profile')
-    else: 
-        data = Project.objects.get(project_name=project_name).__dict__
-        form = EditProjectForm(initial=data)
+#             return HttpResponseRedirect('/project/profile')
+#     else: 
+#         data = Project.objects.get(project_name=project_name).__dict__
+#         form = EditProjectForm(initial=data)
 
-    return render(request, 'projects/projectEdit.html', {'title' : "Project Edit Profile", 'form' : form})
-
-
-@login_required
-def editProjectQuestions(request):
-    email = None
-    if request.user.is_authenticated:
-        email = request.user.email
-    if User.objects.filter(email = email, groups__name = "Partner").exists():
-        pass
-    else:
-        return HttpResponse("Invalid credentials")
+#     return render(request, 'projects/projectEdit.html', {'title' : "Project Edit Profile", 'form' : form})
 
 
-    pass
+# @login_required
+# def editProjectQuestions(request):
+#     email = None
+#     if request.user.is_authenticated:
+#         email = request.user.email
+#     if User.objects.filter(email = email, groups__name = "Partner").exists():
+#         pass
+#     else:
+#         return HttpResponse("Invalid credentials")
+
+
+#     pass

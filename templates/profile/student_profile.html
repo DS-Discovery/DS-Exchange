@@ -41,7 +41,6 @@
                 {% endfor %}
             </table>
 
-            <br>
             
             <h5>Application Info: </h5>
             <p><strong>First Choice: </strong> {{ context.first_choice }}</p>
@@ -50,8 +49,8 @@
 
             <p><strong>Resume Link: </strong> {{ context.resume_link }}</p>
             <p><strong>General Interest Statement:  </strong><br>{{ context.general_question }}</p>
-            <br>
-            <input type=button value="Edit Profile" onClick="location.href = '/student/edit'"> 
+            
+            <a class="btn btn-light" href="/profile/edit">Edit Profile</a>
 
 
         </div>

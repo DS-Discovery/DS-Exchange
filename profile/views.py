@@ -18,13 +18,13 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth import update_session_auth_hash
 
+
 def index(request):
     return HttpResponse("Login View")
 
 
-
 @login_required
-def studentSignup(request):
+def student_signup(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -50,18 +50,15 @@ def studentSignup(request):
             # print(s)
             s.save()
 
-            return HttpResponseRedirect('/student/profile')
+            return HttpResponseRedirect('/profile')
 
         # return HttpResponseRedirect('/submitted')
     else: # GET
         form = StudentSignupForm()
-
-
-
-    return render(request, 'account/studentProfileEdit.html', {'title' : "Student Create Profile",'form' : form})
+        return render(request, 'prfile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
 
 @login_required
-def studentProfileEdit(request):
+def edit_student_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -89,7 +86,7 @@ def studentProfileEdit(request):
 
             student.update(_skills = skills)
 
-            return HttpResponseRedirect('/student/profile')
+            return HttpResponseRedirect('/profile')
 
     else: 
         student = Student.objects.get(email_address = email)
@@ -99,26 +96,26 @@ def studentProfileEdit(request):
 
 
 
-        return render(request, 'account/studentProfileEdit.html', {
+        return render(request, 'profile/edit_student_profile.html', {
             'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items()
         })
 
 @login_required
-def studentProfileView(request):
+def view_student_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
-    studentExists = Student.objects.filter(email_address = email).exists()
+    
+    student_exists = Student.objects.filter(email_address = email).exists()
 
-    if not studentExists:
-        return HttpResponseRedirect("/student/signup")
-
+    if not student_exists:
+        return HttpResponseRedirect("/profile/signup")
 
     student = Student.objects.get(email_address = email)
     context = student.__dict__
     # print(context)
     # breakpoint()
-    return render(request, 'login/studentBasic.html', {'context' : context, "skills_tups": student.skills.items()})
+    return render(request, 'profile/student_profile.html', {'context' : context, "skills_tups": student.skills.items()})
 
 @login_required
 def partnerProfileEdit(request):
@@ -143,7 +140,7 @@ def partnerProfileEdit(request):
         data = Partner.objects.get(email_address = email).__dict__
         form = EditPartnerSignupForm(initial=data)
 
-    return render(request, 'account/partnerProfileEdit.html', {'title' : "Partner Edit Profile", 'form' : form})
+    return render(request, 'profile/edit_partner_profile.html', {'title' : "Partner Edit Profile", 'form' : form})
 
 
 
@@ -151,7 +148,7 @@ def partnerProfileEdit(request):
 
 
 @login_required
-def partnerProfileView(request):
+def view_partner_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -168,17 +165,17 @@ def partnerProfileView(request):
         roles = PartnerProjectInfo.objects.filter(project = p)
         projectPartnerRoles[p.project_name] = roles
     print(projectPartnerRoles)
-    return render(request, 'login/partnerBasic.html', {'context' : context.__dict__, 'projects': projects, 'projectPartnerRoles' : projectPartnerRoles})
+    return render(request, 'profile/partner_profile.html', {'context' : context.__dict__, 'projects': projects, 'projectPartnerRoles' : projectPartnerRoles})
 
 @login_required
-def redirectProfile(request):
+def get_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
     if User.objects.filter(email = email, groups__name = "Partner").exists():
         # return HttpResponseRedirect('/partner/profile')
-        return HttpResponseRedirect('/projects/partnerlisting')
-    return HttpResponseRedirect('/student/profile')
+        return view_partner_profile(request)
+    return view_student_profile(request)
 
 
 def google_auth_redirect(request):

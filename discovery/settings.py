@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'login',
+    'profile',
     # 'social_app',
     
     'allauth',
@@ -213,7 +213,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 # for login_required decorate
 LOGIN_URL = ''
 
-SOCIALACCOUNT_ADAPTER = "login.models.CustomSocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "profile.models.CustomSocialAccountAdapter"
 # SOCIALACCOUNT_FORMS = {
 #     'signup': 'login.forms.StudentSignupForm'
 # }
