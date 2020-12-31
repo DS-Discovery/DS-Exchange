@@ -24,7 +24,7 @@ def list_student_applications(request):
     # changed from email to student
     # all_apps = Application.objects.filter(email_address=EMAIL_ADDRESS)
     first_project, second_project, third_project = None, None, None
-    all_apps = Application.objects.filter(student = student)
+    all_apps = Application.objects.filter(student = student).order_by("created_at")
     print("all_apps", all_apps)
     if len(all_apps) > 2:
         third_project = Project.objects.get(id=all_apps[2].project_id)
@@ -139,7 +139,7 @@ def list_project_applicants(request):
     # project = Project.objects.get(project_name=project_name)
 
     if skill_wanted == "None":
-        applications = Application.objects.filter(project_id=project.id)
+        applications = Application.objects.filter(project_id=project.id).order_by("created_at")
     
     else:
         print("skill_wanted:", skill_wanted)
@@ -179,8 +179,6 @@ def list_project_applicants(request):
         context.update({
             "questions_and_answers": zip([a.question for a in answers], answers),
         })
-
-    print(context)
 
     return render(request, 'applications/review_applicants.html', context)
 
