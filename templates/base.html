@@ -43,6 +43,15 @@
     </nav>
 
     <div class="container">
+        
+        {% if messages %}
+        <!-- {{ messages}} -->
+            {% for message in messages %}
+
+                    <div class="alert alert-info my-2">{{ message }}</div>
+
+            {% endfor %}
+        {% endif %}
 
         {% block content %}
             replace meeeeeeeee
