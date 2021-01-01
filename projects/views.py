@@ -27,7 +27,7 @@ def list_projects(request):
 
     project_category_list = set()
     for e in Project.objects.all():
-        categories = e.project_category.strip().split(',')
+        categories = e.project_category.strip().split(';')
         categories = [cat.strip() for cat in categories]
         project_category_list.update(categories)
 
@@ -325,7 +325,7 @@ def partnerlisting(request):
             #     if context["selected_project"] in projects:
             #         selected_partner = partner
             # context["selected_partner"] = selected_partner
-            context["labels"] = context["selected_project"].project_category.split(",")
+            context["labels"] = context["selected_project"].project_category.split(";")
             context['partnerProjectInfos'] = PartnerProjectInfo.objects.filter(project = context["selected_project"])
      
             questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
