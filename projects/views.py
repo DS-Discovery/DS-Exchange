@@ -61,7 +61,7 @@ def list_projects(request):
                     selected_partner = partner
             
             context["selected_partner"] = selected_partner
-            context["labels"] = context["selected_project"].project_category.split(",")
+            context["labels"] = context["selected_project"].project_category.split(";")
 
             context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
 
