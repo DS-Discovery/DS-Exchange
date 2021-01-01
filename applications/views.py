@@ -111,7 +111,7 @@ def list_project_applicants(request):
     try:
         partner = Partner.objects.get(email_address = email)
     except ObjectDoesNotExist:
-        raise HttpResponseForbidden("User is not a partner.")
+        return HttpResponseForbidden("User is not a partner.")
 
     projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
     project_wanted = request.GET.get("project_wanted")

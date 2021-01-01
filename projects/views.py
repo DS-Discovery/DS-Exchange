@@ -249,7 +249,7 @@ def apply(request, project_name):
         print(questions)
         return render(request, 'projects/application.html', {'questions': questions, 'project' : project, 'form' : form})
     else:
-        raise HttpResponseForbidden("User is not logged in.")
+        return HttpResponseForbidden("User is not logged in.")
 
 
 # def results(request, question_id):
@@ -265,7 +265,7 @@ def partnerProjectView(request, project_name):
     try:
         context = Partner.objects.get(email_address = email)
     except ObjectDoesNotExist:
-        raise HttpResponseForbidden("User is not a partner.")
+        return HttpResponseForbidden("User is not a partner.")
     # projects = context.projects.all()
     # breakpoint()
     canView = False
@@ -274,7 +274,7 @@ def partnerProjectView(request, project_name):
         if project.project_name == project_name:
             canView = True
     if not canView:
-        raise HttpResponseForbidden("User lacks permission to view this project.")
+        return HttpResponseForbidden("User lacks permission to view this project.")
     project = Project.objects.get(project_name=project_name)
     questions = Question.objects.filter(project = project).order_by('question_num')
 
