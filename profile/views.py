@@ -151,3 +151,15 @@ def get_profile(request):
 
 def google_auth_redirect(request):
     return redirect("/accounts/google/login")
+
+
+@login_required
+def login_callback(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    if Partner.objects.filter(email_address = email).exists() or Student.objects.filter(email_address = email).exists():
+        return redirect("/profile")
+    else:
+        messages.info(request, "Please complete your student profile.")
+        return redirect("/profile/signup")

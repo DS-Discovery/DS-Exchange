@@ -11,4 +11,5 @@ urlpatterns = [
     path('edit', views.edit_student_profile, name='edit_student_profile'),
     # path('edit', views.partnerProfileEdit, name='partnerProfileEdit'),
     path('login', views.google_auth_redirect, name='google_auth_redirect'),
+    path('login/callback', views.login_callback, name='login_callback'),
 ]
