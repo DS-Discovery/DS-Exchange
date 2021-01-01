@@ -1,1 +1,1 @@
-gunicorn --bind=0.0.0.0 --timeout 600 --chdir discovery discovery.wsgi
+gunicorn --bind=0.0.0.0 --timeout 600 discovery.wsgi
