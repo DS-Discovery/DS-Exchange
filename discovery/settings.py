@@ -207,8 +207,8 @@ ACCOUNT_LOGOUT_ON_GET = True #url accounts/logout
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 
-SIGNUP_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/'
+SIGNUP_REDIRECT_URL = '/profile/login/callback'
+LOGIN_REDIRECT_URL = '/profile/login/callback'
 ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 
 # for login_required decorate
