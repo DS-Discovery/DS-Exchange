@@ -28,7 +28,8 @@ def id(obj):
 
 @register.filter
 def addclass(field, css):
-    return field.as_widget(attrs={"class":css})
+    old_css = field.field.widget.attrs.get("class", "")
+    return field.as_widget(attrs={"class": old_css + " " + css})
 
 
 @register.filter
