@@ -11,8 +11,12 @@
     <p><strong>Email: </strong> {{ context.email_address }}</p>
     <p><strong>SID: </strong> {{ context.student_id }}</p>
     <p><strong>Major:  </strong>{{ context.major }}</p>
-    <p><strong>Year: </strong> {{ context.year }}</p>
-    <p><strong>College:  </strong>{{ context.college }}</p>
+    {% with context.year as year %}
+        <p><strong>EGT: </strong> {{ context.egt_mapping|index:year }}</p>
+    {% endwith %}
+    {% with context.college as college %}
+        <p><strong>College:  </strong>{{ context.college_mapping|index:college }}</p>
+    {% endwith %}
     <p><strong>Resume: </strong><a href="{{ context.resume_link }}" targe="_blank" rel="noopener noreferrer">{{ context.resume_link }}</a></p>
 
 </div>

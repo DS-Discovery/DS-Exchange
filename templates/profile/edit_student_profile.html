@@ -39,8 +39,8 @@
     })
 
     // This inserts info about selecting skill levels
-    const skillLevelSpiel = "<p class='my-2'>Please enter you skill level in each of the technologies or techniques below.</p>";
-    $("select").first().parent().before(skillLevelSpiel);
+    const skillLevelSpiel = "<h6 class='my-2'>Please enter you skill level in each of the technologies or techniques below.</h6>";
+    $("select.skill-dropdown").first().parent().before(skillLevelSpiel);
 
     // This allows the student's skills to be preselected when editing their profile
     {% for skill in student.skills %}

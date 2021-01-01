@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from applications.models import Answer, Application
 from projects.models import Project, Question
@@ -16,15 +17,37 @@ def get_default_skills():
 
 
 class Student(models.Model):
-    # user = models.OneToOneField(User, on_delete=models.CASCADE)
-    college_choices = (
-        ('College Letters & Science','College Letters & Science'),
-        ('College of Engineering','College of Engineering'),
-        ('College of Chemistry', 'College of Chemistry'),
-        ('College of Environmental Design','College of Environmental Design'),
-        ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
-        ('Haas School of Business','Haas School of Business'),
-    )
+
+    class GraduationTerm(models.TextChoices):
+        SP21 = ("SP21", _("Spring 2021"))
+        FA21 = ("FA21", _("Fall 2021"))
+        SP22 = ("SP22", _("Spring 2022"))
+        FA22 = ("FA22", _("Fall 2022"))
+        SP23 = ("SP23", _("Spring 2023"))
+        FA23 = ("FA23", _("Fall 2023"))
+        SP24 = ("SP24", _("Spring 2024"))
+        FA24 = ("FA24", _("Fall 2024"))
+        SP25 = ("SP25", _("Spring 2025"))
+
+    class College(models.TextChoices):
+        LS = ("L&S", _("College of Letters & Sciences"))
+        COE = ("COE", _("College of Engineering"))
+        COC = ("COC", _("College of Chemistry"))
+        CED = ("CED", _("College of Environmental Design"))
+        CNR = ("CNR", _("Rausser College of Natural Resources"))
+        HAAS = ("HAAS", _("Haas School of Business"))
+
+    # college_choices = (
+    #     ('College Letters & Science','College Letters & Science'),
+    #     ('College of Engineering','College of Engineering'),
+    #     ('College of Chemistry', 'College of Chemistry'),
+    #     ('College of Environmental Design','College of Environmental Design'),
+    #     ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
+    #     ('Haas School of Business','Haas School of Business'),
+    # )
+
+    egt_mapping = {k: v for k, v in GraduationTerm.choices}
+    college_mapping = {k: v for k, v in College.choices}
 
     skill_levels_options = {
         "": "",
@@ -46,9 +69,9 @@ class Student(models.Model):
     last_name = models.CharField(max_length=100, null = True)
     # full_name = models.CharField(max_length=200)
     student_id = models.CharField(max_length=200)
-    college = models.CharField(max_length=200)
+    college = models.CharField(max_length=4, choices=College.choices)
     major = models.CharField(max_length=200)
-    year = models.CharField(max_length=100)
+    year = models.CharField(max_length=4, choices=GraduationTerm.choices)
     first_choice = models.CharField(max_length=1000, null=True, blank=True)
     second_choice = models.CharField(max_length=1000, null=True, blank=True)
     third_choice = models.CharField(max_length=1000, null=True, blank=True)

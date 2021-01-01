@@ -3,7 +3,7 @@ import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.forms import ModelForm, Textarea, TextInput, ChoiceField
+from django.forms import ChoiceField, ModelForm, Select, Textarea, TextInput
 from django.utils.translation import ugettext_lazy as _
 
 from allauth.account.forms import LoginForm
@@ -43,7 +43,7 @@ class StudentSignupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skills.items():
-            self.fields[s] = ChoiceField(choices=Student.skill_levels)
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, widget=Select(attrs={'class': 'skill-dropdown'}))
             self.fields[s].initial = self.instance.skills[s]
 
 
@@ -56,6 +56,7 @@ class EditStudentSignupForm(forms.ModelForm):
         fields = (
             'first_name',
             'last_name',
+            'student_id',
             'college',
             'major',
             'year',
@@ -66,25 +67,29 @@ class EditStudentSignupForm(forms.ModelForm):
 
         labels = {
             'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
+            'year': _('Expected Graduation Term:'),
+            # 'resume_link': 'Please provide a link to your resume.',
         }
 
         widgets = {
-            'general_question': Textarea(attrs={'class': 'form-control'})
+            'general_question': Textarea(attrs={'class': 'form-control'}),
         }
+
+    resume_link = forms.URLField(label="Please provide a link to your resume.")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skills.items():
-            self.fields[s] = ChoiceField(choices=Student.skill_levels)
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, widget=Select(attrs={'class': 'skill-dropdown'}))
             self.fields[s].initial = self.instance.skills[s]
 
 
-class EditPartnerSignupForm(forms.ModelForm):
+# class EditPartnerSignupForm(forms.ModelForm):
 
-    class Meta:
-        model = Partner
-        fields = (
-            'first_name',
-            'last_name',
-        )
+#     class Meta:
+#         model = Partner
+#         fields = (
+#             'first_name',
+#             'last_name',
+#         )
 

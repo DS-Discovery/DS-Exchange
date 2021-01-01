@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from students.models import Student
 from projects.models import Partner, PartnerProjectInfo
 
-from .forms import EditPartnerSignupForm, EditStudentSignupForm, StudentSignupForm
+from .forms import EditStudentSignupForm, StudentSignupForm
 
 
 @login_required
@@ -113,7 +113,7 @@ def view_student_profile(request):
         return redirect("/profile/signup")
 
     student = Student.objects.get(email_address = email)
-    context = student.__dict__
+    context = student#.__dict__
 
     return render(request, 'profile/student_profile.html', {'context' : context, "skills_tups": student.skills.items()})
 
