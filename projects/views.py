@@ -77,8 +77,15 @@ def projects_json(request):
     if email is None:
         return redirect('/profile/login')
 
-    projects = [p.to_dict() for p in  Project.objects.all()]
-    return JsonResponse(projects)
+    projects = []
+    for p in Project.objects.all():
+        d = p.to_dict()
+        d["num_applicants"] = Application.objects.filter(project=p).count()
+        projects.append(d)
+
+    projects = sorted(projects, key=lambda d: d["project_name"])
+
+    return JsonResponse({"projects": projects})
 
 
 # def detail(request, project_name):

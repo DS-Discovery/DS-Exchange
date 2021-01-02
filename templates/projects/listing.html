@@ -3,7 +3,7 @@
 
 {% block extra_head %}
 
-{% static 'js/project_listing.js' %}
+<script src="{% static 'js/project_listing.js' %}"></script>
 
 {% endblock %}
 
@@ -38,19 +38,19 @@
 
 </form>
 
-<script>
+<!-- <script>
     // scrolls to the active project
     $(window).ready(() => {
         $("#project-list button.active").get(0).scrollIntoView();
     });
-</script>
+</script> -->
 
 {% endblock %}
 
 
 {% block second_column %}
 
-<div class="mx-2 my-3">
+<div class="mx-2 my-3" id="description">
 
     {% if selected_project.project_name %}
         <!-- <h3>Project Info: </h3> -->
@@ -100,68 +100,67 @@
 
 <hr>
 
-{% if selected_project %}
+<div id="project-sidebar">
 
-    <!-- <div class="flex-row my-1">
-        <h5 class="text-center">Category</h5>
-        
-    </div>
+    {% if selected_project %}
 
-    <hr> -->
-
-    <!-- <div class="flex-row my-1">
-        <h5 class="text-center">Project Status </h5>
-        
-        {% if labels %}
-            <h4>
-                <ul style="list-style-type:none;">
-                    <li><span class="badge badge-pill badge-info">NA</span></li>
-                </ul>
-            </h4>
-        {% endif %}
-    </div>
-
-    <hr> -->
-
-    <div class="flex-row my-1">
-        <h5 class="text-center">Project Info</h5>
-
-        <div class="d-flex flex-row flex-wrap align-items-start mb-3">
-            {% for label in labels %}
-                <span class="badge badge-pill badge-info mr-1 mt-1">{{ label }}</span>
-            {% endfor %}
+        <!-- <div class="flex-row my-1">
+            <h5 class="text-center">Category</h5>
+            
         </div>
 
+        <hr> -->
 
-        <!-- <p>Partner First Name: {{ selected_partner.first_name }}</p>
-        <p>Partner Last Name: {{ selected_partner.last_name }}</p>
-        <p>Partner Email: {{ selected_partner.email_address }}</p>
-        <p>Partner Organization: {{ selected_project.organization }}</p>
-        <p>Project Category: {{ selected_project.project_category }}</p> 
-        <p>Student Number: {{ selected_project.student_num }}</p>-->
+        <!-- <div class="flex-row my-1">
+            <h5 class="text-center">Project Status </h5>
+            
+            {% if labels %}
+                <h4>
+                    <ul style="list-style-type:none;">
+                        <li><span class="badge badge-pill badge-info">NA</span></li>
+                    </ul>
+                </h4>
+            {% endif %}
+        </div>
 
-        <p>Number of Students: <span class="text-muted">{{ selected_project.student_num }}</span></p>
-        <p>Applications Received: <span class="text-muted">{{ num_applicants}}</span></p>
-        
-        <!-- <span class="badge badge-pill badge-info">{{ num_applicants }}</span> -->
-    </div>
+        <hr> -->
 
-    <hr>
+        <div class="flex-row my-1">
+            <h5 class="text-center">Project Info</h5>
 
-    <div class="d-flex flex-column my-1">
-
-        <h5 class="text-center">Action Items</h5>
-    
-        <div class="my-1">
-    
-            <div class="d-flex flex-row justify-content-center mb-2">
-                <a href="{{ selected_project.project_name }}/apply"><button type="button" class="btn btn-outline-info">Apply</button></a>
+            <div class="d-flex flex-row flex-wrap align-items-start mb-3">
+                {% for label in labels %}
+                    <span class="badge badge-pill badge-info mr-1 mt-1">{{ label }}</span>
+                {% endfor %}
             </div>
 
-        </div>
-    
-    </div>
+            <p>Number of Students: <span class="text-muted">{{ selected_project.student_num }}</span></p>
+            <p>Applications Received: <span class="text-muted">{{ num_applicants}}</span></p>
 
-{% endif %}
+        </div>
+
+        <hr>
+
+        <div class="d-flex flex-column my-1">
+
+            <h5 class="text-center">Action Items</h5>
+        
+            <div class="my-1">
+        
+                <div class="d-flex flex-row justify-content-center mb-2">
+                    <a href="{{ selected_project.project_name }}/apply"><button type="button" class="btn btn-outline-info">Apply</button></a>
+                </div>
+
+            </div>
+        
+        </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+    $(document).ready(loadProjects);
+</script>
 
 {% endblock %}
