@@ -1,5 +1,7 @@
 const descriptionQuery = "div#description";
 const projectInfoQuery = "div#project-sidebar"
+const categoryFilterQuery = "div#category-filter";
+const categoryFilterSelectId = "category-filter-select";
 var projects;
 
 function loadProjects() {
@@ -8,14 +10,53 @@ function loadProjects() {
     }).done((data) => {
         console.log(data);
         projects = data.projects;
-        listProjects();
+        listProjects(projects);
+        loadCategoryFilter();
     }).fail(() => {
         alert("Could not load projects. Please refresh the page to continue.")
     });
     return jqxhr;
 }
 
-function listProjects() {
+function loadCategoryFilter() {
+    var categories = new Set();
+    for (i = 0; i < projects.length; i++) {
+        for (j = 0; j < projects[i].project_category.length; j++) {
+            categories.add(projects[i].project_category[j]);
+        }
+    }
+    categories = Array.from(categories).sort();
+    var filterHTML = `
+        <select name="category_wanted" class="custom-select" id="${ categoryFilterSelectId }" onChange="filterProjects()">
+            <option class="dropdown-item" value=""></option>
+    `;
+    for (i = 0; i < categories.length; i++) {
+        var category = categories[i];
+        filterHTML += `<option class="dropdown-item" value="${ category }">${ category }</option>\n`;
+    }
+    filterHTML += `
+        </select>
+    `;
+    $(categoryFilterQuery).append(filterHTML);
+}
+
+function filterProjects() {
+    var category = $(`#${ categoryFilterSelectId }`).val();
+    if (category === "") {
+        return listProjects(projects);
+    }
+    console.log(category);
+    var filteredProjects = [];
+    for (i = 0; i < projects.length; i++) {
+        if (projects[i].project_category.includes(category)) {
+            filteredProjects.push(projects[i]);
+        }
+    }
+    listProjects(filteredProjects);
+}
+
+function listProjects(projects) {
+    $("div#project-list").empty();
     for (i = 0; i < projects.length; i++) {
         var project =  projects[i];
         console.log(project);
