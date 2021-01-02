@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, SuspiciousOperation
 from django.shortcuts import Http404, redirect, render
 
 from applications.models import Answer, Application
@@ -14,7 +13,7 @@ def get_applications(request):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        return HttpResponseForbidden("User is not authenticated")
+        raise PermissionDenied("User is not authenticated")
 
     if Student.objects.filter(email_address = email).exists():
         return list_student_applications(request)
@@ -31,7 +30,7 @@ def list_student_applications(request):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        return HttpResponseForbidden("User is not authenticated")
+        raise PermissionDenied("User is not authenticated")
 
     student = Student.objects.get(email_address = email)
 
@@ -198,6 +197,9 @@ def list_project_applicants(request):
 
 @login_required
 def update_application_status(request):
+    if request.method == "GET":
+        raise SuspiciousOperation("This is a POST-only route.")
+
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -207,9 +209,6 @@ def update_application_status(request):
     except ObjectDoesNotExist:
         messages.info(request, "You do not have permission to access this page.")
         return redirect("/")
-
-    if request.method == "GET":
-        return HttpResponseBadRequest("This is a POST-only route.")
 
     print(request.POST)
 

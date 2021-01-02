@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseForbidden, JsonResponse
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
 
@@ -261,7 +261,7 @@ def apply(request, project_name):
         print(questions)
         return render(request, 'projects/application.html', {'questions': questions, 'project' : project, 'form' : form})
     else:
-        return HttpResponseForbidden("User is not logged in.")
+        raise PermissionDenied("User is not logged in.")
 
 
 # def results(request, question_id):
