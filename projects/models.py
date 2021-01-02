@@ -82,6 +82,7 @@ class Question(models.Model):
 
     def to_dict(self):
         return {
+            "id": self.id,
             "project": self.project.id,
             "question_text": self.question_text,
             "question_type": self.question_type,

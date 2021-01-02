@@ -4,9 +4,9 @@ const projectFilterSelectQuery  = projectFilterQuery + " select";
 const skillFilterQuery = "div#skill-filter";
 const skillFilterSelectQuery = skillFilterQuery + " select#skill-filter-select";
 const levelFilterSelectQuery = skillFilterQuery + " select#level-filter-select";
+const applicationQuestionsQuery = "div#application-questions";
 const appButtonQuery = "div#app-list";
 var appInfo;
-// var filteredApplications;
 
 function loadApplications() {
     appInfo = JSON.parse($(appJSONQuery).text());
@@ -42,6 +42,7 @@ function loadProjectsFilter() {
 
 function renderApplicantList() {
     $(appButtonQuery).empty()
+    clearRenderedApplication();
 
     var skill = $(skillFilterSelectQuery).val();
     var filterSkills = false;
@@ -53,8 +54,7 @@ function renderApplicantList() {
 
     const pId = $(projectFilterSelectQuery).val();
     const project = appInfo.projects[pId];
-    
-    // filteredApplications = appInfo.applications.filter(app => app.project == pId);
+
     for (appId in appInfo.applications) {
         var app = appInfo.applications[appId];
         var student = appInfo.students[app.student];
@@ -66,6 +66,7 @@ function renderApplicantList() {
                     name="selected_applicant" 
                     value="${ appId }"
                     onclick="renderApplication(${ appId })"
+                    id="app-${ appId }"
                 >${ appInfo.students[app.student].first_name } ${ appInfo.students[app.student].last_name }</button>
             `);
         }
@@ -73,7 +74,178 @@ function renderApplicantList() {
 }
 
 function renderApplication(appId)  {
+    $(appButtonQuery + " button.active").removeClass("active");
+    $(`#app-${ appId }`).addClass("active");
 
+    var application = appInfo.applications[appId];
+    var questions = appInfo.projects[application.project].questions;
+    var answers = application.answers;
+    var student = appInfo.students[application.student];
+
+    var appHTML = "";
+
+    for (i = 0; i < questions.length; i++) {
+        var question = questions[i];
+        var answer = "NUH-UH";
+        for (j = 0; j < answers.length; j++) {
+            if (answers[j].question == question.id) {
+                answer = answers[j];
+            }
+        };
+
+        appHTML += `
+            <div class="application-question m-3">
+                <h6>${ question.question_text }</h6>
+        `;
+
+        if (answer === "NUH-UH") {
+            appHTML += `
+                    <div class="alert alert-danger">Student submitted no response for this question.</div>
+                </div>
+            `;
+            continue;
+        }
+        
+        if (question.question_type === "text") {
+            appHTML += `
+                <textarea 
+                    class="form-group form-control" 
+                    placeholder="Your response here." 
+                    style="width: 80%;"
+                    required
+                    disabled
+                >${ answer.answer_text }</textarea>
+            `;
+        } else if (question.question_type === "mc") {
+            var options = question.question_data.split(";");
+            for (j = 0; j < options.length; j++) {
+                var radio = options[j];
+                appHTML += `
+                    <input 
+                        type="radio" 
+                        value ="${ radio }" 
+                        required 
+                        disabled 
+                `;
+                if (radio === answer.answer_text) {
+                    appHTML += `
+                        checked
+                    `;
+                }
+                appHTML += `
+                    > ${ radio }<br>
+                `;
+            }
+        } else if (question.question_type === "dropdown") {
+            var options = question.question_data.split(";");
+            appHTML += `
+                <select class="custom-select" required disabled>
+                    <option value=""></option>
+            `
+            for (j = 0; j < options.length; j++) {
+                var radio = options[j];
+                appHTML += `
+                    <option value="${ radio }"
+                `;
+                if (radio === answer.answer_text) {
+                    appHTML += `
+                        selected
+                    `;
+                }
+                appHTML += `
+                    >${ radio }</option>
+                `;
+            }
+            appHTML += `
+                </select>
+            `;
+        } else if (question.question_type === "checkbox") {
+            var options = question.question_data.split(";");
+            for (j = 0; j < options.length; j++) {
+                var radio = options[j];
+                appHTML += `
+                    <input 
+                        type="checkbox" 
+                        value ="${ radio }" 
+                        required 
+                        disabled 
+                `;
+                if (answer.answer_text.split(";").includes(radio)) {
+                    appHTML += `
+                        checked
+                    `;
+                }
+                appHTML += `
+                    > ${ radio }<br>
+                `;
+            }
+        } else if (question.question_type === "multiselect") {
+            var options = question.question_data.split(";");
+            appHTML += `
+                <select class="custom-select" multiple required disabled>
+            `
+            for (j = 0; j < options.length; j++) {
+                var radio = options[j];
+                appHTML += `
+                    <option value="${ radio }"
+                `;
+                if (answer.answer_text.split(";").includes(radio)) {
+                    appHTML += `
+                        selected
+                    `;
+                }
+                appHTML += `
+                    >${ radio }</option>
+                `;
+            }
+            appHTML += `
+                </select>
+            `;
+        } else if (question.question_type === "range") {
+            var options = question.question_data.split(";");
+            appHTML += `
+                <script>
+                    function updateSlider(i, slideAmount) {
+                        slideAmount = parseInt(slideAmount);  // to prevent an syntax error below due to template syntax
+                        var sliderDiv = document.getElementById("sliderAmount-" + i);
+                        sliderDiv.innerHTML = slideAmount;
+                    };
+                </script>
+            
+                <input 
+                    type="range" min="${ options[0] }" 
+                    max="${ options[1] }" step="1" 
+                    value="${ answer.answer_text }" 
+                    onchange="updateSlider(${i}, this.value)"
+                    disabled
+                >
+                <span id="sliderAmount-${ i }"></span>
+                <script>updateSlider(${ i }, "${ answer.answer_text }")</script>
+            `;
+        }
+
+        appHTML += `
+            </div>
+        `;
+    }
+
+    appHTML = `
+        <h5>General Interest Statement</h5>
+
+        <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
+
+        <p>${ student.general_question }</p>
+
+        <h5>Application Questions</h5>
+
+        ${ appHTML }
+    `
+
+    $(applicationQuestionsQuery).empty().append(appHTML);
+}
+
+function clearRenderedApplication() {
+    $(applicationQuestionsQuery).empty().append("<p>Please select an applicant on the left.</p>");
 }
 
 function loadSkillFilter() {
