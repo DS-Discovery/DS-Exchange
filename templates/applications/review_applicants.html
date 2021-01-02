@@ -1,5 +1,6 @@
 {% extends 'three_column_view.html' %}
 {% load helperfuncs %}
+{% load static %}
 
 <!-- TODO -->
 
@@ -11,9 +12,20 @@
     </ul>
 </div>
 
+{% block extra_head %}
+
+<script src="{% static 'js/applicant_listing.js' %}"></script>
+
+{% endblock %}
+
+
 {% block first_column %}
 
-<form method="get" novalidate>
+<div class="list-group list-group-flush" id="app-list">
+
+</div>
+
+<!-- <form method="get" novalidate>
     {% csrf_token %}
 
     <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
@@ -31,19 +43,19 @@
                     class="list-group-item list-group-item-action {% if applications|index:i|id == curr_app|id %} active {% endif %}" 
                     name="selected_applicant" 
                     value="{{ applications|index:i|id }}"
-                ><!-- Applicant {{ i|add:1 }}</button> -->{{ app.student.name }}</button>
+                >{{ app.student.name }}</button>
             {% endwith %}
         {% endfor %}
 
     </div>
-</form>
+</form> -->
 
-<script>
+<!-- <script>
     // scrolls to the active application
     $(window).ready(() => {
         $("#app-list button.active").get(0).scrollIntoView();
     });
-</script>
+</script> -->
 
 {% endblock %}
 
@@ -80,23 +92,19 @@
 <div class="my-1 mt-2">
     <h5 class="text-center">Project</h5>
 
-    <form method="GET" novalidate>
+    <div id="project-filter">
 
-        {% csrf_token %}
-        
-        <select name="project_wanted" class="custom-select mb-2" onChange="form.submit();">
-            {% for project in projects %}
-                    <option class="dropdown-item" value="{{ project.id }}" {% if project_wanted == project %} selected {% endif %}>{{ project.project_name }}</option>
-            {% endfor %}
-        </select>
-
-    </form>
+    </div>
 
     <hr>
     
     <h5 class="text-center">Skill Filters</h5>
 
-    <form method="GET" novalidate>
+    <div id="skill-filter">
+
+    </div>
+
+    <!-- <form method="GET" novalidate>
 
         {% csrf_token %}
 
@@ -116,7 +124,7 @@
             </select>
         {% endif %}
 
-    </form>
+    </form> -->
 </div>
 
 <hr>
@@ -190,5 +198,11 @@
     </script>
 
 {% endif %}
+
+{{ applications_json|json_script:"applications-json" }}
+
+<script>
+    $(document).ready(loadApplications);
+</script>
 
 {% endblock %}

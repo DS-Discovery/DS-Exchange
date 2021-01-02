@@ -8,6 +8,10 @@ from projects.models import Partner, Project
 from students.models import Student
 
 
+def model_list_to_dict(l):
+    return {m.id: m.to_dict() for m in l}
+
+
 @login_required
 def get_applications(request):
     if request.user.is_authenticated:
@@ -110,87 +114,94 @@ def list_project_applicants(request):
     partner = Partner.objects.get(email_address = email)
 
     projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
-    project_wanted = request.GET.get("project_wanted")
-    if project_wanted is not None:
-        project_wanted = Project.objects.get(id=project_wanted)
-        if project_wanted not in projects:
-            messages.info("You do not have permission to view this project.")
-            return redirect("/applications")
-    else:
-        if len(projects) == 0:
-            messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
-            return redirect("/")
-        project_wanted = projects[0]
+    # project_wanted = request.GET.get("project_wanted")
+    # if project_wanted is not None:
+    #     project_wanted = Project.objects.get(id=project_wanted)
+    #     if project_wanted not in projects:
+    #         messages.info("You do not have permission to view this project.")
+    #         return redirect("/applications")
+    # else:
+    if len(projects) == 0:
+        messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
+        return redirect("/")
+        # project_wanted = projects[0]
+
+    applications = Application.objects.filter(project__in=projects)
+    students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
+    print(applications, students, projects)
+
+    projects, applications, students = model_list_to_dict(projects), model_list_to_dict(applications), model_list_to_dict(students)
 
     skills = list(Student.default_skills.keys())
     skills.insert(0, "None")
     levels = list(Student.skill_levels_options.values())
-    levels = levels[1:]
 
-    skill_wanted = "None"
-    level_wanted = "No experience"
+    # skill_wanted = "None"
+    # level_wanted = "No experience"
     
-    if request.GET.get("skill_wanted"):
-        skill_wanted = request.GET.get("skill_wanted")
+    # if request.GET.get("skill_wanted"):
+    #     skill_wanted = request.GET.get("skill_wanted")
 
-    if request.GET.get("level_wanted"):
-        level_wanted = request.GET.get("level_wanted")
+    # if request.GET.get("level_wanted"):
+    #     level_wanted = request.GET.get("level_wanted")
 
-    selected_applicant = None
-    if request.GET.get("selected_applicant"):
-        selected_applicant = request.GET.get("selected_applicant")
+    # selected_applicant = None
+    # if request.GET.get("selected_applicant"):
+    #     selected_applicant = request.GET.get("selected_applicant")
 
-    # #project = Project.objects.filter(id=PROJECT_ID)
-    # # projects
-    # # TODO: this needs to handle partners w/ multiple projects
-    # for ppi in partner.partnerprojectinfo_set.all():
-    #     project = ppi.project
-
-    # project = Project.objects.get(project_name=project_name)
-
-    if skill_wanted == "None":
-        applications = Application.objects.filter(project_id=project_wanted.id).order_by("created_at")
+    # if skill_wanted == "None":
+    #     applications = Application.objects.filter(project_id=project_wanted.id).order_by("created_at")
     
-    else:
-        print("skill_wanted:", skill_wanted)
-        print("level_wanted:", level_wanted)
+    # else:
+    #     print("skill_wanted:", skill_wanted)
+    #     print("level_wanted:", level_wanted)
 
-        for short in Student.skill_levels_options:
-            if Student.skill_levels_options[short] == level_wanted:
-                print(short)
-                applications = Application.objects.filter(project_id=project_wanted.id).filter(
-                    student___skills__contains={skill_wanted: short}
-                )
-                break
+    #     for short in Student.skill_levels_options:
+    #         if Student.skill_levels_options[short] == level_wanted:
+    #             print(short)
+    #             applications = Application.objects.filter(project_id=project_wanted.id).filter(
+    #                 student___skills__contains={skill_wanted: short}
+    #             )
+    #             break
 
-    if not applications or selected_applicant is None:
-        student = None
-        curr_app = None
+    # if not applications or selected_applicant is None:
+    #     student = None
+    #     curr_app = None
     
-    else:
-        student = Application.objects.get(id=selected_applicant).student
-        curr_app = Application.objects.get(id=selected_applicant)
-        print("curr_app:", curr_app)
+    # else:
+    #     student = Application.objects.get(id=selected_applicant).student
+    #     curr_app = Application.objects.get(id=selected_applicant)
+    #     print("curr_app:", curr_app)
 
-        answers = Answer.objects.filter(student=student, application=curr_app)
+    #     answers = Answer.objects.filter(student=student, application=curr_app)
+
+    # context = {
+    #     "num_apps": range(len(applications)),
+    #     "curr_app": curr_app,
+    #     "curr_student": student,
+    #     "skills": skills,
+    #     "skill_wanted": skill_wanted,
+    #     "levels": levels,
+    #     "level_wanted": level_wanted,
+    #     "applications": applications,
+    #     "projects": projects,
+    #     "project_wanted": project_wanted,
+    # }
+
+    # if curr_app is not None:
+    #     context.update({
+    #         "questions_and_answers": zip([a.question for a in answers], answers),
+    #     })
 
     context = {
-        "num_apps": range(len(applications)),
-        "curr_app": curr_app,
-        "curr_student": student,
-        "skills": skills,
-        "skill_wanted": skill_wanted,
-        "levels": levels,
-        "level_wanted": level_wanted,
-        "applications": applications,
-        "projects": projects,
-        "project_wanted": project_wanted,
+        "applications_json": {
+            "projects": projects,
+            "applications": applications,
+            "students": students,
+            "skills": skills,
+            "levels": levels,
+        }
     }
-
-    if curr_app is not None:
-        context.update({
-            "questions_and_answers": zip([a.question for a in answers], answers),
-        })
 
     return render(request, 'applications/review_applicants.html', context)
 

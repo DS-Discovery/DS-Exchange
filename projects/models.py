@@ -43,6 +43,7 @@ class Project(models.Model):
             "project_category": self.project_category.split(";"),
             "student_num": self.student_num,
             "description": self.description,
+            "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
         }
 
 
@@ -52,7 +53,6 @@ class Partner(models.Model):
     last_name = models.CharField(max_length=100)
     
     projects = models.ManyToManyField(Project)
-
 
     def __str__(self):
         return self.email_address
@@ -79,6 +79,14 @@ class Question(models.Model):
     question_text = models.CharField(max_length=200)
     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
     question_data =  models.CharField(max_length=1000, null=True, blank=True)
+
+    def to_dict(self):
+        return {
+            "project": self.project.id,
+            "question_text": self.question_text,
+            "question_type": self.question_type,
+            "question_data": self.question_data,
+        }
 
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
