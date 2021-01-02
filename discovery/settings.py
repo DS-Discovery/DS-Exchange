@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import yaml
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.environ else 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
+    with open(BASE_DIR / 'secrets.yml') as f:
+        addl_config = yaml.full_load(f.read())
+    
+    assert isinstance(addl_config, dict), f"Additional environment variables invalid: {addl_config}"
+    os.environ.update(addl_config)
 
 if not DEBUG:
     LOGGING = {
@@ -49,6 +57,7 @@ if not DEBUG:
             }
         }
     }
+
 
 ALLOWED_HOSTS = [
     # 'discovery-application.azurewebsites.net', # old host
@@ -169,22 +178,25 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# """
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 WHITENOISE_MANIFEST_STRICT = True
 WHITENOISE_USE_FINDERS = True
 
 STATICFILES_DIRS = [
-    # STATIC_ROOT,
     BASE_DIR / 'static',
-    # BASE_DIR / 'static' / 'css',
-    # os.path.join(BASE_DIR, 'static'),
-    # os.path.join(BASE_DIR, 'boot'),
 ]
-# """
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ["EMAIL_USER"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_PASS"]
+
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
