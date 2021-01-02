@@ -219,23 +219,20 @@ def update_application_status(request):
     try:
         partner = Partner.objects.get(email_address = email)
     except ObjectDoesNotExist:
-        messages.info(request, "You do not have permission to access this page.")
-        return redirect("/")
+        return HttpResponse("You do not have permission to perform this action.", status=403)
 
     application_id = request.POST.get("application_id")
     new_status = request.POST.get("new_status")
-    print(application_id, new_status)
     if application_id is None or new_status not in [t[0] for t in Application.ApplicationStatus.choices]:
-        messages.info(request, "Improperly formed request. Please try again.")
-        print("here")
-        return redirect("/applications")
+        return HttpResponse("Improperly formed request. Please try again or contact ds-discovery@berkeley.edu", status=400)
 
     application = Application.objects.get(id=application_id)
 
     partner_projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
     if application.project not in partner_projects:
-        messages.info(request, "You do not have permission to update this application.")
-        return redirect("/applications")
+        # messages.info(request, "You do not have permission to update this application.")
+        # return redirect("/applications")
+        return HttpResponse("You do not have permission to perform this action.", status=403)
 
     application.status = new_status
     application.save()
