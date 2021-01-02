@@ -5,6 +5,7 @@ const skillFilterQuery = "div#skill-filter";
 const skillFilterSelectQuery = skillFilterQuery + " select#skill-filter-select";
 const levelFilterSelectQuery = skillFilterQuery + " select#level-filter-select";
 const applicationQuestionsQuery = "div#application-questions";
+const applicationSidebarQuery = "div#app-sidebar";
 const appButtonQuery = "div#app-list";
 var appInfo;
 
@@ -242,10 +243,12 @@ function renderApplication(appId)  {
     `
 
     $(applicationQuestionsQuery).empty().append(appHTML);
+    loadApplicationSidebar(appId);
 }
 
 function clearRenderedApplication() {
     $(applicationQuestionsQuery).empty().append("<p>Please select an applicant on the left.</p>");
+    $(applicationSidebarQuery).empty();
 }
 
 function loadSkillFilter() {
@@ -292,4 +295,87 @@ function filterSkills()  {
 function clearSkillFilter() {
     $(skillFilterSelectQuery).val("None");
     filterSkills();
+}
+
+function loadApplicationSidebar(appId) {
+    var application = appInfo.applications[appId];
+    var student = appInfo.students[application.student];
+    sidebarHTML = `
+        <div class="d-flex flex-column my-1">
+            <h5 class="text-center">Basic Information</h5>
+            
+            <div class="d-flex flex-column my-1">
+                <p>Name: <span class="text-muted">${ student.first_name } ${ student.last_name }</span></p>
+                <p>Email: <span class="text-muted">${ student.email_address }</span></p>
+                <p>Major: <span class="text-muted">${ student.major }</span></p>
+                <p>Graduation Term: <span class="text-muted">${ student.year }</span></p>
+            </div>
+            
+            <div class="d-flex flex-column align-items-center">
+                <a class="btn btn-outline-info" href="${ student.resume_link }" role="button" target="_blank" rel="noopener noreferrer">Resume</a>
+            </div>
+            
+        </div>
+
+        <hr>
+
+        <div class="d-flex flex-column my-1">
+
+            <h5 class="text-center">Action Items</h5>
+
+            <div class="my-1">
+
+    `;
+    for (short in application.app_status_choices) {
+        if (short !== "SUB") {
+            sidebarHTML += `
+                <div class="d-flex flex-row justify-content-center mb-2">
+                    <button 
+                        type="button" 
+                        class="btn 
+            `;
+            if (short === application.status) {
+                sidebarHTML += `btn-info disabled" disabled`;
+             } else {
+                 sidebarHTML += `btn-outline-info"`;
+             }
+             sidebarHTML += `
+                        id="btn-${ short }"
+                        onclick="updateStatusAndSubmit(${ appId }, '${ short }')"
+                    >${ application.app_status_choices[short] }</button>
+                </div>
+            `;
+        }
+    }
+
+    sidebarHTML += `
+            </div>
+        </div>
+    `;
+
+    $(applicationSidebarQuery).empty().append(sidebarHTML);
+}
+
+function updateStatusAndSubmit(appId, newStatus) {
+    const csrftoken = getCookie('csrftoken');
+    $.ajax({
+        url: `/applications/status`,
+        data: {
+            application_id: appId,
+            new_status: newStatus,
+        },
+        type: "POST",
+        mode: "same-origin",
+        beforeSend: (xhr) => xhr.setRequestHeader('X-CSRFToken', csrftoken),
+        success: (data) => {
+            $(applicationSidebarQuery + " button.disabled")
+                .removeClass("disabled")
+                .removeClass("btn-info")
+                .addClass("btn-outline-info")
+                .attr("disabled", false);
+            $(`#btn-${ newStatus }`).addClass("disabled btn-info").removeClass("btn-outline-info").attr("disabled", true);
+            console.log(data);
+            sendAlert(data, 5000);
+        }
+    });
 }

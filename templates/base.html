@@ -47,14 +47,16 @@
 
     <div class="{% block container_class %}container-fluid{% endblock %} mt-3">
         
-        {% if messages %}
-        <!-- {{ messages}} -->
-            {% for message in messages %}
+        <div class="container" id="messages">
+            {% if messages %}
+            <!-- {{ messages}} -->
+                {% for message in messages %}
 
-                    <div class="alert alert-info my-2">{{ message }}</div>
+                        <div class="alert alert-info my-2">{{ message }}</div>
 
-            {% endfor %}
-        {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
 
         {% block additional_nav %}
             {% block content %}

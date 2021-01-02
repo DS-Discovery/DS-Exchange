@@ -39,8 +39,9 @@ class Application(models.Model):
             "project": self.project.id,
             "created_at": str(self.created_at),
             "rank": self.rank,
-            "status": self.app_status_mapping[self.status],
+            "status": self.status,
             "answers": [a.to_dict() for a in Answer.objects.filter(application=self)],
+            "app_status_choices": self.app_status_choices,
         }
 
     def __str__(self):

@@ -61,75 +61,11 @@
 
 <hr>
 
-{% if curr_app is not None %}
+<div class="d-flex flex-column my-1" id="app-sidebar">
+    
+</div>
 
-    <div class="d-flex flex-column my-1">
-        <h5 class="text-center">Basic Information</h5>
-        
-        <div class="d-flex flex-column my-1">
-            <p>Name: <span class="text-muted">{{curr_student.first_name}} {{curr_student.last_name}}</span></p>
-            <p>Email: <span class="text-muted">{{curr_student.email_address}}</span></p>
-            <p>Major: <span class="text-muted">{{curr_student.major}}</span></p>
-            <p>Graduation Year: <span class="text-muted">{{curr_student.year}}</span></p>
-        </div>
-        
-        <div class="d-flex flex-column align-items-center">
-            <a class="btn btn-outline-info" href="{{ curr_student.resume_link }}" role="button" target="_blank" rel="noopener noreferrer">Resume</a>
-        </div>
-        
-    </div>
-
-    <hr>
-
-    <div class="d-flex flex-column my-1">
-
-        <h5 class="text-center">Action Items</h5>
-
-        <div class="my-1">
-
-            <form action="status" method="POST" id="new-status-form">
-                {% csrf_token %}
-
-                <input type="text" name="project_wanted" value="{{ project_wanted.id }}" hidden>
-
-                <input type="text" hidden name="application_id" value="{{ curr_app.id }}">
-
-                <input type="text" hidden name="new_status" value="{{ curr_app.status }}" id="new-status">
-
-                <input type="text" name="skill_wanted" value="{{ skill_wanted }}" hidden>
-
-                <input type="text" name="level_wanted" value="{{ level_wanted }}" hidden>
-
-                {% for short in curr_app.app_status_choices %}
-                    {% if short != "SUB" %}
-                        <div class="d-flex flex-row justify-content-center mb-2">
-                            <button 
-                                type="button" 
-                                class="btn {% if short == curr_app.status %} btn-info {% else %} btn-outline-info {% endif %}" 
-                                id="btn-{{ short }}"
-                                {% if short == curr_app.status %} disabled {% endif %}
-                                onclick="updateStatusAndSubmit('{{ short }}')"
-                            >{{ curr_app.app_status_choices|index:short }}</button>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <script>
-        function updateStatusAndSubmit(newStatus) {
-            if (!$("#btn-" + newStatus).prop("disabled")) {
-                $("#new-status").val(newStatus);
-                $("#new-status-form").submit();
-            }
-        }
-    </script>
-
-{% endif %}
+{% csrf_token %}
 
 {{ applications_json|json_script:"applications-json" }}
 
