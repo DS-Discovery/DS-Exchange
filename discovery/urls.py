@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
 
-from .views import status_400, status_403, status_404
+from .views import status_400, status_403, status_404, status_500
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name="home.html")),
@@ -33,3 +33,4 @@ urlpatterns = [
 handler400 = status_400 #'discovery.views.status_403'
 handler403 = status_403 #'discovery.views.status_403'
 handler404 = status_404 # 'discovery.views.status_404'
+handler500 = status_500
