@@ -1,4 +1,12 @@
 {% extends 'three_column_view.html' %}
+{% load static %}
+
+{% block extra_head %}
+
+{% static 'js/project_listing.js' %}
+
+{% endblock %}
+
 
 {% block first_column %}
 
@@ -12,12 +20,12 @@
                 <!-- <script>
                     var selected_category = document.getElementById("ddlViewBy").value;
                 </script> -->
-                <button 
+                <!-- <button 
                     type="submit" 
                     class="list-group-item list-group-item-action {% if selected_project.project_name == question.project_name %} active {% endif %}" 
                     name="project_wanted" 
                     value="{{question.project_name}}"
-                >{{ question.project_name }}</button>
+                >{{ question.project_name }}</button> -->
             {% endfor %}
         {% else %}
             <p>No projects are available.</p>

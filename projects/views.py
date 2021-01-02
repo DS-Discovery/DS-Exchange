@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
 
@@ -66,6 +66,19 @@ def list_projects(request):
             context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
 
     return render(request, 'projects/listing.html', context)
+
+
+@login_required
+def projects_json(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
+    if email is None:
+        return redirect('/profile/login')
+
+    projects = [p.to_dict() for p in  Project.objects.all()]
+    return JsonResponse(projects)
 
 
 # def detail(request, project_name):

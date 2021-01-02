@@ -13,6 +13,9 @@
     <!-- custom static files -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}" />
     <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_head %}
+    {% endblock %}
 </head>
 <body>
 

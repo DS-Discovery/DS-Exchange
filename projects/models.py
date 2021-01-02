@@ -21,6 +21,8 @@ class Semester(models.TextChoices):
 
 class Project(models.Model):
 
+    sem_mapping = {k: v for k, v in Semester.choices}
+
     project_name = models.CharField(max_length=200)
     organization = models.CharField(max_length=100)
     # semester = models.CharField(max_length=100)
@@ -29,8 +31,19 @@ class Project(models.Model):
     project_category = models.CharField(max_length=100)
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
+    
     def __str__(self):
         return self.project_name
+
+    def to_dict(self):
+        return {
+            "project_name": self.project_name,
+            "organization": self.organization,
+            "semester": self.sem_mapping[self.semester],
+            "project_category": self.project_category.split(";"),
+            "student_num": self.student_num,
+            "description": self.description,
+        }
 
 
 class Partner(models.Model):
