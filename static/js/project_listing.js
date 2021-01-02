@@ -1,21 +1,26 @@
+const projectJSONQuery = "script#projects-json";
 const descriptionQuery = "div#description";
 const projectInfoQuery = "div#project-sidebar"
 const categoryFilterQuery = "div#category-filter";
 const categoryFilterSelectId = "category-filter-select";
+
 var projects;
 
 function loadProjects() {
-    const jqxhr = $.ajax({
-        url: "/projects/json",
-    }).done((data) => {
-        console.log(data);
-        projects = data.projects;
-        listProjects(projects);
-        loadCategoryFilter();
-    }).fail(() => {
-        alert("Could not load projects. Please refresh the page to continue.")
-    });
-    return jqxhr;
+    // const jqxhr = $.ajax({
+    //     url: "/projects/json",
+    // }).done((data) => {
+    //     console.log(data);
+    //     projects = data.projects;
+    //     listProjects(projects);
+    //     loadCategoryFilter();
+    // }).fail(() => {
+    //     alert("Could not load projects. Please refresh the page to continue.")
+    // });
+    // return jqxhr;
+    projects = JSON.parse($(projectJSONQuery).text()).projects;
+    listProjects(projects);
+    loadCategoryFilter();
 }
 
 function loadCategoryFilter() {
@@ -37,7 +42,7 @@ function loadCategoryFilter() {
     filterHTML += `
         </select>
     `;
-    $(categoryFilterQuery).append(filterHTML);
+    $(categoryFilterQuery).empty().append(filterHTML);
 }
 
 function filterProjects() {

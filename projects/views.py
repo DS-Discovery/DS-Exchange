@@ -25,58 +25,50 @@ def list_projects(request):
     if email is None:
         return redirect('/profile/login')
 
-    project_category_list = set()
-    for e in Project.objects.all():
-        categories = e.project_category.strip().split(';')
-        categories = [cat.strip() for cat in categories]
-        project_category_list.update(categories)
+    # project_category_list = set()
+    # for e in Project.objects.all():
+    #     categories = e.project_category.strip().split(';')
+    #     categories = [cat.strip() for cat in categories]
+    #     project_category_list.update(categories)
 
-    project_category_list = sorted(list(project_category_list))
-    latest_question_list = Project.objects.order_by('project_name')
-    context = {
-        'latest_question_list': latest_question_list,
-        'project_category_list': project_category_list,
-    }
+    # project_category_list = sorted(list(project_category_list))
+    # latest_question_list = Project.objects.order_by('project_name')
+    # context = {
+    #     'latest_question_list': latest_question_list,
+    #     'project_category_list': project_category_list,
+    # }
 
-    # need to send requested category back to keep category selected
-    if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
+    # # need to send requested category back to keep category selected
+    # if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
         
-        # here when select dropdown category
-        category = request.GET.get('category_wanted')
-        project = request.GET.get('project_wanted')
+    #     # here when select dropdown category
+    #     category = request.GET.get('category_wanted')
+    #     project = request.GET.get('project_wanted')
 
-        if category:
-            # send selected category back
-            context["selected_category"] = category
-            latest_question_list = Project.objects.filter(project_category__contains=category)
-            context["latest_question_list"] = latest_question_list
+    #     if category:
+    #         # send selected category back
+    #         context["selected_category"] = category
+    #         latest_question_list = Project.objects.filter(project_category__contains=category)
+    #         context["latest_question_list"] = latest_question_list
 
-        if project:
-            context["selected_project"] = Project.objects.filter(project_name=project)[0]
+    #     if project:
+    #         context["selected_project"] = Project.objects.filter(project_name=project)[0]
             
-            selected_partner = None
-            for partner in Partner.objects.all():
-                projects = [p.project for p in partner.partnerprojectinfo_set.all()]
-                if context["selected_project"] in projects:
-                    selected_partner = partner
+    #         selected_partner = None
+    #         for partner in Partner.objects.all():
+    #             projects = [p.project for p in partner.partnerprojectinfo_set.all()]
+    #             if context["selected_project"] in projects:
+    #                 selected_partner = partner
             
-            context["selected_partner"] = selected_partner
-            context["labels"] = context["selected_project"].project_category.split(";")
+    #         context["selected_partner"] = selected_partner
+    #         context["labels"] = context["selected_project"].project_category.split(";")
 
-            context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
+    #         context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
 
-    return render(request, 'projects/listing.html', context)
+    return render(request, 'projects/listing.html', {"projects_json": get_projects_json()})
 
 
-@login_required
-def projects_json(request):
-    email = None
-    if request.user.is_authenticated:
-        email = request.user.email
-
-    if email is None:
-        return redirect('/profile/login')
-
+def get_projects_json():
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
@@ -85,7 +77,7 @@ def projects_json(request):
 
     projects = sorted(projects, key=lambda d: d["project_name"])
 
-    return JsonResponse({"projects": projects})
+    return {"projects": projects}
 
 
 # def detail(request, project_name):
