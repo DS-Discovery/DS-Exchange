@@ -10,17 +10,30 @@ from students.models import Student
 
 
 @login_required
+def get_applications(request):
+    if request.user.is_authenticated:
+        email = request.user.email
+    else:
+        return HttpResponseForbidden("User is not authenticated")
+
+    if Student.objects.filter(email_address = email).exists():
+        return list_student_applications(request)
+    elif Partner.objects.filter(email_address = email).exists():
+        return list_project_applicants(request)
+    else:
+        messages.info(request, "Please create your student profile to view applications.")
+        return redirect("/profile")
+
+
+@login_required
 def list_student_applications(request):
     # email = EMAIL_ADDRESS
     if request.user.is_authenticated:
         email = request.user.email
     else:
         return HttpResponseForbidden("User is not authenticated")
-    # email = EMAIL_ADDRESS # set to default
-    try:
-        student = Student.objects.get(email_address = email)
-    except ObjectDoesNotExist:
-        return list_project_applicants(request)
+
+    student = Student.objects.get(email_address = email)
 
     # changed from email to student
     # all_apps = Application.objects.filter(email_address=EMAIL_ADDRESS)
@@ -72,19 +85,6 @@ def list_student_applications(request):
             context["active_project"] = first_project
             context["active_application"] = all_apps[0]
 
-            # selected_status = request.POST.get('selected_status')
-            # if selected_status:
-            #     context["selected_status"] = selected_status
-            #     context["active_application"].status = selected_status
-            #     context["active_application"].save()
-
-        # selected_partner = None
-        # for partner in Partner.objects.all():
-        #     projects = partner.projects.all()
-        #     if context["active_project"] in projects:
-        #         selected_partner = partner
-        # context["selected_partner"] = selected_partner
-
         if not context["active_application"] and all_apps:
             context["active_project"] = first_project
             context["active_application"] = all_apps[0]
@@ -108,10 +108,7 @@ def list_project_applicants(request):
     if request.user.is_authenticated:
         email = request.user.email
 
-    try:
-        partner = Partner.objects.get(email_address = email)
-    except ObjectDoesNotExist:
-        return HttpResponseForbidden("User is not a partner.")
+    partner = Partner.objects.get(email_address = email)
 
     projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
     project_wanted = request.GET.get("project_wanted")
