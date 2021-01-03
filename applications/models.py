@@ -9,6 +9,7 @@ class Application(models.Model):
     class ApplicationStatus(models.TextChoices):
         SUBMITTED = "SUB", _("Submitted")
         REJECTED_NO_INTERVIEW = "RNI", _("Rejected without interview")
+        INTERVIEWED = "INT", _("Invite to interview")
         REJECTED_WITH_INTERVIEW = "RWI", _("Rejected after interview")
         OFFER_SENT =  "OFS", _("Offer sent")
         OFFER_REJECTED = "OFR", _("Offer rejected")
@@ -30,6 +31,16 @@ class Application(models.Model):
     @property
     def app_status_choices(self):
         return {k: v for k, v in self.ApplicationStatus.choices}
+
+    @property
+    def possible_next_statuses(self):
+        if self.status == "SUB":
+            return ["RNI", "INT"]
+        elif self.status == "INT":
+            return ["RWI", "OFS"]
+        elif self.status == "OFS":
+            return ["OFR", "OFA"]
+        return []
 
     def __str__(self):
         return self.student.email_address + " application for " + self.project.project_name
