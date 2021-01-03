@@ -7,19 +7,8 @@ const categoryFilterSelectId = "category-filter-select";
 var projects;
 
 function loadProjects() {
-    // const jqxhr = $.ajax({
-    //     url: "/projects/json",
-    // }).done((data) => {
-    //     console.log(data);
-    //     projects = data.projects;
-    //     listProjects(projects);
-    //     loadCategoryFilter();
-    // }).fail(() => {
-    //     alert("Could not load projects. Please refresh the page to continue.")
-    // });
-    // return jqxhr;
     projects = JSON.parse($(projectJSONQuery).text()).projects;
-    listProjects(projects);
+    listProjects([...Array(projects.length).keys()]);
     loadCategoryFilter();
 }
 
@@ -48,38 +37,39 @@ function loadCategoryFilter() {
 function filterProjects() {
     var category = $(`#${ categoryFilterSelectId }`).val();
     if (category === "") {
-        return listProjects(projects);
+        return listProjects([...Array(projects.length).keys()]);
     }
     console.log(category);
     var filteredProjects = [];
     for (i = 0; i < projects.length; i++) {
         if (projects[i].project_category.includes(category)) {
-            filteredProjects.push(projects[i]);
+            filteredProjects.push(i);
         }
     }
     listProjects(filteredProjects);
 }
 
-function listProjects(projects) {
+function listProjects(projectIdxs) {
     $(descriptionQuery).empty().append("<p>No project selected.</p>");
     $(projectInfoQuery).empty();
     $("div#project-list").empty();
     for (i = 0; i < projects.length; i++) {
-        var project =  projects[i];
+        var project =  projects[projectIdxs[i]];
         console.log(project);
         $("div#project-list").append(`
             <button 
                 type="button" 
                 class="list-group-item list-group-item-action project" 
-                id="project-${ i }" 
-                onclick='clickProject(${ JSON.stringify(project) }, ${ i })'
+                id="project-${ projectIdxs[i] }" 
+                onclick='clickProject(${ projectIdxs[i] })'
             >${ project.project_name }</button>
         `);
     }
 }
 
-function clickProject(project, projectNum) {
+function clickProject(projectNum) {
     var projectId = "#project-" + projectNum;
+    var project = projects[projectNum];
     $("button.project.active").removeClass("active");
     $(projectId).addClass("active");
     replaceDescription(project);
