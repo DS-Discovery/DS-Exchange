@@ -61,6 +61,8 @@ function filterProjects() {
 }
 
 function listProjects(projects) {
+    $(descriptionQuery).empty().append("<p>No project selected.</p>");
+    $(projectInfoQuery).empty();
     $("div#project-list").empty();
     for (i = 0; i < projects.length; i++) {
         var project =  projects[i];
@@ -70,23 +72,22 @@ function listProjects(projects) {
                 type="button" 
                 class="list-group-item list-group-item-action project" 
                 id="project-${ i }" 
-                onclick="clickProject(${ i })"
+                onclick='clickProject(${ JSON.stringify(project) }, ${ i })'
             >${ project.project_name }</button>
         `);
     }
 }
 
-function clickProject(projectNum) {
+function clickProject(project, projectNum) {
     var projectId = "#project-" + projectNum;
     $("button.project.active").removeClass("active");
     $(projectId).addClass("active");
-    replaceDescription(projectNum);
-    loadSidebar(projectNum);
+    replaceDescription(project);
+    loadSidebar(project);
 }
 
-function replaceDescription(projectNum) {
+function replaceDescription(project) {
     $(descriptionQuery).empty();
-    var project = projects[projectNum];
     $(descriptionQuery).append(`
         <h5>${ project.project_name }</h5>
         <p class="mt-4"><strong>Project Description</strong></p>
@@ -94,8 +95,7 @@ function replaceDescription(projectNum) {
     `);
 }
 
-function loadSidebar(projectNum) {
-    var project = projects[projectNum];
+function loadSidebar(project) {
     $(projectInfoQuery).empty()
     var sidebarHTML = `
         <div class="flex-row my-1">
