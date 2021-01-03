@@ -52,6 +52,7 @@ if not DEBUG:
 
 ALLOWED_HOSTS = [
     # 'discovery-application.azurewebsites.net', # old host
+    'dsdiscovery.org',
     'ds-discovery.azurewebsites.net',
     "127.0.0.1",
 ]
