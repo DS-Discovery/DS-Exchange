@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'profile',
+
+    'gmailapi_backend', # for email
     # 'social_app',
     
     'allauth',
@@ -190,12 +192,11 @@ STATICFILES_DIRS = [
 
 # Email
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ["EMAIL_USER"]
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_PASS"]
+EMAIL_BACKEND = 'gmailapi_backend.mail.GmailBackend'
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+GMAIL_API_CLIENT_ID = os.environ["GMAIL_CLIENT_ID"]
+GMAIL_API_CLIENT_SECRET = os.environ["GMAIL_CLIENT_SECRET"]
+GMAIL_API_REFRESH_TOKEN = os.environ["GMAIL_REFRESH_TOKEN"]
 
 
 AUTHENTICATION_BACKENDS = (

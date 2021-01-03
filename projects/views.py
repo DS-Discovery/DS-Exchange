@@ -1,9 +1,13 @@
+# from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+# from django.core.mail import send_mail
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
+# from django.template.loader import render_to_string
+# from django.utils.html import strip_tags
 
 from applications.forms import AnswerForm
 from applications.models import Answer, Application
@@ -182,8 +186,6 @@ def apply(request, project_name):
             except:
                  application = Application(student=student, project=project, status = "SUB")
 
-            application.save()
-
             for post in ans_list:
                 print(post)
 
@@ -224,6 +226,8 @@ def apply(request, project_name):
             #     # raise Http404("Student has applied to 3 applications")
             #     messages.info(request, 'You have already applied to 3 projects.')
             #     return redirect('/projects')
+
+            application.save()
 
             messages.info(request, 'Your application has been submitted successfully!')
             return redirect('/projects')

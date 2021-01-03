@@ -5,3 +5,4 @@ django-allauth
 login
 whitenoise
 PyYAML
+django-gmailapi-backend
