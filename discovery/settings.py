@@ -61,6 +61,7 @@ if not DEBUG:
 
 ALLOWED_HOSTS = [
     # 'discovery-application.azurewebsites.net', # old host
+    'dsdiscovery.org',
     'ds-discovery.azurewebsites.net',
     "127.0.0.1",
 ]
@@ -205,7 +206,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = 3
+SITE_ID = 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True

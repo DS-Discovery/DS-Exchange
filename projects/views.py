@@ -1,13 +1,9 @@
-# from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-# from django.core.mail import send_mail
-from django.http import HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
-# from django.template.loader import render_to_string
-# from django.utils.html import strip_tags
 
 from applications.forms import AnswerForm
 from applications.models import Answer, Application
@@ -29,47 +25,59 @@ def list_projects(request):
     if email is None:
         return redirect('/profile/login')
 
-    project_category_list = set()
-    for e in Project.objects.all():
-        categories = e.project_category.strip().split(';')
-        categories = [cat.strip() for cat in categories]
-        project_category_list.update(categories)
+    # project_category_list = set()
+    # for e in Project.objects.all():
+    #     categories = e.project_category.strip().split(';')
+    #     categories = [cat.strip() for cat in categories]
+    #     project_category_list.update(categories)
 
-    project_category_list = sorted(list(project_category_list))
-    latest_question_list = Project.objects.order_by('project_name')
-    context = {
-        'latest_question_list': latest_question_list,
-        'project_category_list': project_category_list,
-    }
+    # project_category_list = sorted(list(project_category_list))
+    # latest_question_list = Project.objects.order_by('project_name')
+    # context = {
+    #     'latest_question_list': latest_question_list,
+    #     'project_category_list': project_category_list,
+    # }
 
-    # need to send requested category back to keep category selected
-    if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
+    # # need to send requested category back to keep category selected
+    # if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
         
-        # here when select dropdown category
-        category = request.GET.get('category_wanted')
-        project = request.GET.get('project_wanted')
+    #     # here when select dropdown category
+    #     category = request.GET.get('category_wanted')
+    #     project = request.GET.get('project_wanted')
 
-        if category:
-            # send selected category back
-            context["selected_category"] = category
-            latest_question_list = Project.objects.filter(project_category__contains=category)
-            context["latest_question_list"] = latest_question_list
+    #     if category:
+    #         # send selected category back
+    #         context["selected_category"] = category
+    #         latest_question_list = Project.objects.filter(project_category__contains=category)
+    #         context["latest_question_list"] = latest_question_list
 
-        if project:
-            context["selected_project"] = Project.objects.filter(project_name=project)[0]
+    #     if project:
+    #         context["selected_project"] = Project.objects.filter(project_name=project)[0]
             
-            selected_partner = None
-            for partner in Partner.objects.all():
-                projects = [p.project for p in partner.partnerprojectinfo_set.all()]
-                if context["selected_project"] in projects:
-                    selected_partner = partner
+    #         selected_partner = None
+    #         for partner in Partner.objects.all():
+    #             projects = [p.project for p in partner.partnerprojectinfo_set.all()]
+    #             if context["selected_project"] in projects:
+    #                 selected_partner = partner
             
-            context["selected_partner"] = selected_partner
-            context["labels"] = context["selected_project"].project_category.split(";")
+    #         context["selected_partner"] = selected_partner
+    #         context["labels"] = context["selected_project"].project_category.split(";")
 
-            context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
+    #         context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
 
-    return render(request, 'projects/listing.html', context)
+    return render(request, 'projects/listing.html', {"projects_json": get_projects_json()})
+
+
+def get_projects_json():
+    projects = []
+    for p in Project.objects.all():
+        d = p.to_dict()
+        d["num_applicants"] = Application.objects.filter(project=p).count()
+        projects.append(d)
+
+    projects = sorted(projects, key=lambda d: d["project_name"])
+
+    return {"projects": projects}
 
 
 # def detail(request, project_name):
@@ -253,90 +261,90 @@ def apply(request, project_name):
         print(questions)
         return render(request, 'projects/application.html', {'questions': questions, 'project' : project, 'form' : form})
     else:
-        return HttpResponseForbidden("User is not logged in.")
+        raise PermissionDenied("User is not logged in.")
 
 
 # def results(request, question_id):
 #     response = "You're looking at the results of question %s."
 #     return HttpResponse(response % question_id)
 
-@login_required
-def partnerProjectView(request, project_name):
-    email = None
-    if request.user.is_authenticated:
-        email = request.user.email
+# @login_required
+# def partnerProjectView(request, project_name):
+#     email = None
+#     if request.user.is_authenticated:
+#         email = request.user.email
 
-    try:
-        context = Partner.objects.get(email_address = email)
-    except ObjectDoesNotExist:
-        return HttpResponseForbidden("User is not a partner.")
-    # projects = context.projects.all()
-    # breakpoint()
-    canView = False
-    for ppi in context.partnerprojectinfo_set.all():
-        project = ppi.project
-        if project.project_name == project_name:
-            canView = True
-    if not canView:
-        return HttpResponseForbidden("User lacks permission to view this project.")
-    project = Project.objects.get(project_name=project_name)
-    questions = Question.objects.filter(project = project).order_by('question_num')
-
-
-    projectPartnerRoles = PartnerProjectInfo.objects.filter(project = project)
-
-    return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project, 'projectPartnerRoles': projectPartnerRoles})
+#     try:
+#         context = Partner.objects.get(email_address = email)
+#     except ObjectDoesNotExist:
+#         return HttpResponseForbidden("User is not a partner.")
+#     # projects = context.projects.all()
+#     # breakpoint()
+#     canView = False
+#     for ppi in context.partnerprojectinfo_set.all():
+#         project = ppi.project
+#         if project.project_name == project_name:
+#             canView = True
+#     if not canView:
+#         return HttpResponseForbidden("User lacks permission to view this project.")
+#     project = Project.objects.get(project_name=project_name)
+#     questions = Question.objects.filter(project = project).order_by('question_num')
 
 
-@login_required
-def partnerlisting(request):
-    # for category dropdown
-    email = None
-    if request.user.is_authenticated:
-        email = request.user.email
-    context = Partner.objects.get(email_address = email)
-    roles = PartnerProjectInfo.objects.filter(partner = context)
-    projects = [p.project for p in roles]
+#     projectPartnerRoles = PartnerProjectInfo.objects.filter(project = project)
 
-    # project_category_list = set()
-    # for e in projects:
-    #     categories = e.project_category.strip().split(',')
-    #     categories = [cat.strip() for cat in categories]
-    #     project_category_list.update(categories)
-    # project_category_list = sorted(list(project_category_list))
+#     return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project, 'projectPartnerRoles': projectPartnerRoles})
 
 
-    latest_question_list = projects
-    context = {'latest_question_list': latest_question_list}
+# @login_required
+# def partnerlisting(request):
+#     # for category dropdown
+#     email = None
+#     if request.user.is_authenticated:
+#         email = request.user.email
+#     context = Partner.objects.get(email_address = email)
+#     roles = PartnerProjectInfo.objects.filter(partner = context)
+#     projects = [p.project for p in roles]
 
-    # need to send requested category back to keep category selected
-    if request.method == "POST":
-        # here when select dropdown category
+#     # project_category_list = set()
+#     # for e in projects:
+#     #     categories = e.project_category.strip().split(',')
+#     #     categories = [cat.strip() for cat in categories]
+#     #     project_category_list.update(categories)
+#     # project_category_list = sorted(list(project_category_list))
+
+
+#     latest_question_list = projects
+#     context = {'latest_question_list': latest_question_list}
+
+#     # need to send requested category back to keep category selected
+#     if request.method == "POST":
+#         # here when select dropdown category
         
-        project = request.POST.get('project_wanted')
-        print("project_wanted is", project)
+#         project = request.POST.get('project_wanted')
+#         print("project_wanted is", project)
        
-        if project:
-            project = project.split("+")[0]
+#         if project:
+#             project = project.split("+")[0]
             
 
       
-        if project:
-            context["selected_project"] = Project.objects.filter(project_name=project)[0]
-            # selected_partner = None
-            # for partner in Partner.objects.all():
-            #     projects = partner.projects.all()
-            #     if context["selected_project"] in projects:
-            #         selected_partner = partner
-            # context["selected_partner"] = selected_partner
-            context["labels"] = context["selected_project"].project_category.split(";")
-            context['partnerProjectInfos'] = PartnerProjectInfo.objects.filter(project = context["selected_project"])
+#         if project:
+#             context["selected_project"] = Project.objects.filter(project_name=project)[0]
+#             # selected_partner = None
+#             # for partner in Partner.objects.all():
+#             #     projects = partner.projects.all()
+#             #     if context["selected_project"] in projects:
+#             #         selected_partner = partner
+#             # context["selected_partner"] = selected_partner
+#             context["labels"] = context["selected_project"].project_category.split(";")
+#             context['partnerProjectInfos'] = PartnerProjectInfo.objects.filter(project = context["selected_project"])
      
-            questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
-            context['questions'] = questions
-            context["count"] = len(Application.objects.filter(project =  context["selected_project"]))
+#             questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
+#             context['questions'] = questions
+#             context["count"] = len(Application.objects.filter(project =  context["selected_project"]))
 
-    # print("context", context)
-    # print("latest_question_list", latest_question_list)
+#     # print("context", context)
+#     # print("latest_question_list", latest_question_list)
     
-    return render(request, 'projects/partnerListing.html', context)
+#     return render(request, 'projects/partnerListing.html', context)
