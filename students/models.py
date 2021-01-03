@@ -39,7 +39,7 @@ class Student(models.Model):
     college_mapping = {k: v for k, v in College.choices}
 
     skill_levels_options = {
-        "": "",
+        # "": "",
         "NE": "No experience",
         "BE": "Beginner",
         "FA": "Familiar",
@@ -80,6 +80,24 @@ class Student(models.Model):
             except KeyError:
                 d[s] = ""
         return d
+
+    @property
+    def id(self):
+        return self.email_address
+
+    def to_dict(self):
+        return {
+            "email_address": self.email_address,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "student_id": self.student_id,
+            "college": self.college_mapping[self.college],
+            "major": self.major,
+            "year": self.egt_mapping[self.year],
+            "resume_link": self.resume_link,
+            "general_question": self.general_question,
+            "skills": self.skills,
+        }
 
     @property
     def name(self):

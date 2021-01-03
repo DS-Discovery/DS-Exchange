@@ -1,12 +1,32 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, SuspiciousOperation
+from django.http import HttpResponse
 from django.shortcuts import Http404, redirect, render
 
 from applications.models import Answer, Application
 from projects.models import Partner, Project
 from students.models import Student
+
+
+def model_list_to_dict(l):
+    return {m.id: m.to_dict() for m in l}
+
+
+@login_required
+def get_applications(request):
+    if request.user.is_authenticated:
+        email = request.user.email
+    else:
+        raise PermissionDenied("User is not authenticated")
+
+    if Student.objects.filter(email_address = email).exists():
+        return list_student_applications(request)
+    elif Partner.objects.filter(email_address = email).exists():
+        return list_project_applicants(request)
+    else:
+        messages.info(request, "Please create your student profile to view applications.")
+        return redirect("/profile")
 
 
 @login_required
@@ -15,12 +35,9 @@ def list_student_applications(request):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        return HttpResponseForbidden("User is not authenticated")
-    # email = EMAIL_ADDRESS # set to default
-    try:
-        student = Student.objects.get(email_address = email)
-    except ObjectDoesNotExist:
-        return list_project_applicants(request)
+        raise PermissionDenied("User is not authenticated")
+
+    student = Student.objects.get(email_address = email)
 
     # changed from email to student
     # all_apps = Application.objects.filter(email_address=EMAIL_ADDRESS)
@@ -72,19 +89,6 @@ def list_student_applications(request):
             context["active_project"] = first_project
             context["active_application"] = all_apps[0]
 
-            # selected_status = request.POST.get('selected_status')
-            # if selected_status:
-            #     context["selected_status"] = selected_status
-            #     context["active_application"].status = selected_status
-            #     context["active_application"].save()
-
-        # selected_partner = None
-        # for partner in Partner.objects.all():
-        #     projects = partner.projects.all()
-        #     if context["active_project"] in projects:
-        #         selected_partner = partner
-        # context["selected_partner"] = selected_partner
-
         if not context["active_application"] and all_apps:
             context["active_project"] = first_project
             context["active_application"] = all_apps[0]
@@ -108,99 +112,106 @@ def list_project_applicants(request):
     if request.user.is_authenticated:
         email = request.user.email
 
-    try:
-        partner = Partner.objects.get(email_address = email)
-    except ObjectDoesNotExist:
-        return HttpResponseForbidden("User is not a partner.")
+    partner = Partner.objects.get(email_address = email)
 
     projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
-    project_wanted = request.GET.get("project_wanted")
-    if project_wanted is not None:
-        project_wanted = Project.objects.get(id=project_wanted)
-        if project_wanted not in projects:
-            messages.info("You do not have permission to view this project.")
-            return redirect("/applications")
-    else:
-        if len(projects) == 0:
-            messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
-            return redirect("/")
-        project_wanted = projects[0]
+    # project_wanted = request.GET.get("project_wanted")
+    # if project_wanted is not None:
+    #     project_wanted = Project.objects.get(id=project_wanted)
+    #     if project_wanted not in projects:
+    #         messages.info("You do not have permission to view this project.")
+    #         return redirect("/applications")
+    # else:
+    if len(projects) == 0:
+        messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
+        return redirect("/")
+        # project_wanted = projects[0]
+
+    applications = Application.objects.filter(project__in=projects)
+    students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
+    print(applications, students, projects)
+
+    projects, applications, students = model_list_to_dict(projects), model_list_to_dict(applications), model_list_to_dict(students)
 
     skills = list(Student.default_skills.keys())
     skills.insert(0, "None")
     levels = list(Student.skill_levels_options.values())
-    levels = levels[1:]
 
-    skill_wanted = "None"
-    level_wanted = "No experience"
+    # skill_wanted = "None"
+    # level_wanted = "No experience"
     
-    if request.GET.get("skill_wanted"):
-        skill_wanted = request.GET.get("skill_wanted")
+    # if request.GET.get("skill_wanted"):
+    #     skill_wanted = request.GET.get("skill_wanted")
 
-    if request.GET.get("level_wanted"):
-        level_wanted = request.GET.get("level_wanted")
+    # if request.GET.get("level_wanted"):
+    #     level_wanted = request.GET.get("level_wanted")
 
-    selected_applicant = None
-    if request.GET.get("selected_applicant"):
-        selected_applicant = request.GET.get("selected_applicant")
+    # selected_applicant = None
+    # if request.GET.get("selected_applicant"):
+    #     selected_applicant = request.GET.get("selected_applicant")
 
-    # #project = Project.objects.filter(id=PROJECT_ID)
-    # # projects
-    # # TODO: this needs to handle partners w/ multiple projects
-    # for ppi in partner.partnerprojectinfo_set.all():
-    #     project = ppi.project
-
-    # project = Project.objects.get(project_name=project_name)
-
-    if skill_wanted == "None":
-        applications = Application.objects.filter(project_id=project_wanted.id).order_by("created_at")
+    # if skill_wanted == "None":
+    #     applications = Application.objects.filter(project_id=project_wanted.id).order_by("created_at")
     
-    else:
-        print("skill_wanted:", skill_wanted)
-        print("level_wanted:", level_wanted)
+    # else:
+    #     print("skill_wanted:", skill_wanted)
+    #     print("level_wanted:", level_wanted)
 
-        for short in Student.skill_levels_options:
-            if Student.skill_levels_options[short] == level_wanted:
-                print(short)
-                applications = Application.objects.filter(project_id=project_wanted.id).filter(
-                    student___skills__contains={skill_wanted: short}
-                )
-                break
+    #     for short in Student.skill_levels_options:
+    #         if Student.skill_levels_options[short] == level_wanted:
+    #             print(short)
+    #             applications = Application.objects.filter(project_id=project_wanted.id).filter(
+    #                 student___skills__contains={skill_wanted: short}
+    #             )
+    #             break
 
-    if not applications or selected_applicant is None:
-        student = None
-        curr_app = None
+    # if not applications or selected_applicant is None:
+    #     student = None
+    #     curr_app = None
     
-    else:
-        student = Application.objects.get(id=selected_applicant).student
-        curr_app = Application.objects.get(id=selected_applicant)
-        print("curr_app:", curr_app)
+    # else:
+    #     student = Application.objects.get(id=selected_applicant).student
+    #     curr_app = Application.objects.get(id=selected_applicant)
+    #     print("curr_app:", curr_app)
 
-        answers = Answer.objects.filter(student=student, application=curr_app)
+    #     answers = Answer.objects.filter(student=student, application=curr_app)
+
+    # context = {
+    #     "num_apps": range(len(applications)),
+    #     "curr_app": curr_app,
+    #     "curr_student": student,
+    #     "skills": skills,
+    #     "skill_wanted": skill_wanted,
+    #     "levels": levels,
+    #     "level_wanted": level_wanted,
+    #     "applications": applications,
+    #     "projects": projects,
+    #     "project_wanted": project_wanted,
+    # }
+
+    # if curr_app is not None:
+    #     context.update({
+    #         "questions_and_answers": zip([a.question for a in answers], answers),
+    #     })
 
     context = {
-        "num_apps": range(len(applications)),
-        "curr_app": curr_app,
-        "curr_student": student,
-        "skills": skills,
-        "skill_wanted": skill_wanted,
-        "levels": levels,
-        "level_wanted": level_wanted,
-        "applications": applications,
-        "projects": projects,
-        "project_wanted": project_wanted,
+        "applications_json": {
+            "projects": projects,
+            "applications": applications,
+            "students": students,
+            "skills": skills,
+            "levels": levels,
+        }
     }
-
-    if curr_app is not None:
-        context.update({
-            "questions_and_answers": zip([a.question for a in answers], answers),
-        })
 
     return render(request, 'applications/review_applicants.html', context)
 
 
 @login_required
 def update_application_status(request):
+    if request.method == "GET":
+        raise SuspiciousOperation("This is a POST-only route.")
+
     email = None
     if request.user.is_authenticated:
         email = request.user.email
@@ -208,32 +219,28 @@ def update_application_status(request):
     try:
         partner = Partner.objects.get(email_address = email)
     except ObjectDoesNotExist:
-        messages.info(request, "You do not have permission to access this page.")
-        return redirect("/")
-
-    if request.method == "GET":
-        return HttpResponseBadRequest("This is a POST-only route.")
-
-    print(request.POST)
+        return HttpResponse("You do not have permission to perform this action.", status=403)
 
     application_id = request.POST.get("application_id")
     new_status = request.POST.get("new_status")
     if application_id is None or new_status not in [t[0] for t in Application.ApplicationStatus.choices]:
-        messages.info(request, "Improperly formed request. Please try again.")
-        return redirect("/applications")
+        return HttpResponse("Improperly formed request. Please try again or contact ds-discovery@berkeley.edu", status=400)
 
     application = Application.objects.get(id=application_id)
 
     partner_projects = [ppi.project for ppi in partner.partnerprojectinfo_set.all()]
     if application.project not in partner_projects:
-        messages.info(request, "You do not have permission to update this application.")
-        return redirect("/applications")
+        # messages.info(request, "You do not have permission to update this application.")
+        # return redirect("/applications")
+        return HttpResponse("You do not have permission to perform this action.", status=403)
 
     application.status = new_status
     application.save()
 
-    messages.info(request, "Application status successfully updated.")
-    return redirect(
-        f"/applications?selected_applicant={application.id}&project_wanted={application.project.id}"
-        f"&skill_wanted={request.POST.get('skill_wanted')}&level_wanted={request.POST.get('level_wanted')}"
-    )
+    return HttpResponse("Application status successfully updated.", status=200)
+
+    # messages.info(request, "Application status successfully updated.")
+    # return redirect(
+    #     f"/applications?selected_applicant={application.id}&project_wanted={application.project.id}"
+    #     f"&skill_wanted={request.POST.get('skill_wanted')}&level_wanted={request.POST.get('level_wanted')}"
+    # )
