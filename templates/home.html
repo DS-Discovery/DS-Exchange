@@ -1,4 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    body {
+        background: url("{% static 'img/campanile.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        backdrop-filter: blur(6px);
+        height: 100vh;
+    }
+
+    nav.navbar {
+        background: none !important;
+    }
+</style>
+{% endblock %}
+
 
 {% block container_class %}
 container
@@ -7,7 +25,7 @@ container
 
 {% block content %}
 
-    <div class="d-flex flex-column">
+    <div class="" id="homepage-text">
         <div class="p-2">
             <p>Welcome to the fall 2020 semester of Data Science Discovery! This website contains information for both Project Partners and Student Researchers as you move through the recruitment process to the semester and ultimately towards the Discovery Showcase event. We will update this page periodically with project profiles and student interviews to get you inspired.</p>
         </div>
