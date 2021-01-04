@@ -9,7 +9,7 @@ from .models import Application
 
 
 @receiver(post_save, sender=Application)
-def my_callback(sender, **kwargs):
+def send_app_confirmation_email(sender, **kwargs):
     if kwargs["created"]:
         html_message = render_to_string("emails/app_confirmation.html", {"project": kwargs["instance"].project})
         plain_message = strip_tags(html_message)
