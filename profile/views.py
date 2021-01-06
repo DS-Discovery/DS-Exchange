@@ -130,7 +130,7 @@ def view_partner_profile(request):
     projects = [p.project for p in relationship]
     projectPartnerRoles = {}
     for p in projects:
-        roles = PartnerProjectInfo.objects.get(project = p)
+        roles = PartnerProjectInfo.objects.get(project = p, partner = context)
         projectPartnerRoles[p.project_name] = roles
 
     return render(request, 'profile/partner_profile.html', {
