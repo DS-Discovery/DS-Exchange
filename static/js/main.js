@@ -1,7 +1,7 @@
 // Function for resizing fill-page divs
 const fillPageQuery = ".fill-page"
-const bottomFillOffset = 10;
 function fillPage() {
+    const bottomFillOffset = 10 + $("footer").height();
     if ($(fillPageQuery).length == 1) {
         var el = $(fillPageQuery);
         el.height($(window).height() - el.offset().top - bottomFillOffset);

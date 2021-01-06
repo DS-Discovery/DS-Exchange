@@ -1,4 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    body {
+        background: url("{% static 'img/campanile.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        backdrop-filter: blur(4px);
+        height: 100vh;
+    }
+
+    nav.navbar {
+        background: none !important;
+    }
+</style>
+{% endblock %}
+
 
 {% block container_class %}
 container
@@ -7,12 +25,12 @@ container
 
 {% block content %}
 
-    <div class="d-flex flex-column">
+    <div class="" id="homepage-text">
         <div class="p-2">
-            <p>Welcome to the fall 2020 semester of Data Science Discovery! This website contains information for both Project Partners and Student Researchers as you move through the recruitment process to the semester and ultimately towards the Discovery Showcase event. We will update this page periodically with project profiles and student interviews to get you inspired.</p>
+            <p>Welcome to the Spring 2021 semester of <a href="https://data.berkeley.edu/research/discovery-program-home">UC Berkeley Data Science Discovery</a>! This website contains information for both project partners and student researchers as you move through the recruitment process to the semester and ultimately towards the Discovery Showcase event. We will update this page periodically with project profiles and student interviews to get you inspired.</p>
         </div>
         <div class="p-2">
-            <p>Throughout the semester we will ask students to submit reflections on certain aspects of their projects, which we will post in the Projects section. Check in often to see what other projects are up to! For more information about resources and requirements for students, check out the Students page. Finally, we have listed our expectations for Project Partners in the Partner page.</p>
+            <p>Throughout the semester we will ask students to submit reflections on certain aspects of their projects, which we will post in the Projects section. Check in often to see what other projects are up to! For more information about resources and requirements for students, check out the Students page. Finally, we have listed our expectations for project partners in the partner page.</p>
         </div>
         <div class="p-2">
             <p>We want to make sure that we’re providing all the information you need to have a successful semester with Discovery. If you have any questions or comments, please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.
