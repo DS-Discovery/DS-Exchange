@@ -114,7 +114,7 @@ function loadSidebar(project) {
             <div class="my-1">
 
                 <div class="d-flex flex-row justify-content-center mb-2">
-                    <a href="${ project.project_name }/apply"><button type="button" class="btn btn-outline-info">Apply</button></a>
+                    <a href="${ encodeURIComponent(project.project_name) }/apply"><button type="button" class="btn btn-outline-info">Apply</button></a>
                 </div>
 
             </div>

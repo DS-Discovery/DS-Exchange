@@ -28,7 +28,7 @@ class Project(models.Model):
     # semester = models.CharField(max_length=100)
     # year = models.CharField(max_length=100)
     semester = models.CharField(max_length=4, choices=Semester.choices)
-    project_category = models.CharField(max_length=100)
+    project_category = models.CharField(max_length=200, blank=True, null=True)
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
     
@@ -40,7 +40,7 @@ class Project(models.Model):
             "project_name": self.project_name,
             "organization": self.organization,
             "semester": self.sem_mapping[self.semester],
-            "project_category": self.project_category.split(";"),
+            "project_category": self.project_category.split(";") if self.project_category is not None else [],
             "student_num": self.student_num,
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
