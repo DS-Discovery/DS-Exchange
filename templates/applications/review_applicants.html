@@ -2,7 +2,6 @@
 {% load helperfuncs %}
 {% load static %}
 {% load feature_flags %}
-{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
 
 <!-- TODO -->
 
@@ -33,6 +32,8 @@
 
 {% block second_column %}
 
+{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
+
 <div class="p-2 my-1" id="application-questions">
 
     {% if apps_reviewable %}
@@ -56,7 +57,9 @@
 
 {% block third_column %}
 
-    {% if apps_reviewable %}
+{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
+
+{% if apps_reviewable %}
 
     <div class="my-1 mt-2">
 
@@ -78,7 +81,7 @@
 
     <hr>
 
-    {% endif %}
+{% endif %}
 
 <div class="d-flex flex-column my-1" id="app-sidebar">
     
