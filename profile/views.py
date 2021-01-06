@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from students.models import Student
 from projects.models import Partner, PartnerProjectInfo
 
-from .forms import EditStudentSignupForm, StudentSignupForm
+from .forms import EditStudentSignupForm
 
 
 @login_required
@@ -24,7 +24,7 @@ def student_signup(request):
         return redirect('/profile')
 
     if request.method == 'POST':
-        form = StudentSignupForm(request.POST)
+        form = EditStudentSignupForm(request.POST)
         if form.is_valid():
 
             s = Student(
@@ -50,7 +50,7 @@ def student_signup(request):
             return redirect('/profile')
 
     else: 
-        form = StudentSignupForm()
+        form = EditStudentSignupForm()
         return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
 
 
@@ -73,6 +73,7 @@ def edit_student_profile(request):
             student.update(year = form.cleaned_data['year'])
             student.update(resume_link = form.cleaned_data['resume_link'])
             student.update(general_question = form.cleaned_data['general_question'])
+            student.update(additional_skills = form.cleaned_data['additional_skills'])
 
             skills = student[0].skills
             for skill in skills:

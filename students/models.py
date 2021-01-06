@@ -9,10 +9,18 @@ from projects.models import Project, Question, Semester
 
 def get_default_skills():
     return {
-        "R": "",
         "Python": "",
-        "data visualization": "",
-        # etc.
+        "R": "",
+        "SQL": "",
+        "Tableau/Looker": "",
+        "Data Visualization": "",
+        "Data Manipulation": "",
+        "Text Analysis": "",
+        "Machine Learning/Deep Learning": "",
+        "Geospatial Data, Tools and Libraries": "",
+        "Web Development (frontend, backend, full stack)": "",
+        "Mobile App Development": "",
+        "Cloud Computing": "",
     }
 
 
@@ -39,7 +47,7 @@ class Student(models.Model):
     college_mapping = {k: v for k, v in College.choices}
 
     skill_levels_options = {
-        # "": "",
+        "": "",
         "NE": "No experience",
         "BE": "Beginner",
         "FA": "Familiar",
@@ -66,7 +74,9 @@ class Student(models.Model):
     third_choice = models.CharField(max_length=1000, null=True, blank=True)
 
     resume_link = models.CharField(max_length=200, null = True, blank=True)
-    general_question = models.CharField(max_length=2000, null = True, blank=True)
+    general_question = models.CharField(max_length=1000, null = True, blank=True)
+
+    additional_skills = models.CharField(max_length=300, null=True, blank=True)
 
     _skills = models.JSONField(default=get_default_skills, null=False)
 

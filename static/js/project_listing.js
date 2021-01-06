@@ -100,7 +100,7 @@ function loadSidebar(project) {
     sidebarHTML += `
             </div>
 
-            <p>Number of Students: <span class="text-muted">${ project.student_num }</span></p>
+            <p>Number of Students Requested: <span class="text-muted">${ project.student_num }</span></p>
             <p>Applications Received: <span class="text-muted">${ project.num_applicants }</span></p>
 
         </div>
