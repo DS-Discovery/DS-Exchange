@@ -33,7 +33,7 @@ container
 
 <script>
     // This inserts a character remaining warning on the textarea
-    const maxChars = 2000;
+    const maxChars = 1000;
     const textareaElem = $("textarea[name='general_question']");
     const charRemainingString  = " characters remaining";
     textareaElem.after("<p class='text-right muted' id='chars-remaining'>" + (maxChars - textareaElem.val().length) + charRemainingString + "</p>");

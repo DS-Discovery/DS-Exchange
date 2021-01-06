@@ -8,11 +8,18 @@
         background-size: cover;
         background-repeat: no-repeat;
         backdrop-filter: blur(4px);
+        background-attachment: fixed;
         height: 100vh;
     }
 
     nav.navbar {
         background: none !important;
+    }
+
+    div#homepage-text {
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        padding: 20px;
     }
 </style>
 {% endblock %}
@@ -26,15 +33,41 @@ container
 {% block content %}
 
     <div class="" id="homepage-text">
-        <div class="p-2">
-            <p>Welcome to the Spring 2021 semester of <a href="https://data.berkeley.edu/research/discovery-program-home">UC Berkeley Data Science Discovery</a>! This website contains information for both project partners and student researchers as you move through the recruitment process to the semester and ultimately towards the Discovery Showcase event. We will update this page periodically with project profiles and student interviews to get you inspired.</p>
-        </div>
-        <div class="p-2">
-            <p>Throughout the semester we will ask students to submit reflections on certain aspects of their projects, which we will post in the Projects section. Check in often to see what other projects are up to! For more information about resources and requirements for students, check out the Students page. Finally, we have listed our expectations for project partners in the partner page.</p>
-        </div>
-        <div class="p-2">
-            <p>We want to make sure that we’re providing all the information you need to have a successful semester with Discovery. If you have any questions or comments, please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.
-        </div>
+
+        <h3>Welcome to the Spring 2021 semester of Data Science Discovery!</h3>
+
+        <!-- <h4>Students</h4> -->
+
+        <h5 class="pt-2">Application Instructions</h5>
+
+        <p>Use this application portal to browse this semester’s projects and submit your application.</p>
+        
+        <p><strong>Phase 1 (Student Applications):</strong> Student applications will be accepted from <strong>Jan 12 to Jan 25</strong>. Each student can apply to up to 3 projects. Please check out the video walkthrough below for a tutorial on how to use the portal.</p>
+        
+        <p><strong>Phase 2 (Application Review):</strong> From <strong>Jan 25 to Feb 5</strong>, Project Partners will begin scheduling interviews and making offers.</p>
+        
+        <p><strong>Phase 3 (Offer Acceptance):</strong> Students will have until <strong>Feb 10</strong> to accept or reject offers.</p>
+
+        <h5>Program Requirements</h5>
+
+        <p>Students are expected to commit <strong>6-12 hours per week</strong> to their research project (the exact time commitment expected should be confirmed with the project partner). 1 unit of academic credit is available for every 3 hours of work per week. See below for instructions regarding enrollment information.</p>
+        
+        <p>All student teams are required to submit a <strong>Mid-Term Progress Report</strong> by the end of Spring Break and a Final Presentation during reading week. See the <a href="https://docs.google.com/document/d/1wmMLWeKCgJrq93ZM5U6BwC-KVoMyD26GuIar5wozHqQ/edit?usp=sharing" target="_blank">Spring 2021 Program Description</a> for more information.</p>
+
+        <p>A number of resources are available to support Discovery teams, including graduate student mentors, working groups, pre-recorded workshops, peer consultants and cloud computing credits. We require that each student engage <strong>at least one time</strong> with each resource by Spring Break.</p>
+
+        <p>Students will be required to respond to <strong>4 short surveys</strong> throughout the semester.</p>
+
+        <h5>Enrollment Information</h5>
+
+        <p>Once you are accepted onto a Discovery project, you will be sent a URAP Learning Contract containing this <a href="https://docs.google.com/document/d/1pzP-v0GzGTG1G1tOk8H3h8S0Avn3cjnnA0MrnLpnNzI/edit?usp=sharing" target="_blank">Student Agreement</a>.</p>
+        
+        <p>After you file the contract, you will receive an email message from the URAP office with the enrollment information for UGIS 192 (class number and permission number). Use your Permission Number promptly to enroll in UGIS 192. One unit of UGIS 192 is available for every 3 hours of research work you do for your mentor. If you wish to have your research experience annotated on your transcripts, you will need to enroll for at least one unit of UGIS 192. All the changes to your class schedule must be made by Wednesday of the fourth week of classes. This includes adds, drops, and changes in unit value for variable unit courses, so make a realistic assessment of the time you will devote to URAP. To make the deadline, you will need to submit your Learning Contract before 9 AM on Wednesday of the fourth week of classes, February 10th.</p>
+
+        <h5>Questions</h5>
+        
+        <p>We want to make sure that we’re providing all the information you need to have a successful semester with Discovery. If you have any questions or comments, please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.</p>
+
     </div>
 
 {% endblock %}
