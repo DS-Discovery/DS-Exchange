@@ -1,6 +1,8 @@
 {% extends 'three_column_view.html' %}
 {% load helperfuncs %}
 {% load static %}
+{% load feature_flags %}
+{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
 
 <!-- TODO -->
 
@@ -33,7 +35,19 @@
 
 <div class="p-2 my-1" id="application-questions">
 
-    <p>Please select an applicant on the left.</p>
+    {% if apps_reviewable %}
+
+        <p>Please select an applicant on the left.</p>
+
+        <script>
+            $(document).ready(loadApplications);
+        </script>
+
+    {% else %}
+
+        <p>Applications are not yet open for review. If you believe you have received this message in error, please email <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.</p>
+
+    {% endif %}
 
 </div>
 
@@ -42,24 +56,29 @@
 
 {% block third_column %}
 
-<div class="my-1 mt-2">
-    <h5 class="text-center">Project</h5>
+    {% if apps_reviewable %}
 
-    <div id="project-filter">
+    <div class="my-1 mt-2">
+
+        <h5 class="text-center">Project</h5>
+
+        <div id="project-filter">
+
+        </div>
+
+        <hr>
+        
+        <h5 class="text-center">Skill Filters</h5>
+
+        <div id="skill-filter">
+
+        </div>
 
     </div>
 
     <hr>
-    
-    <h5 class="text-center">Skill Filters</h5>
 
-    <div id="skill-filter">
-
-    </div>
-
-</div>
-
-<hr>
+    {% endif %}
 
 <div class="d-flex flex-column my-1" id="app-sidebar">
     
@@ -68,9 +87,5 @@
 {% csrf_token %}
 
 {{ applications_json|json_script:"applications-json" }}
-
-<script>
-    $(document).ready(loadApplications);
-</script>
 
 {% endblock %}

@@ -1,5 +1,9 @@
 /* Various CSS alterations for the application */
 
+html, body {
+    height: 100%;
+}
+
 .text-sm {
     font-size: 14px;
 }
