@@ -74,6 +74,8 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'profile',
     # 'social_app',
+
+    'flags',
     
     'allauth',
     'allauth.account',
@@ -111,6 +113,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'discovery.wsgi.application'
+
+
+# Django Flags
+# https://cfpb.github.io/django-flags/
+
+FLAGS = {
+    'APPLICATIONS_REVIEWABLE': []
+}
 
 
 # Database
