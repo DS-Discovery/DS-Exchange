@@ -107,6 +107,7 @@ class Student(models.Model):
             "resume_link": self.resume_link,
             "general_question": self.general_question,
             "skills": self.skills,
+            "additional_skills": self.additional_skills,
         }
 
     @property

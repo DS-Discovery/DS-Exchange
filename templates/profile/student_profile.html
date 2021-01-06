@@ -42,9 +42,9 @@ container
 
 <div class="p-2">
 
-<h5>General Interest Statement</h5>
+    <h5>General Interest Statement</h5>
 
-<p>{{ context.general_question }}</p>
+    <p>{{ context.general_question }}</p>
 
 </div>
 
@@ -52,26 +52,26 @@ container
 
 <div class="p-2 my-1">
 
-<h5>Skills</h5>
+    <h5>Skills</h5>
 
-<table class="table my-3">
-    <tr>
-        <th>Skill</th>
-        <th>Skill Level</th>
-    </tr>
-    {% for skill, level in skills_tups %}
-
+    <table class="table my-3">
         <tr>
-            <th scope="row">{{ skill }}</th>
-            <td>{{ level }}</td>
+            <th>Skill</th>
+            <th>Skill Level</th>
         </tr>
+        {% for skill, level in skills_tups %}
 
-    {% endfor %}
-</table>
+            <tr>
+                <th scope="row">{{ skill }}</th>
+                <td>{{ level }}</td>
+            </tr>
 
-<h6>Additional Skills</h6>
+        {% endfor %}
+    </table>
 
-<p>{{ context.additional_skills }}</p>
+    <h6>Additional Skills</h6>
+
+    <p>{{ context.additional_skills }}</p>
 
 </div>
 
