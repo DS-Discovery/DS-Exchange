@@ -230,19 +230,44 @@ function renderApplication(appId)  {
         `;
     }
 
-    appHTML = `
+    appProfileHTML = `
         <h5>General Interest Statement</h5>
 
         <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
 
         <p>${ student.general_question }</p>
 
+        <h5>Skills</h5>
+
+        <table class="table my-3">
+            <tr>
+                <th>Skill</th>
+                <th>Skill Level</th>
+            </tr>
+    `
+    for (skill in student.skills) {
+        var level = student.skills[skill];
+        appProfileHTML += `
+            <tr>
+                <td>${ skill }</td>
+                <td>${ level }</td>
+            </tr>
+        `;
+    }
+
+    appProfileHTML += `
+        </table>
+
+        <h6>Additional Skills</h6>
+
+        <p>${ student.additional_skills }</p>
+
         <h5>Application Questions</h5>
 
         ${ appHTML }
     `
 
-    $(applicationQuestionsQuery).empty().append(appHTML);
+    $(applicationQuestionsQuery).empty().append(appProfileHTML);
     loadApplicationSidebar(appId);
 }
 
