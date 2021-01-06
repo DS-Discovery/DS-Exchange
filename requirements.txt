@@ -4,3 +4,4 @@ pandas
 django-allauth
 login
 whitenoise
+django-flags
