@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+
+# script runs django migrations when app is deployed
+python3 manage.py migrate
