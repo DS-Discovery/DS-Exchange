@@ -3,13 +3,16 @@
 
 {% block extra_head %}
 <style>
+    html, body {
+        min-height: 100vh;
+        height: unset !important;
+    }
     body {
         background: url("{% static 'img/campanile.png' %}");
         background-size: cover;
         background-repeat: no-repeat;
         backdrop-filter: blur(4px);
         background-attachment: fixed;
-        height: 100vh;
     }
 
     nav.navbar {
