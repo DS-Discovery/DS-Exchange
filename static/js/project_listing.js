@@ -16,7 +16,7 @@ function loadCategoryFilter() {
     var categories = new Set();
     for (i = 0; i < projects.length; i++) {
         for (j = 0; j < projects[i].project_category.length; j++) {
-            categories.add(projects[i].project_category[j]);
+            categories.add(projects[i].project_category[j].trim());
         }
     }
     categories = Array.from(categories).sort();
