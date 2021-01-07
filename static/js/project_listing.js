@@ -8,6 +8,14 @@ var projects;
 
 function loadProjects() {
     projects = JSON.parse($(projectJSONQuery).text()).projects;
+
+    // trim category whitespace
+    for (i = 0; i < projects.length; i++) {
+        for (j = 0; j < projects[i].project_category.length; j++) {
+            projects[i].project_category[j] = projects[i].project_category[j].trim();
+        }
+    }
+
     listProjects([...Array(projects.length).keys()]);
     loadCategoryFilter();
 }
@@ -16,7 +24,7 @@ function loadCategoryFilter() {
     var categories = new Set();
     for (i = 0; i < projects.length; i++) {
         for (j = 0; j < projects[i].project_category.length; j++) {
-            categories.add(projects[i].project_category[j].trim());
+            categories.add(projects[i].project_category[j]);
         }
     }
     categories = Array.from(categories).sort();
@@ -53,7 +61,7 @@ function listProjects(projectIdxs) {
     $(descriptionQuery).empty().append("<p>No project selected.</p>");
     $(projectInfoQuery).empty();
     $("div#project-list").empty();
-    for (i = 0; i < projects.length; i++) {
+    for (i = 0; i < projectIdxs.length; i++) {
         var project =  projects[projectIdxs[i]];
         console.log(project);
         $("div#project-list").append(`
