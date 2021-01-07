@@ -31,6 +31,13 @@ class Project(models.Model):
     project_category = models.CharField(max_length=200, blank=True, null=True)
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
+
+    organization_description = models.CharField(max_length=500, blank=True)
+    timeline = models.CharField(max_length=1000, blank=True)
+    project_workflow = models.CharField(max_length=1000, blank=True)
+    dataset = models.CharField(max_length=500, blank=True)
+    deliverable = models.CharField(max_length=500, blank=True)
+    skillset = models.CharField(max_length=500, blank=True)
     
     def __str__(self):
         return self.project_name
@@ -44,6 +51,12 @@ class Project(models.Model):
             "student_num": self.student_num,
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
+            "organization_description": self.organization_description,
+            "timeline": self.timeline,
+            "project_workflow": self.project_workflow,
+            "dataset": self.dataset,
+            "deliverable": self.deliverable,
+            "skillset": self.skillset,
         }
 
 

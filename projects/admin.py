@@ -38,6 +38,12 @@ class ProjectAdminForm(ModelForm):
     model = Project
     widgets = {
       'description': Textarea(attrs={"cols": "100"}),
+      'organization_description': Textarea(attrs={"cols": "100"}),
+      'timeline': Textarea(attrs={"cols": "100"}),
+      'project_workflow': Textarea(attrs={"cols": "100"}),
+      'dataset': Textarea(attrs={"cols": "100"}),
+      'deliverable': Textarea(attrs={"cols": "100"}),
+      'skillset': Textarea(attrs={"cols": "100"}),
     }
     fields = '__all__'
 
@@ -45,7 +51,7 @@ class ProjectAdminForm(ModelForm):
 class ProjectAdmin(admin.ModelAdmin):
     
     form =  ProjectAdminForm
-    fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
+    # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
     list_display = ('project_name', 'project_category', 'semester', )
     list_filter = ['project_category']
