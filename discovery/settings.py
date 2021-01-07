@@ -120,7 +120,8 @@ WSGI_APPLICATION = 'discovery.wsgi.application'
 # https://cfpb.github.io/django-flags/
 
 FLAGS = {
-    'APPLICATIONS_REVIEWABLE': []
+    'APPLICATIONS_REVIEWABLE': [],
+    'APPLICATIONS_OPEN': [],
 }
 
 

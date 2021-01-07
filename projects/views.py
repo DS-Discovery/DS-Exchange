@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
 
+from flags.state import flag_enabled
+
 from applications.forms import AnswerForm
 from applications.models import Answer, Application
 from students.models import Student
@@ -121,6 +123,14 @@ def apply(request, project_name):
         else:
             messages.info(request, "You have not yet signed up. Please complete the signup form to continue.")
             return redirect("/profile/signup")
+
+    if not flag_enabled('APPLICATIONS_OPEN'):
+        messages.info(
+            request, 
+            "Applications are currently closed. If you believe you have received "
+            "this message in error, please email ds-discovery@berkeley.edu."
+        )
+        return redirect("/projects")
 
     count = Application.objects.filter(student = student).count()
 
