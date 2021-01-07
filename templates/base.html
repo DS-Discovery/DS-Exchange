@@ -12,6 +12,7 @@
     
     <!-- custom static files -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
     <script src="{% static 'js/main.js' %}"></script>
 
     {% block extra_head %}
@@ -23,7 +24,10 @@
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light" id="primary-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">Discovery Application Portal</a>
+                <a class="navbar-brand" href="/">
+                    <img class="mr-2" src="{% static 'img/discovery-logo.png' %}" height="50" />
+                    Discovery Application Portal
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
