@@ -33,16 +33,17 @@ container
 
 <script>
     // This inserts a character remaining warning on the textarea
-    const maxChars = 1000;
-    const textareaElem = $("textarea[name='general_question']");
-    const charRemainingString  = " characters remaining";
-    textareaElem.after("<p class='text-right muted' id='chars-remaining'>" + (maxChars - textareaElem.val().length) + charRemainingString + "</p>");
-    textareaElem.keyup(() => {
-        $("#chars-remaining").text((maxChars - textareaElem.val().length) + charRemainingString);
-        if (this.val().length > maxChars) {
-            this.val(this.val().substring(0,maxChars));
-        }
-    })
+    // const maxChars = 1000;
+    // const textareaElem = $("textarea[name='general_question']");
+    // const charRemainingString  = " characters remaining";
+    // textareaElem.after("<p class='text-right muted' id='chars-remaining'>" + (maxChars - textareaElem.val().length) + charRemainingString + "</p>");
+    // textareaElem.keyup(() => {
+    //     $("#chars-remaining").text((maxChars - textareaElem.val().length) + charRemainingString);
+    //     if (this.val().length > maxChars) {
+    //         this.val(this.val().substring(0,maxChars));
+    //     }
+    // })
+    addCharacterLimit("textarea[name='general_question']", 1000);
 
     // This inserts info about selecting skill levels
     const skillLevelSpiel = "<h6 class='my-2'>Please enter you skill level in each of the technologies or techniques below.</h6>";

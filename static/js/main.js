@@ -37,5 +37,25 @@ function sendAlert(message, timeout) {
     }, timeout);
 }
 
+// Function for rendering character limits below textareas
+function addCharacterLimit(query, maxChars) {
+    const textareaElem = $(query);
+    const charRemainingString  = " characters remaining";
+
+    // generate unique id
+    var id = Math.floor(Math.random() * 10000000000);
+    while ($(`#chars-remaining-${ id }`).length) {
+        id = Math.floor(Math.random() * 10000000000);
+    }
+
+    textareaElem.after(`<p class='text-right muted' id='chars-remaining-${ id }'>` + (maxChars - textareaElem.val().length) + charRemainingString + "</p>");
+    textareaElem.keyup((event) => {
+        $(`#chars-remaining-${ id }`).text((maxChars - $(event.target).val().length) + charRemainingString);
+        if ($(event.target).val().length > maxChars) {
+            $(event.target).val($(event.target).val().substring(0, maxChars));
+        }
+    })
+}
+
 $(window).on("load", fillPage);
 $(window).resize(fillPage);

@@ -82,6 +82,24 @@ function replaceDescription(project) {
         <h5>${ project.project_name }</h5>
         <p class="mt-4"><strong>Project Description</strong></p>
         <p>${ project.description }</p>
+        
+        <p class="mt-4"><strong>Project Timeline</strong></p>
+        <p>${ project.timeline }</p>
+
+        <p class="mt-4"><strong>Project Workflow</strong></p>
+        <p>${ project.project_workflow }</p>
+
+        <p class="mt-4"><strong>Dataset</strong></p>
+        <p>${ project.dataset }</p>
+
+        <p class="mt-4"><strong>Deliverables</strong></p>
+        <p>${ project.deliverable }</p>
+
+        <p class="mt-4"><strong>Applicant Skillset</strong></p>
+        <p>${ project.skillset }</p>
+
+        <p class="mt-4"><strong>Project Organization:</strong> ${ project.organization }</p>
+        <p>${ project.organization_description }</p>
     `);
 }
 

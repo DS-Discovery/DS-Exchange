@@ -9,7 +9,7 @@ container
 
 {% block content %}
 
-<div class=" p-2">
+<div class="col-8 p-2">
     <h2> Application for {{project}} </h2>
 
     <form class="mb-5" method="post">
@@ -25,12 +25,19 @@ container
             
                 <!-- "text type" -->
                 {% if question.question_type == "text" %}
-                    <textarea 
-                        class="form-group" 
-                        name="{{ question.id }}" 
-                        placeholder="Your response here." 
-                        required
-                    ></textarea>
+                    <div>
+                        <textarea 
+                            class="form-group" 
+                            name="{{ question.id }}" 
+                            placeholder="Your response here." 
+                            id="textarea-{{ forloop.counter0 }}"
+                            style="width: 100%; margin-bottom: 0;"
+                            required
+                        ></textarea>
+                    </div>
+                    <script>
+                        addCharacterLimit("#textarea-{{ forloop.counter0 }}", 1000)
+                    </script>
                 {% endif %}
 
                 <!-- "mc type" -->
