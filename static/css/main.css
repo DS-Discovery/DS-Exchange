@@ -56,3 +56,8 @@ div.column-pane {
     overflow: scroll;
     overflow-x: hidden;
 }
+
+/* for showing linebreaks */
+.render-whitespace  {
+    white-space: pre-line;
+}

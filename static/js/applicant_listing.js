@@ -235,7 +235,7 @@ function renderApplication(appId)  {
 
         <p class="text-sm"><em>Why are you interested in the Discovery program? What do you hope to gain?</em></p>
 
-        <p>${ student.general_question }</p>
+        <p class="render-whitespace">${ student.general_question }</p>
 
         <h5>Skills</h5>
 
@@ -260,7 +260,7 @@ function renderApplication(appId)  {
 
         <h6>Additional Skills</h6>
 
-        <p>${ student.additional_skills }</p>
+        <p class="render-whitespace">${ student.additional_skills }</p>
 
         <h5>Application Questions</h5>
 
