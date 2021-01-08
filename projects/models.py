@@ -7,6 +7,23 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+def get_default_skills():
+    return {
+        "Python": "",
+        "R": "",
+        "SQL": "",
+        "Tableau/Looker": "",
+        "Data Visualization": "",
+        "Data Manipulation": "",
+        "Text Analysis": "",
+        "Machine Learning/Deep Learning": "",
+        "Geospatial Data, Tools and Libraries": "",
+        "Web Development (frontend, backend, full stack)": "",
+        "Mobile App Development": "",
+        "Cloud Computing": "",
+    }
+
+
 class Semester(models.TextChoices):
     SP21 = ("SP21", _("Spring 2021"))
     FA21 = ("FA21", _("Fall 2021"))
@@ -37,7 +54,8 @@ class Project(models.Model):
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset = models.CharField(max_length=50, blank=True)
     deliverable = models.CharField(max_length=500, blank=True)
-    skillset = models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
+    skillset = models.JSONField(default=get_default_skills, null=False)
+    # models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
     # TODO: dropdown for skills in admin view
 
     @property
@@ -112,3 +130,4 @@ class Question(models.Model):
 
 
 from applications.models import Application
+from students.models import Student

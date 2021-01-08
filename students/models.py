@@ -4,24 +4,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from applications.models import Answer, Application
-from projects.models import Project, Question, Semester
-
-
-def get_default_skills():
-    return {
-        "Python": "",
-        "R": "",
-        "SQL": "",
-        "Tableau/Looker": "",
-        "Data Visualization": "",
-        "Data Manipulation": "",
-        "Text Analysis": "",
-        "Machine Learning/Deep Learning": "",
-        "Geospatial Data, Tools and Libraries": "",
-        "Web Development (frontend, backend, full stack)": "",
-        "Mobile App Development": "",
-        "Cloud Computing": "",
-    }
+from projects.models import get_default_skills, Project, Question, Semester
 
 
 class Student(models.Model):
@@ -33,15 +16,6 @@ class Student(models.Model):
         CED = ("CED", _("College of Environmental Design"))
         CNR = ("CNR", _("Rausser College of Natural Resources"))
         HAAS = ("HAAS", _("Haas School of Business"))
-
-    # college_choices = (
-    #     ('College Letters & Science','College Letters & Science'),
-    #     ('College of Engineering','College of Engineering'),
-    #     ('College of Chemistry', 'College of Chemistry'),
-    #     ('College of Environmental Design','College of Environmental Design'),
-    #     ('Rausser College of Natural Resources','Rausser College of Natural Resources'),
-    #     ('Haas School of Business','Haas School of Business'),
-    # )
 
     egt_mapping = {k: v for k, v in Semester.choices}
     college_mapping = {k: v for k, v in College.choices}
