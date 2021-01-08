@@ -90,6 +90,25 @@ function clickProject(projectNum) {
 function replaceDescription(project) {
     $(descriptionQuery).empty();
 
+    var htmlSkillset = `
+        <table class="table my-3">
+            <tr>
+                <th>Skill</th>
+                <th>Skill Level</th>
+            </tr>
+    `;
+    for (skill in project.skillset) {
+        htmlSkillset += `
+            <tr>
+                <td>${ skill }</th>
+                <td>${ project.skillset[skill] }</td>
+            </tr>
+        `;
+    }
+    htmlSkillset += `
+        </table>
+    `;
+
     var htmlDescription = mdConverter.makeHtml(project.description);
     var htmlTimeline = mdConverter.makeHtml(project.timeline);
     var htmlWorkflow = mdConverter.makeHtml(project.project_workflow)
@@ -112,7 +131,7 @@ function replaceDescription(project) {
         <p class="render-whitespace">${ project.deliverable }</p>
 
         <p class="mt-4"><strong>Applicant Skillset</strong></p>
-        <p class="render-whitespace">${ project.skillset }</p>
+        ${ htmlSkillset }
 
         <p class="mt-4"><strong>Project Organization:</strong> ${ project.organization }</p>
         <p class="render-whitespace">${ project.organization_description }</p>

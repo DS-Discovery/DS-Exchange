@@ -1,11 +1,17 @@
-# Register your models here.
+import json
+import logging
+
+from django import forms
 from django.contrib import admin
 from django.forms import ModelForm, Textarea
+from django.utils.translation import ugettext_lazy as _
 
-from .models import Partner
-from .models import Project
-from .models import Question
-from .models import PartnerProjectInfo
+from students.models import Student
+
+from .models import get_default_skills, Partner, PartnerProjectInfo, Project, Question
+
+
+logger = logging.getLogger(__name__)
 
 
 class QuestionInLine(admin.TabularInline):
@@ -33,6 +39,22 @@ class PartnerAdmin(admin.ModelAdmin):
 admin.site.register(Partner, PartnerAdmin)
 
 
+class PrettyJSONWidget(Textarea):
+
+    def format_value(self, value):
+        try:
+            value = json.dumps(json.loads(value), indent=2, sort_keys=True)
+            # these lines will try to adjust size of TextArea to fit to content
+            row_lengths = [len(r) for r in value.split('\n')]
+            self.attrs['rows'] = min(max(len(row_lengths) + 2, 10), 30)
+            self.attrs['style'] = "font-family: monospace;"
+            # self.attrs['cols'] = 100
+            return value
+        except Exception as e:
+            logger.warning("Error while formatting JSON: {}".format(e))
+            return super(PrettyJSONWidget, self).format_value(value)
+
+
 class ProjectAdminForm(ModelForm):
     class Meta:
         model = Project
@@ -43,7 +65,7 @@ class ProjectAdminForm(ModelForm):
             'project_workflow': Textarea(attrs={"cols": "100"}),
             'dataset': Textarea(attrs={"cols": "100"}),
             'deliverable': Textarea(attrs={"cols": "100"}),
-            'skillset': Textarea(attrs={"cols": "100"}),
+            'skillset': PrettyJSONWidget(attrs={"cols": "100"}),
         }
         fields = '__all__'
 
@@ -53,15 +75,20 @@ class ProjectAdminForm(ModelForm):
         for f in ["description", "timeline", "project_workflow"]:
             self.fields[f].help_text = md_help
         self.fields["project_category"].help_text = "Please enter as a semicolon-delimited string, e.g. <code style='font-size: inherit;'>Academic;Government</code>."
-
+        self.fields["skillset"].help_text = f"The values in the JSON object above should be among the keys in this mapping: <code style='font-size: inherit;'>{Student.skill_levels_options}</code>."
+        
+        # for s, l in self.instance.skillset.items():
+        #     # self.fields[s] = forms.ChoiceField(choices=Student.skill_levels, label=_(s), widget=forms.Select())
+        #     self.fields[s] = forms.CharField()
+        #     self.fields[s].initial = self.instance.skillset[s]
 
 
 class ProjectAdmin(admin.ModelAdmin):
     
-    form =  ProjectAdminForm
+    form = ProjectAdminForm
     # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
-    list_display = ('project_name', 'project_category', 'semester', )
+    list_display = ('project_name', 'project_category', 'semester', 'num_applications')
     list_filter = ['project_category']
     search_fields = ['project_name']
     ordering = ("project_name", )

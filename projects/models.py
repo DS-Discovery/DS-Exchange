@@ -7,6 +7,23 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+def get_default_skills():
+    return {
+        "Python": "",
+        "R": "",
+        "SQL": "",
+        "Tableau/Looker": "",
+        "Data Visualization": "",
+        "Data Manipulation": "",
+        "Text Analysis": "",
+        "Machine Learning/Deep Learning": "",
+        "Geospatial Data, Tools and Libraries": "",
+        "Web Development (frontend, backend, full stack)": "",
+        "Mobile App Development": "",
+        "Cloud Computing": "",
+    }
+
+
 class Semester(models.TextChoices):
     SP21 = ("SP21", _("Spring 2021"))
     FA21 = ("FA21", _("Fall 2021"))
@@ -32,15 +49,19 @@ class Project(models.Model):
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
 
-    organization_description = models.CharField(max_length=500, blank=True) # 1500?
+    organization_description = models.CharField(max_length=1500, blank=True)
     timeline = models.CharField(max_length=1000, blank=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
-    dataset = models.CharField(max_length=500, blank=True) # 50
+    dataset = models.CharField(max_length=50, blank=True)
     deliverable = models.CharField(max_length=500, blank=True)
-    skillset = models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
+    skillset = models.JSONField(default=get_default_skills, null=False)
+    # models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
     # TODO: dropdown for skills in admin view
 
-    
+    @property
+    def num_applications(self):
+        return Application.objects.filter(project=self).count()
+
     def __str__(self):
         return self.project_name
 
@@ -106,3 +127,7 @@ class Question(models.Model):
 
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
+
+
+from applications.models import Application
+from students.models import Student
