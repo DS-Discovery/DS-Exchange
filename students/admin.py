@@ -1,12 +1,20 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from projects.models import Question
 
 from .models import Answer, DataScholar, Student
 
 
-class StudentAdmin(admin.ModelAdmin):
+class StudentResource(resources.ModelResource):
+    class Meta:
+        model = Student
 
+
+class StudentAdmin(ImportExportModelAdmin):
+
+    resource_class = StudentResource
     list_display = ['last_name', 'first_name', 'student_id', 'email_address', ]
     ordering = list_display.copy()
 

@@ -5,6 +5,8 @@ from django import forms
 from django.contrib import admin
 from django.forms import ModelForm, Textarea
 from django.utils.translation import ugettext_lazy as _
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from students.models import Student
 
@@ -83,8 +85,14 @@ class ProjectAdminForm(ModelForm):
         #     self.fields[s].initial = self.instance.skillset[s]
 
 
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectResource(resources.ModelResource):
+    class Meta:
+        model = Project
+
+
+class ProjectAdmin(ImportExportModelAdmin):
     
+    resource_class = ProjectResource
     form = ProjectAdminForm
     # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
