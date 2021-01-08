@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.http import JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
 
@@ -151,8 +151,6 @@ def apply(request, project_name):
             except:
                  application = Application(student=student, project=project, status = "SUB")
 
-            application.save()
-
             for post in ans_list:
                 print(post)
 
@@ -193,6 +191,8 @@ def apply(request, project_name):
             #     # raise Http404("Student has applied to 3 applications")
             #     messages.info(request, 'You have already applied to 3 projects.')
             #     return redirect('/projects')
+
+            application.save()
 
             messages.info(request, 'Your application has been submitted successfully!')
             return redirect('/projects')

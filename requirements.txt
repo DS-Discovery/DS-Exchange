@@ -5,3 +5,5 @@ django-allauth
 login
 whitenoise
 django-flags
+PyYAML
+django-gmailapi-backend

@@ -159,6 +159,7 @@ def login_callback(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
+
     if Partner.objects.filter(email_address = email).exists() or Student.objects.filter(email_address = email).exists():
         return redirect("/profile")
     else:

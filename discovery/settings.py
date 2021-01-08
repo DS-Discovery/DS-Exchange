@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import yaml
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
+SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.environ else 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+
+if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
+    with open(BASE_DIR / 'secrets.yml') as f:
+        addl_config = yaml.full_load(f.read())
+    
+    assert isinstance(addl_config, dict), f"Additional environment variables invalid: {addl_config}"
+    os.environ.update(addl_config)
 
 if not DEBUG:
     LOGGING = {
@@ -50,6 +58,7 @@ if not DEBUG:
         }
     }
 
+
 ALLOWED_HOSTS = [
     # 'discovery-application.azurewebsites.net', # old host
     'dsdiscovery.org',
@@ -74,6 +83,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'profile',
+
+    'gmailapi_backend', # for email
     # 'social_app',
 
     'flags',
@@ -181,22 +192,24 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# """
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 WHITENOISE_MANIFEST_STRICT = True
 WHITENOISE_USE_FINDERS = True
 
 STATICFILES_DIRS = [
-    # STATIC_ROOT,
     BASE_DIR / 'static',
-    # BASE_DIR / 'static' / 'css',
-    # os.path.join(BASE_DIR, 'static'),
-    # os.path.join(BASE_DIR, 'boot'),
 ]
-# """
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# Email
+
+EMAIL_BACKEND = 'gmailapi_backend.mail.GmailBackend'
+EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+GMAIL_API_CLIENT_ID = os.environ["GMAIL_CLIENT_ID"]
+GMAIL_API_CLIENT_SECRET = os.environ["GMAIL_CLIENT_SECRET"]
+GMAIL_API_REFRESH_TOKEN = os.environ["GMAIL_REFRESH_TOKEN"]
+
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

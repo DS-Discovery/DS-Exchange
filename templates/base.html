@@ -91,6 +91,11 @@
         // sets the 'active' class on the nav link of the current route
         var navHeaderRoute = window.location.pathname.split("/")[1];
         $("#primary-navbar li.nav-item a[href='/" + navHeaderRoute + "']").parent().addClass("active");
+
+        // tooltips
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
     </script>
 
 </body>
