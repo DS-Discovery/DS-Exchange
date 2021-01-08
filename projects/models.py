@@ -50,11 +50,13 @@ class Project(models.Model):
     description = models.CharField(max_length=5000)
 
     organization_description = models.CharField(max_length=1500, blank=True)
-    timeline = models.CharField(max_length=1000, blank=True)
+    timeline = models.CharField(max_length=1500, blank=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset = models.CharField(max_length=50, blank=True)
-    deliverable = models.CharField(max_length=500, blank=True)
+    deliverable = models.CharField(max_length=1000, blank=True)
     skillset = models.JSONField(default=get_default_skills, null=False)
+    additional_skills = models.CharField(max_length=500, blank=True)
+    technical_requirements = models.CharField(max_length=500, blank=True)
     # models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
     # TODO: dropdown for skills in admin view
 
@@ -80,6 +82,8 @@ class Project(models.Model):
             "dataset": self.dataset,
             "deliverable": self.deliverable,
             "skillset": self.skillset,
+            "additional_skills": self.additional_skills,
+            "technical_requirements": self.technical_requirements,
         }
 
 
