@@ -5,6 +5,7 @@ from .models import Application
 
 class ApplicationAdmin(admin.ModelAdmin):
     
-    list_display = ('project', 'student')
+    list_display = ('id', 'project', 'student', 'status')
+    ordering = ('id', )
 
 admin.site.register(Application, ApplicationAdmin)
