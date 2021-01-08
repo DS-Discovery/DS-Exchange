@@ -95,6 +95,10 @@ class Student(models.Model):
     def id(self):
         return self.email_address
 
+    @property
+    def is_scholar(self):
+        return DataScholar.objects.filter(email_address=self.email_address).exists()
+
     def to_dict(self):
         return {
             "email_address": self.email_address,
@@ -108,6 +112,7 @@ class Student(models.Model):
             "general_question": self.general_question,
             "skills": self.skills,
             "additional_skills": self.additional_skills,
+            "is_scholar": self.is_scholar,
         }
 
     @property
@@ -116,3 +121,8 @@ class Student(models.Model):
 
     def __str__(self):
         return self.email_address
+
+
+class DataScholar(models.Model):
+
+    email_address = models.CharField(max_length=100, primary_key=True)
