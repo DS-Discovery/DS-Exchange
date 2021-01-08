@@ -7,3 +7,4 @@ whitenoise
 django-flags
 PyYAML
 django-gmailapi-backend
+django-import-export
