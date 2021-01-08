@@ -401,6 +401,7 @@ function updateStatusAndSubmit(appId, newStatus) {
             $(`#btn-${ newStatus }`).addClass("disabled btn-info").removeClass("btn-outline-info").attr("disabled", true);
             console.log(data);
             sendAlert(data, 5000);
+            appInfo.applications[appId].status = newStatus;
         },
     }).fail((xhr) => {
         alert(`The operation could not be performed. The server responded with the error:\n\n${ xhr.responseText }`);

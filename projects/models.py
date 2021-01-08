@@ -32,12 +32,14 @@ class Project(models.Model):
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
 
-    organization_description = models.CharField(max_length=500, blank=True)
+    organization_description = models.CharField(max_length=500, blank=True) # 1500?
     timeline = models.CharField(max_length=1000, blank=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
-    dataset = models.CharField(max_length=500, blank=True)
+    dataset = models.CharField(max_length=500, blank=True) # 50
     deliverable = models.CharField(max_length=500, blank=True)
-    skillset = models.CharField(max_length=500, blank=True)
+    skillset = models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
+    # TODO: dropdown for skills in admin view
+
     
     def __str__(self):
         return self.project_name
