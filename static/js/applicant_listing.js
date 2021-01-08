@@ -60,7 +60,7 @@ function renderApplicantList() {
         var app = appInfo.applications[appId];
         var student = appInfo.students[app.student];
         if (app.project == pId && (!filterSkills || student.skills[skill] === level)) {
-            $(appButtonQuery).append(`
+            var btn = `
                 <button 
                     type="button" 
                     class="list-group-item list-group-item-action" 
@@ -68,8 +68,12 @@ function renderApplicantList() {
                     value="${ appId }"
                     onclick="renderApplication(${ appId })"
                     id="app-${ appId }"
-                >${ appInfo.students[app.student].first_name } ${ appInfo.students[app.student].last_name }</button>
-            `);
+                >${ appInfo.students[app.student].first_name } ${ appInfo.students[app.student].last_name }`;
+            if (student.is_scholar) {
+                btn += `<span class="badge badge-pill badge-info ml-2" data-toggle="tooltip" data-placement="bottom" title="Data Scholar">S</span>`;
+            }
+            btn += `</button>`;
+            $(appButtonQuery).append(btn);
         }
     }
 }
