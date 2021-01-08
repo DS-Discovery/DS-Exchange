@@ -150,6 +150,9 @@ DATABASES = {
     }
 }
 
+# Data import/export
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -199,13 +202,11 @@ STATICFILES_DIRS = [
 
 
 # Email
-
 EMAIL_BACKEND = 'gmailapi_backend.mail.GmailBackend'
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 GMAIL_API_CLIENT_ID = os.environ.get("GMAIL_CLIENT_ID")
 GMAIL_API_CLIENT_SECRET = os.environ.get("GMAIL_CLIENT_SECRET")
 GMAIL_API_REFRESH_TOKEN = os.environ.get("GMAIL_REFRESH_TOKEN")
-
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -236,10 +237,6 @@ ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 LOGIN_URL = '/profile/login'
 
 SOCIALACCOUNT_ADAPTER = "user_profile.models.CustomSocialAccountAdapter"
-# SOCIALACCOUNT_FORMS = {
-#     'signup': 'login.forms.StudentSignupForm'
-# }
-
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
