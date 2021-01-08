@@ -61,7 +61,7 @@ class ProjectAdmin(admin.ModelAdmin):
     form =  ProjectAdminForm
     # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
-    list_display = ('project_name', 'project_category', 'semester', )
+    list_display = ('project_name', 'project_category', 'semester', 'num_applications')
     list_filter = ['project_category']
     search_fields = ['project_name']
     ordering = ("project_name", )

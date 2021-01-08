@@ -40,7 +40,10 @@ class Project(models.Model):
     skillset = models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
     # TODO: dropdown for skills in admin view
 
-    
+    @property
+    def num_applications(self):
+        return Application.objects.filter(project=self).count()
+
     def __str__(self):
         return self.project_name
 
@@ -106,3 +109,6 @@ class Question(models.Model):
 
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
+
+
+from applications.models import Application

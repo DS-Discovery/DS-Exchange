@@ -8,4 +8,3 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('project', 'student')
 
 admin.site.register(Application, ApplicationAdmin)
-
