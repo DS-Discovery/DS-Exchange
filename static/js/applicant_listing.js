@@ -346,7 +346,7 @@ function loadApplicationSidebar(appId) {
 
         <div class="d-flex flex-column my-1">
 
-            <h5 class="text-center">Action Items</h5>
+            <h5 class="text-center">Application Status</h5>
 
             <div class="my-1">
 
