@@ -133,6 +133,12 @@ function replaceDescription(project) {
         <p class="mt-4"><strong>Applicant Skillset</strong></p>
         ${ htmlSkillset }
 
+        <p class="mt-4"><strong>Additional Skills</strong></p>
+        <p class="render-whitespace">${ project.additional_skills }</p>
+
+        <p class="mt-4"><strong>Technical Requirements</strong></p>
+        <p class="render-whitespace">${ project.technical_requirements }</p>
+
         <p class="mt-4"><strong>Project Organization:</strong> ${ project.organization }</p>
         <p class="render-whitespace">${ project.organization_description }</p>
     `);
