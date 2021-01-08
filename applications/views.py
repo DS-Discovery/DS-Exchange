@@ -78,30 +78,7 @@ def list_student_applications(request):
             selected_application = 0
 
         app = all_apps[selected_application]
-        
-        # context["selected_application"] = selected_application
-        # if selected_application == 0:
-        #     context["active_project"] = first_project
-        #     context["active_application"] = all_apps[0]
-        # elif selected_application == 1:
-        #     context["active_project"] = second_project
-        #     context["active_application"] = all_apps[1]
-        # elif selected_application == 2:
-        #     context["active_project"] = third_project
-        #     context["active_application"] = all_apps[2]
-        # else:
-        #     context["active_project"] = first_project
-        #     context["active_application"] = all_apps[0]
-
-        # if not context["active_application"] and all_apps:
-        #     context["active_project"] = first_project
-        #     context["active_application"] = all_apps[0]
-        
-        # if context["active_application"] and context["active_application"].status != "SENT":
-        #     context["available_status"] = ["Accept Offer", "Reject Offer"]
-        
-        # else:
-        #     context["available_status"] = ["NA"]
+        context["selected_application"] = selected_application
 
         answers = Answer.objects.filter(student=student, application=app)
         context["questions_and_answers"] = zip([a.question for a in answers], answers)
@@ -139,63 +116,6 @@ def list_project_applicants(request):
     skills = list(Student.default_skills.keys())
     skills.insert(0, "None")
     levels = list(Student.skill_levels_options.values())
-
-    # skill_wanted = "None"
-    # level_wanted = "No experience"
-    
-    # if request.GET.get("skill_wanted"):
-    #     skill_wanted = request.GET.get("skill_wanted")
-
-    # if request.GET.get("level_wanted"):
-    #     level_wanted = request.GET.get("level_wanted")
-
-    # selected_applicant = None
-    # if request.GET.get("selected_applicant"):
-    #     selected_applicant = request.GET.get("selected_applicant")
-
-    # if skill_wanted == "None":
-    #     applications = Application.objects.filter(project_id=project_wanted.id).order_by("created_at")
-    
-    # else:
-    #     print("skill_wanted:", skill_wanted)
-    #     print("level_wanted:", level_wanted)
-
-    #     for short in Student.skill_levels_options:
-    #         if Student.skill_levels_options[short] == level_wanted:
-    #             print(short)
-    #             applications = Application.objects.filter(project_id=project_wanted.id).filter(
-    #                 student___skills__contains={skill_wanted: short}
-    #             )
-    #             break
-
-    # if not applications or selected_applicant is None:
-    #     student = None
-    #     curr_app = None
-    
-    # else:
-    #     student = Application.objects.get(id=selected_applicant).student
-    #     curr_app = Application.objects.get(id=selected_applicant)
-    #     print("curr_app:", curr_app)
-
-    #     answers = Answer.objects.filter(student=student, application=curr_app)
-
-    # context = {
-    #     "num_apps": range(len(applications)),
-    #     "curr_app": curr_app,
-    #     "curr_student": student,
-    #     "skills": skills,
-    #     "skill_wanted": skill_wanted,
-    #     "levels": levels,
-    #     "level_wanted": level_wanted,
-    #     "applications": applications,
-    #     "projects": projects,
-    #     "project_wanted": project_wanted,
-    # }
-
-    # if curr_app is not None:
-    #     context.update({
-    #         "questions_and_answers": zip([a.question for a in answers], answers),
-    #     })
 
     context = {
         "applications_json": {
