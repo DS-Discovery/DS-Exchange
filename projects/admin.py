@@ -34,18 +34,26 @@ admin.site.register(Partner, PartnerAdmin)
 
 
 class ProjectAdminForm(ModelForm):
-  class Meta:
-    model = Project
-    widgets = {
-      'description': Textarea(attrs={"cols": "100"}),
-      'organization_description': Textarea(attrs={"cols": "100"}),
-      'timeline': Textarea(attrs={"cols": "100"}),
-      'project_workflow': Textarea(attrs={"cols": "100"}),
-      'dataset': Textarea(attrs={"cols": "100"}),
-      'deliverable': Textarea(attrs={"cols": "100"}),
-      'skillset': Textarea(attrs={"cols": "100"}),
-    }
-    fields = '__all__'
+    class Meta:
+        model = Project
+        widgets = {
+            'description': Textarea(attrs={"cols": "100"}),
+            'organization_description': Textarea(attrs={"cols": "100"}),
+            'timeline': Textarea(attrs={"cols": "100"}),
+            'project_workflow': Textarea(attrs={"cols": "100"}),
+            'dataset': Textarea(attrs={"cols": "100"}),
+            'deliverable': Textarea(attrs={"cols": "100"}),
+            'skillset': Textarea(attrs={"cols": "100"}),
+        }
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        md_help = "This field supports Markdown syntax (but please don't use Markdown headers)."
+        for f in ["description", "timeline", "project_workflow"]:
+            self.fields[f].help_text = md_help
+        self.fields["project_category"].help_text = "Please enter as a semicolon-delimited string, e.g. <code style='font-size: inherit;'>Academic;Government</code>."
+
 
 
 class ProjectAdmin(admin.ModelAdmin):
