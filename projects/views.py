@@ -1,9 +1,14 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.mail import send_mail
+from django.db.models.signals import post_save
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, Http404, render, redirect
 from django.template.context_processors import csrf
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 from flags.state import flag_enabled
 
@@ -151,6 +156,8 @@ def apply(request, project_name):
             except:
                  application = Application(student=student, project=project, status = "SUB")
 
+            application.save()
+
             for post in ans_list:
                 print(post)
 
@@ -192,7 +199,8 @@ def apply(request, project_name):
             #     messages.info(request, 'You have already applied to 3 projects.')
             #     return redirect('/projects')
 
-            application.save()
+            # application.save()
+            send_app_confirmation_email(application)
 
             messages.info(request, 'Your application has been submitted successfully!')
             return redirect('/projects')
@@ -221,87 +229,16 @@ def apply(request, project_name):
         raise PermissionDenied("User is not logged in.")
 
 
-# def results(request, question_id):
-#     response = "You're looking at the results of question %s."
-#     return HttpResponse(response % question_id)
+def send_app_confirmation_email(app):
+    html_message = render_to_string("emails/app_confirmation.html", {"project": app.project})
+    plain_message = strip_tags(html_message)
 
-# @login_required
-# def partnerProjectView(request, project_name):
-#     email = None
-#     if request.user.is_authenticated:
-#         email = request.user.email
+    send_mail(
+        "DS Discovery Application Confirmation",
+        plain_message,
+        settings.EMAIL_HOST_USER,
+        [app.student.email_address],
+        html_message=html_message,
+    )
 
-#     try:
-#         context = Partner.objects.get(email_address = email)
-#     except ObjectDoesNotExist:
-#         return HttpResponseForbidden("User is not a partner.")
-#     # projects = context.projects.all()
-#     # breakpoint()
-#     canView = False
-#     for ppi in context.partnerprojectinfo_set.all():
-#         project = ppi.project
-#         if project.project_name == project_name:
-#             canView = True
-#     if not canView:
-#         return HttpResponseForbidden("User lacks permission to view this project.")
-#     project = Project.objects.get(project_name=project_name)
-#     questions = Question.objects.filter(project = project).order_by('question_num')
-
-
-#     projectPartnerRoles = PartnerProjectInfo.objects.filter(project = project)
-
-#     return render(request, 'projects/partnerProjectView.html', {'questions': questions, 'project' : project, 'projectPartnerRoles': projectPartnerRoles})
-
-
-# @login_required
-# def partnerlisting(request):
-#     # for category dropdown
-#     email = None
-#     if request.user.is_authenticated:
-#         email = request.user.email
-#     context = Partner.objects.get(email_address = email)
-#     roles = PartnerProjectInfo.objects.filter(partner = context)
-#     projects = [p.project for p in roles]
-
-#     # project_category_list = set()
-#     # for e in projects:
-#     #     categories = e.project_category.strip().split(',')
-#     #     categories = [cat.strip() for cat in categories]
-#     #     project_category_list.update(categories)
-#     # project_category_list = sorted(list(project_category_list))
-
-
-#     latest_question_list = projects
-#     context = {'latest_question_list': latest_question_list}
-
-#     # need to send requested category back to keep category selected
-#     if request.method == "POST":
-#         # here when select dropdown category
-        
-#         project = request.POST.get('project_wanted')
-#         print("project_wanted is", project)
-       
-#         if project:
-#             project = project.split("+")[0]
-            
-
-      
-#         if project:
-#             context["selected_project"] = Project.objects.filter(project_name=project)[0]
-#             # selected_partner = None
-#             # for partner in Partner.objects.all():
-#             #     projects = partner.projects.all()
-#             #     if context["selected_project"] in projects:
-#             #         selected_partner = partner
-#             # context["selected_partner"] = selected_partner
-#             context["labels"] = context["selected_project"].project_category.split(";")
-#             context['partnerProjectInfos'] = PartnerProjectInfo.objects.filter(project = context["selected_project"])
-     
-#             questions = Question.objects.filter(project = context["selected_project"]).order_by('question_num')
-#             context['questions'] = questions
-#             context["count"] = len(Application.objects.filter(project =  context["selected_project"]))
-
-#     # print("context", context)
-#     # print("latest_question_list", latest_question_list)
-    
-#     return render(request, 'projects/partnerListing.html', context)
+    print(f"Sent confirmation email to {app.student.email_address}")
