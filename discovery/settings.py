@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',
- 
+    'user_profile.apps.LoginConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,13 +82,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'profile',
-
     'gmailapi_backend', # for email
-    # 'social_app',
-
-    'flags',
-    
+    'import_export', # for exporting data
+    'flags', # feature flags
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -239,7 +235,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL ='/'
 # for login_required decorate
 LOGIN_URL = '/profile/login'
 
-SOCIALACCOUNT_ADAPTER = "profile.models.CustomSocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "user_profile.models.CustomSocialAccountAdapter"
 # SOCIALACCOUNT_FORMS = {
 #     'signup': 'login.forms.StudentSignupForm'
 # }
