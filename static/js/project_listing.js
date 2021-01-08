@@ -4,6 +4,9 @@ const projectInfoQuery = "div#project-sidebar"
 const categoryFilterQuery = "div#category-filter";
 const categoryFilterSelectId = "category-filter-select";
 
+// showdown
+const mdConverter = new showdown.Converter();
+
 var projects;
 
 function loadProjects() {
@@ -86,16 +89,21 @@ function clickProject(projectNum) {
 
 function replaceDescription(project) {
     $(descriptionQuery).empty();
+
+    var htmlDescription = mdConverter.makeHtml(project.description);
+    var htmlTimeline = mdConverter.makeHtml(project.timeline);
+    var htmlWorkflow = mdConverter.makeHtml(project.project_workflow)
+
     $(descriptionQuery).append(`
         <h5>${ project.project_name }</h5>
         <p class="mt-4"><strong>Project Description</strong></p>
-        <p class="render-whitespace">${ project.description }</p>
+        ${ htmlDescription }
         
         <p class="mt-4"><strong>Project Timeline</strong></p>
-        <p class="render-whitespace">${ project.timeline }</p>
+        ${ htmlTimeline }
 
         <p class="mt-4"><strong>Project Workflow</strong></p>
-        <p class="render-whitespace">${ project.project_workflow }</p>
+        ${ htmlWorkflow }
 
         <p class="mt-4"><strong>Dataset</strong></p>
         <p class="render-whitespace">${ project.dataset }</p>

@@ -44,21 +44,23 @@ def list_student_applications(request):
     first_project, second_project, third_project = None, None, None
     all_apps = Application.objects.filter(student = student).order_by("created_at")
     print("all_apps", all_apps)
-    if len(all_apps) > 2:
-        third_project = Project.objects.get(id=all_apps[2].project_id)
-    if len(all_apps) > 1:
-        second_project = Project.objects.get(id=all_apps[1].project_id)
-    if len(all_apps) > 0:
-        first_project = Project.objects.get(id=all_apps[0].project_id)
-        no_apps = False
-    else:
-        no_apps = True
+
+    no_apps = len(all_apps) == 0
+    # if len(all_apps) > 2:
+    #     third_project = Project.objects.get(id=all_apps[2].project_id)
+    # if len(all_apps) > 1:
+    #     second_project = Project.objects.get(id=all_apps[1].project_id)
+    # if len(all_apps) > 0:
+    #     first_project = Project.objects.get(id=all_apps[0].project_id)
+    #     no_apps = False
+    # else:
+    #     no_apps = True
 
     num_apps = list(range(0, len(all_apps)))
    
     context = {
         "num_apps": num_apps,
-        "active_project": first_project,
+        # "active_project": first_project,
         "projects": [a.project for a in all_apps],
     }
 
@@ -74,34 +76,35 @@ def list_student_applications(request):
             selected_application = int(selected_application)
         else:
             selected_application = 0
-        
-        context["selected_application"] = selected_application
-        if selected_application == 0:
-            context["active_project"] = first_project
-            context["active_application"] = all_apps[0]
-        elif selected_application == 1:
-            context["active_project"] = second_project
-            context["active_application"] = all_apps[1]
-        elif selected_application == 2:
-            context["active_project"] = third_project
-            context["active_application"] = all_apps[2]
-        else:
-            context["active_project"] = first_project
-            context["active_application"] = all_apps[0]
 
-        if not context["active_application"] and all_apps:
-            context["active_project"] = first_project
-            context["active_application"] = all_apps[0]
+        app = all_apps[selected_application]
         
-        if context["active_application"] and context["active_application"].status != "SENT":
-            context["available_status"] = ["Accept Offer", "Reject Offer"]
-        
-        else:
-            context["available_status"] = ["NA"]
+        # context["selected_application"] = selected_application
+        # if selected_application == 0:
+        #     context["active_project"] = first_project
+        #     context["active_application"] = all_apps[0]
+        # elif selected_application == 1:
+        #     context["active_project"] = second_project
+        #     context["active_application"] = all_apps[1]
+        # elif selected_application == 2:
+        #     context["active_project"] = third_project
+        #     context["active_application"] = all_apps[2]
+        # else:
+        #     context["active_project"] = first_project
+        #     context["active_application"] = all_apps[0]
 
-        if context["active_application"] is not None:
-            answers = Answer.objects.filter(student=student, application=context["active_application"])
-            context["questions_and_answers"] = zip([a.question for a in answers], answers)
+        # if not context["active_application"] and all_apps:
+        #     context["active_project"] = first_project
+        #     context["active_application"] = all_apps[0]
+        
+        # if context["active_application"] and context["active_application"].status != "SENT":
+        #     context["available_status"] = ["Accept Offer", "Reject Offer"]
+        
+        # else:
+        #     context["available_status"] = ["NA"]
+
+        answers = Answer.objects.filter(student=student, application=app)
+        context["questions_and_answers"] = zip([a.question for a in answers], answers)
 
     return render(request, "applications/student_applications.html", context=context)
 

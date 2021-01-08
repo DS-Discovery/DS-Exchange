@@ -17,55 +17,12 @@ from .models import Partner, PartnerProjectInfo, Project, Question
 
 @login_required
 def list_projects(request):
-    # for category dropdown
-
     email = None
     if request.user.is_authenticated:
         email = request.user.email
-    # student_exists = Student.objects.filter(email_address = email).exists()
 
     if email is None:
         return redirect('/profile/login')
-
-    # project_category_list = set()
-    # for e in Project.objects.all():
-    #     categories = e.project_category.strip().split(';')
-    #     categories = [cat.strip() for cat in categories]
-    #     project_category_list.update(categories)
-
-    # project_category_list = sorted(list(project_category_list))
-    # latest_question_list = Project.objects.order_by('project_name')
-    # context = {
-    #     'latest_question_list': latest_question_list,
-    #     'project_category_list': project_category_list,
-    # }
-
-    # # need to send requested category back to keep category selected
-    # if request.GET.get('category_wanted') or request.GET.get('project_wanted'):
-        
-    #     # here when select dropdown category
-    #     category = request.GET.get('category_wanted')
-    #     project = request.GET.get('project_wanted')
-
-    #     if category:
-    #         # send selected category back
-    #         context["selected_category"] = category
-    #         latest_question_list = Project.objects.filter(project_category__contains=category)
-    #         context["latest_question_list"] = latest_question_list
-
-    #     if project:
-    #         context["selected_project"] = Project.objects.filter(project_name=project)[0]
-            
-    #         selected_partner = None
-    #         for partner in Partner.objects.all():
-    #             projects = [p.project for p in partner.partnerprojectinfo_set.all()]
-    #             if context["selected_project"] in projects:
-    #                 selected_partner = partner
-            
-    #         context["selected_partner"] = selected_partner
-    #         context["labels"] = context["selected_project"].project_category.split(";")
-
-    #         context["num_applicants"] = len(Application.objects.filter(project=context["selected_project"]))
 
     return render(request, 'projects/listing.html', {"projects_json": get_projects_json()})
 
@@ -80,19 +37,6 @@ def get_projects_json():
     projects = sorted(projects, key=lambda d: d["project_name"])
 
     return {"projects": projects}
-
-
-# def detail(request, project_name):
-#     try:
-#         project = Project.objects.get(project_name=project_name)
-#         print(project, project_name)
-#         # print([e.project_name for e in Partner.objects.all()])
-#         questions = Question.objects.filter(project = project)
-#         # questions = question.objects.get(project_name = project)
-
-#     except Question.DoesNotExist:
-#         raise Http404("Question does not exist")
-#     return render(request, 'project.html', {'project': project})
 
 
 @login_required
@@ -134,8 +78,11 @@ def apply(request, project_name):
 
     count = Application.objects.filter(student = student).count()
 
-    if count > 2:
+    if count > 2 and not student.is_scholar:
         messages.info(request, 'You have already applied to 3 projects.')
+        return redirect('/projects')
+    elif count > 5 and student.is_scholar:
+        messages.info(request, 'You have already applied to 6 projects.')
         return redirect('/projects')
 
     count = Application.objects.filter(student = student, project = project).count()
@@ -235,13 +182,13 @@ def apply(request, project_name):
                     print(form.errors)
 
             # TODO: allow students to update rank
-            studentUpdater = Student.objects.filter(email_address = email)
-            if not student.first_choice:
-                studentUpdater.update(first_choice = project.project_name)
-            elif not student.second_choice:
-                studentUpdater.update(second_choice = project.project_name)
-            elif not student.third_choice:
-                studentUpdater.update(third_choice = project.project_name)
+            # studentUpdater = Student.objects.filter(email_address = email)
+            # if not student.first_choice:
+            #     studentUpdater.update(first_choice = project.project_name)
+            # elif not student.second_choice:
+            #     studentUpdater.update(second_choice = project.project_name)
+            # elif not student.third_choice:
+            #     studentUpdater.update(third_choice = project.project_name)
             # else:
             #     # raise Http404("Student has applied to 3 applications")
             #     messages.info(request, 'You have already applied to 3 projects.')
