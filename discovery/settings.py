@@ -74,7 +74,7 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',
-    'user_profile.apps.LoginConfig',
+    'user_profile.apps.UserProfileConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
