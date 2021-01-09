@@ -112,6 +112,7 @@ function replaceDescription(project) {
     var htmlDescription = mdConverter.makeHtml(project.description);
     var htmlTimeline = mdConverter.makeHtml(project.timeline);
     var htmlWorkflow = mdConverter.makeHtml(project.project_workflow)
+    var htmlOrgDescription = mdConverter.makeHtml(project.organization_description)
 
     $(descriptionQuery).append(`
         <h5>${ project.project_name }</h5>
@@ -140,7 +141,7 @@ function replaceDescription(project) {
         <p class="render-whitespace">${ project.technical_requirements }</p>
 
         <p class="mt-4"><strong>Project Organization:</strong> ${ project.organization }</p>
-        <p class="render-whitespace">${ project.organization_description }</p>
+        ${ htmlOrgDescription }
     `);
 }
 
