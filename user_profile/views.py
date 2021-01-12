@@ -13,6 +13,10 @@ from projects.models import Partner, PartnerProjectInfo
 from .forms import EditStudentSignupForm
 
 
+def get_user_email(user):
+    return user.email
+
+
 @login_required
 def student_signup(request):
     email = None
