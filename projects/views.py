@@ -20,14 +20,14 @@ from .forms import EditProjectForm
 from .models import Partner, PartnerProjectInfo, Project, Question
 
 
-@login_required
+# @login_required
 def list_projects(request):
-    email = None
-    if request.user.is_authenticated:
-        email = request.user.email
+    # email = None
+    # if request.user.is_authenticated:
+    #     email = request.user.email
 
-    if email is None:
-        return redirect('/profile/login')
+    # if email is None:
+    #     return redirect('/profile/login')
 
     return render(request, 'projects/listing.html', {"projects_json": get_projects_json()})
 
