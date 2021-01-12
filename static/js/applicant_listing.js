@@ -70,7 +70,9 @@ function renderApplicantList() {
                     id="app-${ appId }"
                 >${ appInfo.students[app.student].first_name } ${ appInfo.students[app.student].last_name }`;
             if (student.is_scholar) {
-                btn += `<span class="badge badge-pill badge-info ml-2" data-toggle="tooltip" data-placement="bottom" title="Data Scholar">S</span>`;
+                btn += `<a href="https://data.berkeley.edu/academics/resources/data-scholars" target="_blank">
+                    <span class="badge badge-pill badge-info ml-2" data-toggle="tooltip" data-placement="bottom" title="Data Scholar">S</span>
+                </a>`;
             }
             btn += `</button>`;
             $(appButtonQuery).append(btn);
