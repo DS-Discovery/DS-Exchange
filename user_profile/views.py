@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
+from flags.state import flag_enabled
+
 from students.models import Student
 from projects.models import Partner, PartnerProjectInfo
 
@@ -59,6 +61,14 @@ def edit_student_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
+    
+    if not flag_enabled('APPLICATIONS_OPEN'):
+        messages.info(
+            request, 
+            "Applications are currently closed and applicants are not longer allowed to edit their profiles. "
+            "If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
+        )
+        return redirect("/profile")
 
     if request.method == 'POST':
         print("Post request: ", request.POST)

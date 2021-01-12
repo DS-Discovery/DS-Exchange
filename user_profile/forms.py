@@ -13,40 +13,6 @@ from students.models import Student
 from projects.models import Partner, Project
 
 
-# class StudentSignupForm(forms.ModelForm):
-#     # skills = JSONField()
-
-#     class Meta:
-#         model = Student
-#         # fields = "__all__"
-#         # general_question = forms.CharField(label = "Why are you interested in the Discovery program? What do you hope to gain?")
-#         fields = (
-#             'first_name',
-#             'last_name',
-#             'student_id',
-#             'college',
-#             'major',
-#             'year',
-#             'resume_link',
-#             'general_question',
-#             # *model.default_skills.keys(),
-#         )
-
-#         labels = {
-#             'general_question': _('Why are you interested in the Discovery program? What do you hope to gain?'),
-#         }
-
-#         widgets = {
-#             'general_question': Textarea(attrs={'class': 'form-control'})
-#         }
-
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         for s, l in self.instance.skills.items():
-#             self.fields[s] = ChoiceField(choices=Student.skill_levels, widget=Select(attrs={'class': 'skill-dropdown'}))
-#             self.fields[s].initial = self.instance.skills[s]
-
-
 class EditStudentSignupForm(forms.ModelForm):
     # skills = JSONField()
 
@@ -80,7 +46,7 @@ class EditStudentSignupForm(forms.ModelForm):
             # 'additional_skills': Textarea(attrs={'class': 'form-control'}),
         }
 
-    resume_link = forms.URLField(label="Please provide a link to your resume.")
+    resume_link = forms.URLField(label="Please provide a sharable link to your resume (i.e. Google Drive).")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -8,6 +8,10 @@ html, body {
     font-size: 14px;
 }
 
+nav.navbar {
+    padding: 0 10px;
+}
+
 /* for application text questions */
 .application-question textarea {
     min-width: 450px;
