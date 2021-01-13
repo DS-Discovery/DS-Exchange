@@ -1,0 +1,94 @@
+{% extends 'three_column_view.html' %}
+{% load helperfuncs %}
+{% load static %}
+{% load feature_flags %}
+
+<!-- TODO -->
+
+<div class="d-flex flex-row justify-content-center align-items-center border p-2">
+    <ul class="list-group list-group-horizontal-lg">
+        <li class="list-group-item flex-fill"><h4 class="text-center">Applicants</h4></li>
+        <div class="mt-3"></div>
+        <li class="list-group-item flex-fill"><h4 class="text-center">Final Team</h4></li>
+    </ul>
+</div>
+
+
+{% block extra_head %}
+
+<script src="{% static 'js/applicant_listing.js' %}"></script>
+
+{% endblock %}
+
+
+{% block first_column %}
+
+<div class="list-group list-group-flush" id="app-list">
+
+</div>
+
+{% endblock %}
+
+
+{% block second_column %}
+
+{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
+
+<div class="p-2 my-1" id="application-questions">
+
+    {% if apps_reviewable %}
+
+        <p>Please select an applicant on the left.</p>
+
+        <script>
+            $(document).ready(loadApplications);
+        </script>
+
+    {% else %}
+
+        <p>Applications are not yet open for review. If you believe you have received this message in error, please email <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.</p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+
+{% block third_column %}
+
+{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
+
+{% if apps_reviewable %}
+
+    <div class="my-1 mt-2">
+
+        <h5 class="text-center">Project</h5>
+
+        <div id="project-filter">
+
+        </div>
+
+        <hr>
+        
+        <h5 class="text-center">Applicant Skills</h5>
+
+        <div id="skill-filter">
+
+        </div>
+
+    </div>
+
+    <hr>
+
+{% endif %}
+
+<div class="d-flex flex-column my-1" id="app-sidebar">
+    
+</div>
+
+{% csrf_token %}
+
+{{ applications_json|json_script:"applications-json" }}
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'three_column_view.html' %}
+{% load static %}
+
+{% block extra_head %}
+
+<script src="{% static 'js/project_listing.js' %}"></script>
+
+{% endblock %}
+
+
+{% block first_column %}
+    
+<div class="list-group list-group-flush" id="project-list">
+    <p>No projects are available.</p>
+</div>
+
+{% endblock %}
+
+
+{% block second_column %}
+
+<div class="mx-2 my-3" id="description">
+
+    <p>No project selected.</p>
+
+</div>
+
+{% endblock %}
+
+
+{% block third_column %}
+
+<!-- project category dropdown -->
+<div class="my-1 mt-2">
+
+    <h5 class="text-center">Project Category</h5>
+
+    <div id="category-filter">
+        <!-- <p>No categories are available.</p> -->
+    </div>
+
+</div>
+
+<hr>
+
+<div id="project-sidebar">
+
+</div>
+
+{{ projects_json|json_script:"projects-json" }}
+
+<script>
+    // This makes a request to gather all projects and load them
+    $(document).ready(loadProjects);
+</script>
+
+{% endblock %}

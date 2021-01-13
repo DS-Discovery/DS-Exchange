@@ -1,0 +1,87 @@
+{% extends 'two_column_view.html' %}
+{% load helperfuncs %}
+
+
+{% block container_class %}
+container
+{% endblock %}
+
+
+{% block first_column %}
+
+<div class="p-2">
+
+    <h5>Basic Information</h5>
+
+    <p><strong>Name: </strong> {{ context.first_name }} {{ context.last_name }}</p>
+    <p><strong>Email: </strong> {{ context.email_address }}</p>
+    <p><strong>SID: </strong> {{ context.student_id }}</p>
+    <p><strong>Major:  </strong>{{ context.major }}</p>
+    {% with context.year as year %}
+        <p><strong>EGT: </strong> {{ context.egt_mapping|index:year }}</p>
+    {% endwith %}
+    {% with context.college as college %}
+        <p><strong>College:  </strong>{{ context.college_mapping|index:college }}</p>
+    {% endwith %}
+    <p><strong>Resume: </strong><a href="{{ context.resume_link }}" targe="_blank" rel="noopener noreferrer">{{ context.resume_link }}</a></p>
+
+</div>
+
+<hr>
+
+<div class="p-2 d-flex flex-column align-items-center">
+
+    <a type="button" class="btn btn-outline-info" href="/profile/edit">Edit Profile</a>
+
+</div>
+
+{% endblock %}
+
+
+{% block second_column %}
+
+<div class="p-2">
+
+    <h5>General Interest Statement</h5>
+
+    <p class="render-whitespace">{{ context.general_question }}</p>
+
+</div>
+
+<hr>
+
+<div class="p-2 my-1">
+
+    <h5>Skills</h5>
+
+    <table class="table my-3">
+        <tr>
+            <th>Skill</th>
+            <th>Skill Level</th>
+        </tr>
+        {% for skill, level in skills_tups %}
+
+            <tr>
+                <td>{{ skill }}</th>
+                <td>{{ level }}</td>
+            </tr>
+
+        {% endfor %}
+    </table>
+
+    <h6>Additional Skills</h6>
+
+    <p class="render-whitespace">{{ context.additional_skills }}</p>
+
+</div>
+
+
+<!-- <h5>Application Info: </h5>
+<p><strong>First Choice: </strong> {{ context.first_choice }}</p>
+<p><strong>Second Choice:  </strong>{{ context.second_choice }}</p>
+<p><strong>Third Choice: </strong> {{ context.third_choice }}</p> -->
+
+
+
+
+{% endblock %}

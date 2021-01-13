@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load helperfuncs %}
+
+{% block container_class %}
+container
+{% endblock %}
+
+
+{% block content %}
+
+<div class="d-flex flex-column">
+
+    <div class="d-flex flex-row">
+        
+        <div class="col-12 p-2 mt-3">
+
+            <h5>Personal Information</h5>
+
+            <p><strong>Name:</strong> {{ partner.first_name }} {{ partner.last_name }}</p>
+            <p><strong>Email:</strong> {{ partner.email_address }}</p>
+
+            <h5 class="mt-5">Projects</h5>
+
+            <div class="list-group list-group-flush">
+
+                {% for project in projects %}
+            
+            
+                <div class="list-group-item">
+
+                    <strong>{{ project.project_name }}</strong> ({{ project.organization }})<br>
+                    {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
+                        <em>Role:</em> {{ partnerProjectInfos.role }}
+                    {% endwith %}
+
+                </div>
+
+            {% endfor %} 
+
+            </div>
+
+            <div class="alert alert-danger mt-5">
+                If any of the information above is incorrect, please email <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

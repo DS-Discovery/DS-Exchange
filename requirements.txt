@@ -1,2 +1,10 @@
 django
-psycopg2
+psycopg2-binary
+pandas
+django-allauth
+login
+whitenoise
+django-flags
+PyYAML
+django-gmailapi-backend
+django-import-export
