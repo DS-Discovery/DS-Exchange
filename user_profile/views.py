@@ -54,6 +54,14 @@ def student_signup(request):
             s.save()
 
             return redirect('/profile')
+        
+        else:
+            messages.info(
+                request, 
+                'Your application was invalid and could not be processed. If this error persists, '
+                'please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.'
+            )
+            return redirect('/profile')
 
     else: 
         form = EditStudentSignupForm()
