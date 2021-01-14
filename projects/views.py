@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -18,6 +20,9 @@ from students.models import Student
 
 from .forms import EditProjectForm
 from .models import Partner, PartnerProjectInfo, Project, Question
+
+
+logger = logging.getLogger(__name__)
 
 
 # @login_required
@@ -101,7 +106,7 @@ def apply(request, project_name):
     if request.method == 'POST':
 
         post = request.POST.copy()
-        print(post)
+        # print(post)
 
         def querydict_to_dict(query_dict):
             data = {}
@@ -147,7 +152,7 @@ def apply(request, project_name):
             new_ans['answer_text'] = answer_text
             ans_list.append(new_ans)
 
-        print(ans_list)
+        # print(ans_list)
 
         if is_valid:
 
@@ -158,15 +163,16 @@ def apply(request, project_name):
 
             application.save()
 
+            answers = []
             for post in ans_list:
-                print(post)
+                # print(post)
 
                 request.POST = post
 
                 form = AnswerForm(request.POST)
 
                 if form.is_valid():
-                    print("Is valid")
+                    # print("Is valid")
                     
                     question = form.cleaned_data['question']
 
@@ -181,10 +187,21 @@ def apply(request, project_name):
                         )
                     
                     a.save()
+                    answers.append(a)
 
                 else:
-                    print("not valid")
-                    print(form.errors)
+                    # cleanup on failure
+                    application.delete()
+                    for a in answers:
+                        a.delete()
+                    
+                    logger.error(f"Invalid answer for application {application}:\n{form}")
+                    messages.info(
+                        request, 
+                        'Your application was invalid and could not be processed. If this error persists, '
+                        'please contact ds-discovery@berkeley.edu.'
+                    )
+                    return redirect('/projects')
 
             # TODO: allow students to update rank
             # studentUpdater = Student.objects.filter(email_address = email)
@@ -209,7 +226,7 @@ def apply(request, project_name):
             messages.info(
                 request, 
                 'Your application was invalid and could not be processed. If this error persists, '
-                'please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.'
+                'please contact ds-discovery@berkeley.edu.'
             )
             return redirect(request.path_info)
     
