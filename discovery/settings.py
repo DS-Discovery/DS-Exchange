@@ -46,13 +46,16 @@ if not DEBUG:
         'handlers': {
             'logfile': {
                 'class': 'logging.handlers.WatchedFileHandler',
-                'filename': '/home/site/wwwroot/app-logs.log'
-            }
+                'filename': '/home/site/wwwroot/app-logs.log',
+            },
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
         },
         'loggers': {
             'django': {
-                'handlers': ['logfile'],
-                'level': 'ERROR',
+                'handlers': ['logfile', 'console'],
+                'level': 'WARNING',
                 'propagate': False,
             }
         }

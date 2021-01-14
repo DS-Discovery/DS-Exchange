@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,9 @@ from students.models import Student
 from projects.models import Partner, PartnerProjectInfo
 
 from .forms import EditStudentSignupForm
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_user_email(user):
@@ -56,10 +60,11 @@ def student_signup(request):
             return redirect('/profile')
         
         else:
+            logger.error(f"Invalid profile form for student {student}:\n{form}")
             messages.info(
                 request, 
                 'Your application was invalid and could not be processed. If this error persists, '
-                'please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.'
+                'please contact ds-discovery@berkeley.edu.'
             )
             return redirect('/profile')
 
@@ -106,10 +111,11 @@ def edit_student_profile(request):
             return redirect('/profile')
         
         else:
+            logger.error(f"Invalid profile form for student {student}:\n{form}")
             messages.info(
                 request, 
                 'Your application was invalid and could not be processed. If this error persists, '
-                'please contact <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.'
+                'please contact ds-discovery@berkeley.edu.'
             )
             return redirect('/profile')
 
