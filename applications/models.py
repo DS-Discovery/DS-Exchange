@@ -63,7 +63,7 @@ class Answer(models.Model):
     student = models.ForeignKey("students.Student", on_delete=models.CASCADE) # PRIMARY KEY
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    answer_text = models.CharField(max_length=1000)
+    answer_text = models.CharField(max_length=1100)
 
     def to_dict(self):
         return {
