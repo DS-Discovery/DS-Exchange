@@ -27,8 +27,14 @@ class PartnerProjectInfoInline(admin.TabularInline):
     ordering = ("project", )
 
 
-class PartnerAdmin(admin.ModelAdmin):
+class PartnerResource(resources.ModelResource):
+    class Meta:
+        model = Partner
 
+
+class PartnerAdmin(ImportExportModelAdmin):
+
+    resource_class = PartnerResource
     fields = [ 'email_address','first_name','last_name',]
     inlines = [PartnerProjectInfoInline]
 

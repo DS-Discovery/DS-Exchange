@@ -51,7 +51,7 @@ class Student(models.Model):
     general_question = models.CharField(max_length=1100, null = True, blank=True)
     # front-end limit is 1000 chars but more here to account for input santization
 
-    additional_skills = models.CharField(max_length=300, null=True, blank=True)
+    additional_skills = models.CharField(max_length=1000, null=True, blank=True)
 
     _skills = models.JSONField(default=get_default_skills, null=False)
 
