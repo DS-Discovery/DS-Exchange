@@ -21,8 +21,14 @@ class StudentAdmin(ImportExportModelAdmin):
 admin.site.register(Student, StudentAdmin)
 
 
-class DataScholarAdmin(admin.ModelAdmin):
+class DataScholarResource(resources.ModelResource):
+    class Meta:
+        model = DataScholar
 
+
+class DataScholarAdmin(ImportExportModelAdmin):
+
+    resource_class = DataScholarResource
     list_display = ["email_address"]
     ordering = list_display.copy()
 
