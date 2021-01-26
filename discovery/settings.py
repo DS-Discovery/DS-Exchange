@@ -145,7 +145,7 @@ FLAGS = {
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
-    "SCHOLARS_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
+    "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
     "APP_LIMIT": (6, "Number of applications any student can submit", int),
 }
 
