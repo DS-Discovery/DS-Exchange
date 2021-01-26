@@ -75,6 +75,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
+    'constance', # constance
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',
@@ -93,6 +94,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'constance.backends.database', # constance
 ]
 
 MIDDLEWARE = [
@@ -133,8 +135,19 @@ WSGI_APPLICATION = 'discovery.wsgi.application'
 FLAGS = {
     'APPLICATIONS_REVIEWABLE': [],
     'APPLICATIONS_OPEN': [],
+    # 'HIDE_PROJECT_APPLICATION_THRESHOLD': [],
 }
 
+
+# Constance (singleton settings in the databse)
+# https://django-constance.readthedocs.io/en/latest/index.html
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_CONFIG = {
+    "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
+    "SCHOLARS_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
+    "APP_LIMIT": (6, "Number of applications any student can submit", int),
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
