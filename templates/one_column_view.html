@@ -32,13 +32,10 @@
 container
 {% endblock %}
 
-
 {% block content %}
-
-    <div class="" id="homepage-text">
-
-      {{ content | safe }}
-
-    </div>
-
+  <div class="" id="homepage-text">
+    {% block column %}
+        replace meeeeeeeee
+    {% endblock %}
+  </div>
 {% endblock %}
