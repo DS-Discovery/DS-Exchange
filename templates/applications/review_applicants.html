@@ -66,11 +66,12 @@
         <h5 class="text-center">Project</h5>
 
         <div id="project-filter">
-
         </div>
 
+        <button class="appButton" onclick="downloadApplicants()">Download CSV</button>
+
         <hr>
-        
+
         <h5 class="text-center">Applicant Skills</h5>
 
         <div id="skill-filter">
@@ -84,7 +85,7 @@
 {% endif %}
 
 <div class="d-flex flex-column my-1" id="app-sidebar">
-    
+
 </div>
 
 {% csrf_token %}
