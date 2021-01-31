@@ -67,7 +67,7 @@ div.column-pane {
 }
 
 .appButton {
-  color: rgba(0,0,0,.5);
+  color: #212529;
   border-color: rgba(0,0,0,.1);
   width:100%;
 }
