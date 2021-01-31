@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import Http404, redirect, render
 
 from applications.models import Answer, Application
-from projects.models import Partner, Project
+from projects.models import Partner, Project, PartnerProjectInfo
 from students.models import Student
 
 
@@ -57,7 +57,7 @@ def list_student_applications(request):
     #     no_apps = True
 
     num_apps = list(range(0, len(all_apps)))
-   
+
     context = {
         "num_apps": num_apps,
         # "active_project": first_project,
@@ -109,9 +109,10 @@ def list_project_applicants(request):
 
     applications = Application.objects.filter(project__in=projects)
     students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
-    print(applications, students, projects)
+    projectPartners = PartnerProjectInfo.objects.filter(project__in=projects)
+    print(applications, students, projects, projectPartners)
 
-    projects, applications, students = model_list_to_dict(projects), model_list_to_dict(applications), model_list_to_dict(students)
+    projects, applications, students, projectPartners = model_list_to_dict(projects), model_list_to_dict(applications), model_list_to_dict(students), model_list_to_dict(projectPartners)
 
     skills = list(Student.default_skills.keys())
     skills.insert(0, "None")
@@ -124,6 +125,7 @@ def list_project_applicants(request):
             "students": students,
             "skills": skills,
             "levels": levels,
+            "projectPartners": projectPartners,
         }
     }
 
