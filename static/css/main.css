@@ -65,3 +65,17 @@ div.column-pane {
 .render-whitespace  {
     white-space: pre-line;
 }
+
+/* for resources page table */
+table, th, td {
+  border: 0.5px solid silver;
+}
+
+table {
+    margin: 10px auto;
+	box-shadow: 5px 4px 30px rgba(0,0,0,.25);
+}
+
+th, td {
+  padding: 15px;
+}
