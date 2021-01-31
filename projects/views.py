@@ -47,8 +47,9 @@ def get_projects_json():
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
-        d["num_applicants"] = Application.objects.filter(project=p).count()
-        projects.append(d)
+        if d['archived'] != "Yes":
+            d["num_applicants"] = Application.objects.filter(project=p).count()
+            projects.append(d)
 
     projects = sorted(projects, key=lambda d: d["project_name"])
 
