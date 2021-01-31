@@ -48,7 +48,7 @@ class Project(models.Model):
     project_category = models.CharField(max_length=200, blank=True, null=True)
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
-
+    archived = models.CharField(max_length=5000, default = "No")
     organization_description = models.CharField(max_length=1500, blank=True)
     timeline = models.CharField(max_length=1500, blank=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
@@ -76,6 +76,7 @@ class Project(models.Model):
             "project_category": self.project_category.split(";") if self.project_category is not None else [],
             "student_num": self.student_num,
             "description": self.description,
+            "archived": self.archived,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
             "organization_description": self.organization_description,
             "timeline": self.timeline,

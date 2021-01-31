@@ -21,7 +21,7 @@ from students.models import Student
 
 from .forms import EditProjectForm
 from .models import Partner, PartnerProjectInfo, Project, Question
-
+from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -265,3 +265,4 @@ def send_app_confirmation_email(app):
     )
 
     print(f"Sent confirmation email to {app.student.email_address}")
+
