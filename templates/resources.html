@@ -2,6 +2,21 @@
 
 {% block column %}
 
+  <style>
+      table, th, td {
+        border: 0.5px solid silver;
+      }
+
+      table {
+        margin: 10px auto;
+        box-shadow: 5px 4px 30px rgba(0,0,0,.25);
+      }
+
+      th, td {
+        padding: 15px;
+      }
+  </style>
+
   <h3>Advising Resources</h3>
 
 
@@ -28,7 +43,7 @@
           with major courses, different Data Science Major domain emphases, extracurriculars and student groups on campus, research opportunities, and various campus resources. </p>
   </ul>
 
-  <h3>Technical resources</h3>
+  <h3>Technical Resources</h3>
 
   <p>We currently have a DS-Discovery Github organization, which gives us access to the <a href="https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/organizing-members-into-teams">Github Teams</a>
       infrastructure. This offers version control, source code management and allows you to manage permissions on project code access, enhancing flexibility in development. For code-intensive and/or multi-semester projects,
@@ -89,5 +104,6 @@
           <li>LinkedIn Learning</li>
           <li>Staff Office Hours</li>
       </ul>
+
 
 {% endblock %}
