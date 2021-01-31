@@ -28,7 +28,11 @@ urlpatterns = [
     path('applications/', include('applications.urls')),
     path('profile/', include('user_profile.urls')),
     path('projects/', include('projects.urls')),
+<<<<<<< HEAD
     path('resources/', include('resources.urls')),
+=======
+    path('roster/', include('roster.urls')),
+>>>>>>> 345567349264a33291e4ef1c82ddff32e9f158e6
 ]
 
 handler400 = status_400 #'discovery.views.status_403'
