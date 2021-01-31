@@ -89,26 +89,27 @@ if __name__ == "__main__":
                           project_category=row["Project Category"],
                           description=row[
                               "Please provide a brief description for your project that we can list on our website."],
+                          semester="SP21", #TODO: default value.
                           )
         project.save()
 
         try:
-          partner_object, created = Partner.objects.get_or_create(  
-              email_address=row['Email Address'], 
-              first_name = row['First name'], 
-              last_name = row['Last name']  
-          ) 
-          # if not created: 
-          #     partner_object.first_name = row['First name'] 
-          #     partner_object.last_name = row['Last name'] 
-          partner_object.projects.add(project) 
+          partner_object, created = Partner.objects.get_or_create(
+              email_address=row['Email Address'],
+              first_name = row['First name'],
+              last_name = row['Last name']
+          )
+          # if not created:
+          #     partner_object.first_name = row['First name']
+          #     partner_object.last_name = row['Last name']
+          partner_object.projects.add(project)
 
 
-          print("partner_object", partner_object) 
-          print("partner_created", created) 
+          print("partner_object", partner_object)
+          print("partner_created", created)
         except:
           pass
-      
+
 
     # seeding applications
     for _, row in df_student.iterrows():
