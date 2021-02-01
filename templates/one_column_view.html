@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    html, body {
+        min-height: 100vh;
+        height: unset !important;
+    }
+    body {
+        background: url("{% static 'img/campanile.png' %}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        backdrop-filter: blur(4px);
+        background-attachment: fixed;
+    }
+
+    nav.navbar {
+        background: none !important;
+    }
+
+    div#homepage-text {
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 20px;
+        padding: 20px;
+    }
+</style>
+{% endblock %}
+
+
+{% block container_class %}
+container
+{% endblock %}
+
+{% block content %}
+  <div class="" id="homepage-text">
+    {% block column %}
+        replace meeeeeeeee
+    {% endblock %}
+  </div>
+{% endblock %}
