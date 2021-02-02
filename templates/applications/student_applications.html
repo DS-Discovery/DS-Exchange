@@ -1,13 +1,23 @@
 {% extends 'two_column_view.html' %}
 {% load helperfuncs %}
-
+{% load static %}
 
 {% block container_class %}
 container
 {% endblock %}
 
 
+{% block extra_head %}
+
+<script src="{% static 'js/applicant_listing.js' %}"></script>
+
+{% endblock %}
+
 {% block first_column %}
+
+<button id="team-roster" onclick="renderTeamRosterStudent()" style="width:100%">Team Roster</button>
+<div class="list-group list-group-flush" id="app-list"></div>
+
 
 <div class="p-1">
 
@@ -26,6 +36,11 @@ container
     </form>
 
 </div>
+
+
+
+
+
 
 {% endblock %}
 

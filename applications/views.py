@@ -64,6 +64,7 @@ def list_student_applications(request):
         "projects": [a.project for a in all_apps],
     }
 
+   
     if not no_apps:
 
         context["active_application"] = None
@@ -83,8 +84,110 @@ def list_student_applications(request):
         answers = Answer.objects.filter(student=student, application=app)
         context["questions_and_answers"] = zip([a.question for a in answers], answers)
 
+        offer = Application.objects.get(student = student, status= "OFA")
+        if offer != None:
+            context["offer"] = offer
+        else:
+            context["offer"] = "None"
+
+
+
     return render(request, "applications/student_applications.html", context=context)
 
+
+@login_required
+def display_team_roster(request):
+    email = None
+    if request.user.is_authenticated:
+            email = request.user.email
+    else:
+        raise PermissionDenied("User is not authenticated")
+
+    if Student.objects.filter(email_address = email).exists():
+        return display_student_team_roster(request)
+    elif Partner.objects.filter(email_address = email).exists():
+        return display_partner_team_roster(request)
+    else:
+        messages.info(request, "Please create your student profile to view applications.")
+        return redirect("/profile")
+
+@login_required
+def display_partner_team_roster(request):     
+    email = request.user.email
+    partner = Partner.objects.get(email_address = email)
+    projects = Project.objects.filter(id__in=PartnerProjectInfo.objects.filter(partner = partner).values_list("project", flat=True))
+    
+    print(projects)
+    
+    project = None
+    # try:
+    #     project = projects.first()
+    # except:
+    #     pass
+    
+    if request.method == 'GET':
+        try:
+            project = Project.objects.get(project_name = request.GET.get('selected_project'))
+        except:
+            pass
+        
+
+
+
+    context = {}
+    context['isPartner'] = True 
+    context['projects'] = projects 
+
+
+
+    if project != None:
+        context["project"] = project
+
+        applications = Application.objects.filter(project=project)
+        students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
+        projectPartners = PartnerProjectInfo.objects.filter(project=project)
+        print(applications, students, project, projectPartners)
+
+       
+        context['students'] = students
+        context['projectPartners'] = projectPartners
+        
+    else:
+        context["project"] = project
+
+    return render(request, "roster/roster.html", context=context)
+
+
+@login_required
+def display_student_team_roster(request):     
+    email = request.user.email
+    student = Student.objects.get(email_address = email)
+    try:
+        project = Application.objects.get(student = student, status= "OFA").project
+    except:
+        project = None
+
+    context = {}
+    context['isPartner'] = False 
+    if project != None:
+        context["project"] = project
+
+        applications = Application.objects.filter(project=project)
+        students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
+        projectPartners = PartnerProjectInfo.objects.filter(project=project)
+        print(applications, students, project, projectPartners)
+
+       
+        context['students'] = students
+        context['projectPartners'] = projectPartners
+        
+    else:
+        context["project"] = project
+
+
+    
+    return render(request, "roster/roster.html", context=context)
+    
 
 @login_required
 def list_project_applicants(request):

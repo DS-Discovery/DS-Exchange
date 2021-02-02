@@ -1,10 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Team Roster</title>
-</head>
-<body>
+{% extends 'one_column_plain_view.html' %}
+{% load helperfuncs %}
+{% load static %}
 
-</body>
-</html>
+{% block container_class %}
+container
+{% endblock %}
+
+{% block column %}
+
+<div>
+    {%if isPartner == True %} 
+    <form method="get" >
+  
+        <select name="selected_project" onChange="form.submit();">
+            <option value="{{ None }}">{{ None }}</option>
+            {% for obj in projects %} 
+                <option value="{{ obj }}">{{ obj }}</option>
+            {% endfor %}
+         </select>
+        
+    </form>
+    {% endif %}
+    {%if project != None %}
+        <h2>Team Roster for {{project}}</h2>
+        <br>
+        <h4>Partners</h4>
+        {% for obj in projectPartners %} 
+            <p>{{obj.partner.first_name}} {{obj.partner.last_name}}: {{obj.partner.email_address}}</p>
+        {% endfor %}
+        <br>
+        <h4>Students</h4>
+        {% for obj in students %} 
+            <p>{{obj.first_name}} {{obj.last_name}}: {{obj.email_address}}</p>
+        {% endfor %}
+
+    {% else %}
+        <p>Please select a project.</p>
+        {%if isPartner == False %} 
+            <meta http-equiv="refresh" content="0; URL='../'" />
+        {% endif %}
+    {% endif %}
+
+</div>
+
+{% endblock %}
