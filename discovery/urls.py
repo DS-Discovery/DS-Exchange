@@ -29,6 +29,7 @@ urlpatterns = [
     path('profile/', include('user_profile.urls')),
     path('projects/', include('projects.urls')),
     path('archive/', include('archive.urls')),
+    path('resources/', TemplateView.as_view(template_name="resources.html")),
 ]
 
 handler400 = status_400 #'discovery.views.status_403'
