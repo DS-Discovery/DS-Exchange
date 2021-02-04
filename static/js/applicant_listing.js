@@ -428,7 +428,7 @@ function listMembers(list, getMember, showCond) {
       }
   }
   if (team === "") {
-    teamRoster += "None yet!";
+    teamRoster += "<li>None yet!</li>";
   } else {
     teamRoster += team;
   }
@@ -444,32 +444,15 @@ function renderTeamRoster() {
     const project = appInfo.projects[pId];
 
     if (pId > 0) {
-      teamRoster = `<h3>${project.project_name}</h3>`;
-
-      teamRoster += "<h4>Leads</h4>";
-      teamRoster += listMembers(appInfo.projectPartners, (x)=>x, (x)=>x.project == pId);
-
-      teamRoster += "<h4>Team</h4>";
-      teamRoster += listMembers( appInfo.applications, (x)=>appInfo.students[x.student], (x)=>x.project == pId && x.status === "OFA");
-    }
-
-    $(applicationQuestionsQuery).empty().append(teamRoster);
-}
-function renderTeamRosterStudent() {
-    var teamRoster = "Please select a project first!";
-
-    const pId = $(projectFilterSelectQuery).val();
-    const project = appInfo.projects[pId];
-
-    if (pId > 0) {
-      teamRoster = `<h3>Team Roster for ${project.project_name}</h3>`;
-
-      teamRoster += "<h4>Partners</h4>";
-      teamRoster += listMembers(appInfo.projectPartners, (x)=>x, (x)=>x.project == pId);
-
-      teamRoster += "<br><h4>Students</h4>";
-      teamRoster += listMembers( appInfo.applications, (x)=>appInfo.students[x.student], (x)=>x.project == pId && x.status === "OFA");
-    }
+        teamRoster = `<h3>Team Roster for ${project.project_name}</h3>`;
+  
+        teamRoster += "<br><h4>Partners</h4>";
+        teamRoster += listMembers(appInfo.projectPartners, (x)=>x, (x)=>x.project == pId);
+  
+        teamRoster += "<br><h4>Students</h4>";
+        teamRoster += listMembers( appInfo.applications, (x)=>appInfo.students[x.student], (x)=>x.project == pId && x.status === "OFA");
+      }
 
     $(applicationQuestionsQuery).empty().append(teamRoster);
 }
+
