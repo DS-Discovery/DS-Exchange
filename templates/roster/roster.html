@@ -14,15 +14,18 @@ container
         <h2>Team Roster for {{project}}</h2>
         <br>
         <h4>Partners</h4>
-        {% for obj in projectPartners %} 
-            <p>{{obj.partner.first_name}} {{obj.partner.last_name}}: {{obj.partner.email_address}}</p>
-        {% endfor %}
+        <ul>
+            {% for obj in projectPartners %} 
+                <li><strong>{{obj.partner.first_name}} {{obj.partner.last_name}}:</strong> {{obj.partner.email_address}}</li>
+            {% endfor %}
+        </ul>
         <br>
         <h4>Students</h4>
-        {% for obj in students %} 
-            <p>{{obj.first_name}} {{obj.last_name}}: {{obj.email_address}}</p>
-        {% endfor %}
-
+        <ul>
+            {% for obj in students %} 
+                <li><strong>{{obj.first_name}} {{obj.last_name}}:</strong> {{obj.email_address}}</li>
+            {% endfor %}
+        </ul>
     {% else %}
         <p>Please select a project.</p>
         {%if isPartner == False %} 
