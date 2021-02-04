@@ -84,11 +84,7 @@ def list_student_applications(request):
         answers = Answer.objects.filter(student=student, application=app)
         context["questions_and_answers"] = zip([a.question for a in answers], answers)
 
-        offer = Application.objects.get(student = student, status= "OFA")
-        if offer != None:
-            context["offer"] = offer
-        else:
-            context["offer"] = "None"
+
 
 
 
