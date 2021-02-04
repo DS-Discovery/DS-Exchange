@@ -9,18 +9,7 @@ container
 {% block column %}
 
 <div>
-    {%if isPartner == True %} 
-    <form method="get" >
-  
-        <select name="selected_project" onChange="form.submit();">
-            <option value="{{ None }}">{{ None }}</option>
-            {% for obj in projects %} 
-                <option value="{{ obj }}">{{ obj }}</option>
-            {% endfor %}
-         </select>
-        
-    </form>
-    {% endif %}
+    
     {%if project != None %}
         <h2>Team Roster for {{project}}</h2>
         <br>
