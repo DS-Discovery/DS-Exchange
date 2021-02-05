@@ -44,7 +44,7 @@ def get_projects_json():
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
-        if d['archived'] == "Yes":
+        if d['semester'] != config.CURRENT_SEMESTER:
             projects.append(d)
 
     projects = sorted(projects, key=lambda d: d["project_name"])
