@@ -28,12 +28,8 @@ urlpatterns = [
     path('applications/', include('applications.urls')),
     path('profile/', include('user_profile.urls')),
     path('projects/', include('projects.urls')),
-<<<<<<< HEAD
-    path('resources/', include('resources.urls')),
     path('roster/', include('roster.urls')),
-=======
     path('resources/', TemplateView.as_view(template_name="resources.html")),
->>>>>>> f057542254cb7431779265605cdcb7ff8c5363e2
 ]
 
 handler400 = status_400 #'discovery.views.status_403'
