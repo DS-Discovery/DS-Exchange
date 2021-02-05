@@ -66,6 +66,7 @@ ALLOWED_HOSTS = [
     # 'discovery-application.azurewebsites.net', # old host
     'dsdiscovery.org',
     'ds-discovery.azurewebsites.net',
+    'ds-discovery-staging.azurewebsites.net',
     "127.0.0.1",
 ]
 
@@ -74,6 +75,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
+    'constance', # constance
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',
@@ -92,6 +94,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'constance.backends.database', # constance
 ]
 
 MIDDLEWARE = [
@@ -132,8 +135,19 @@ WSGI_APPLICATION = 'discovery.wsgi.application'
 FLAGS = {
     'APPLICATIONS_REVIEWABLE': [],
     'APPLICATIONS_OPEN': [],
+    # 'HIDE_PROJECT_APPLICATION_THRESHOLD': [],
 }
 
+
+# Constance (singleton settings in the databse)
+# https://django-constance.readthedocs.io/en/latest/index.html
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_CONFIG = {
+    "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
+    "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
+    "APP_LIMIT": (6, "Number of applications any student can submit", int),
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -217,7 +231,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = 4
+SITE_ID = os.environ.get("SITE_ID") if os.environ.get("SITE_ID") is not None else 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True

@@ -69,6 +69,7 @@ class Project(models.Model):
 
     def to_dict(self):
         return {
+            "id": self.id,
             "project_name": self.project_name,
             "organization": self.organization,
             "semester": self.sem_mapping[self.semester],
