@@ -7,7 +7,6 @@ const levelFilterSelectQuery = skillFilterQuery + " select#level-filter-select";
 const applicationQuestionsQuery = "div#application-questions";
 const applicationSidebarQuery = "div#app-sidebar";
 const appButtonQuery = "div#app-list";
-const teamRosterQuery = "b#team-roster";
 var appInfo;
 
 function loadApplications() {
