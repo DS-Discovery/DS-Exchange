@@ -21,7 +21,7 @@ from students.models import Student
 
 from .forms import EditProjectForm
 from .models import Partner, PartnerProjectInfo, Project, Question
-
+from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -47,8 +47,11 @@ def get_projects_json():
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
-        d["num_applicants"] = Application.objects.filter(project=p).count()
-        projects.append(d)
+        print(d['semester'])
+        print(config.CURRENT_SEMESTER)
+        if d['semester'] == config.CURRENT_SEMESTER:
+            d["num_applicants"] = Application.objects.filter(project=p).count()
+            projects.append(d)
 
     projects = sorted(projects, key=lambda d: d["project_name"])
 
@@ -265,3 +268,4 @@ def send_app_confirmation_email(app):
     )
 
     print(f"Sent confirmation email to {app.student.email_address}")
+
