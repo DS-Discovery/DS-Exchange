@@ -45,6 +45,7 @@ class Project(models.Model):
     organization = models.CharField(max_length=100)
     # semester = models.CharField(max_length=100)
     # year = models.CharField(max_length=100)
+    embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
     project_category = models.CharField(max_length=200, blank=True, null=True)
     student_num = models.IntegerField(default=0)
@@ -72,6 +73,7 @@ class Project(models.Model):
             "id": self.id,
             "project_name": self.project_name,
             "organization": self.organization,
+            "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
             "project_category": self.project_category.split(";") if self.project_category is not None else [],
             "student_num": self.student_num,
