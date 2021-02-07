@@ -94,7 +94,7 @@ class Partner(models.Model):
     email_address = models.EmailField(primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    
+
     projects = models.ManyToManyField(Project)
 
     def __str__(self):
@@ -105,6 +105,18 @@ class PartnerProjectInfo(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.CharField(max_length=100)
+
+    def to_dict(self):
+        return {
+            "email_address": self.partner.email_address,
+            "first_name": self.partner.first_name,
+            "last_name": self.partner.last_name,
+            "project": self.project.id,
+        }
+
+
+    def __str__(self):
+        return f"{self.partner}+{self.project}"
 
 
 class Question(models.Model):

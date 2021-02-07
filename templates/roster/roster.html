@@ -1,0 +1,38 @@
+{% extends 'one_column_plain_view.html' %}
+{% load helperfuncs %}
+{% load static %}
+
+{% block container_class %}
+container
+{% endblock %}
+
+{% block column %}
+
+<div>
+    
+    {%if project != None %}
+        <h2>Team Roster for {{project}}</h2>
+        <br>
+        <h4>Partners</h4>
+        <ul>
+            {% for obj in projectPartners %} 
+                <li><strong>{{obj.partner.first_name}} {{obj.partner.last_name}}:</strong> {{obj.partner.email_address}}</li>
+            {% endfor %}
+        </ul>
+        <br>
+        <h4>Students</h4>
+        <ul>
+            {% for obj in students %} 
+                <li><strong>{{obj.first_name}} {{obj.last_name}}:</strong> {{obj.email_address}}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No available team roster.</p>
+        {%if isPartner == False %} 
+            <meta http-equiv="refresh" content="0; URL='../'" />
+        {% endif %}
+    {% endif %}
+
+</div>
+
+{% endblock %}

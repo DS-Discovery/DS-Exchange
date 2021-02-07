@@ -13,7 +13,6 @@
     </ul>
 </div>
 
-
 {% block extra_head %}
 
 <script src="{% static 'js/applicant_listing.js' %}"></script>
@@ -23,6 +22,7 @@
 
 {% block first_column %}
 
+<a role ="button" target="_blank" rel="noopener noreferrer" class="btn btn-primary" id="team-roster" onclick="renderTeamRoster()" style="width:100%" >Team Roster</a>
 <div class="list-group list-group-flush" id="app-list">
 
 </div>
@@ -70,7 +70,7 @@
         </div>
 
         <hr>
-        
+
         <h5 class="text-center">Applicant Skills</h5>
 
         <div id="skill-filter">
@@ -84,7 +84,7 @@
 {% endif %}
 
 <div class="d-flex flex-column my-1" id="app-sidebar">
-    
+
 </div>
 
 {% csrf_token %}

@@ -61,10 +61,10 @@ function renderApplicantList() {
         var student = appInfo.students[app.student];
         if (app.project == pId && (!filterSkills || student.skills[skill] === level)) {
             var btn = `
-                <button 
-                    type="button" 
-                    class="list-group-item list-group-item-action" 
-                    name="selected_applicant" 
+                <button
+                    type="button"
+                    class="list-group-item list-group-item-action"
+                    name="selected_applicant"
                     value="${ appId }"
                     onclick="renderApplication(${ appId })"
                     id="app-${ appId }"
@@ -112,12 +112,12 @@ function renderApplication(appId)  {
             `;
             continue;
         }
-        
+
         if (question.question_type === "text") {
             appHTML += `
-                <textarea 
-                    class="form-group form-control" 
-                    placeholder="Your response here." 
+                <textarea
+                    class="form-group form-control"
+                    placeholder="Your response here."
                     style="width: 80%;"
                     required
                     disabled
@@ -128,11 +128,11 @@ function renderApplication(appId)  {
             for (j = 0; j < options.length; j++) {
                 var radio = options[j];
                 appHTML += `
-                    <input 
-                        type="radio" 
-                        value ="${ radio }" 
-                        required 
-                        disabled 
+                    <input
+                        type="radio"
+                        value ="${ radio }"
+                        required
+                        disabled
                 `;
                 if (radio === answer.answer_text) {
                     appHTML += `
@@ -171,11 +171,11 @@ function renderApplication(appId)  {
             for (j = 0; j < options.length; j++) {
                 var radio = options[j];
                 appHTML += `
-                    <input 
-                        type="checkbox" 
-                        value ="${ radio }" 
-                        required 
-                        disabled 
+                    <input
+                        type="checkbox"
+                        value ="${ radio }"
+                        required
+                        disabled
                 `;
                 if (answer.answer_text.split(";").includes(radio)) {
                     appHTML += `
@@ -218,11 +218,11 @@ function renderApplication(appId)  {
                         sliderDiv.innerHTML = slideAmount;
                     };
                 </script>
-            
-                <input 
-                    type="range" min="${ options[0] }" 
-                    max="${ options[1] }" step="1" 
-                    value="${ answer.answer_text }" 
+
+                <input
+                    type="range" min="${ options[0] }"
+                    max="${ options[1] }" step="1"
+                    value="${ answer.answer_text }"
                     onchange="updateSlider(${i}, this.value)"
                     disabled
                 >
@@ -318,7 +318,7 @@ function filterSkills()  {
             </select>
         `;
         $(skillFilterQuery).append(filterHTML);
-        
+
     }
     renderApplicantList();
 }
@@ -334,18 +334,18 @@ function loadApplicationSidebar(appId) {
     sidebarHTML = `
         <div class="d-flex flex-column my-1">
             <h5 class="text-center">Basic Information</h5>
-            
+
             <div class="d-flex flex-column my-1">
                 <p>Name: <span class="text-muted">${ student.first_name } ${ student.last_name }</span></p>
                 <p>Email: <span class="text-muted">${ student.email_address }</span></p>
                 <p>Major: <span class="text-muted">${ student.major }</span></p>
                 <p>Graduation Term: <span class="text-muted">${ student.year }</span></p>
             </div>
-            
+
             <div class="d-flex flex-column align-items-center">
                 <a class="btn btn-outline-info" href="${ student.resume_link }" role="button" target="_blank" rel="noopener noreferrer">Resume</a>
             </div>
-            
+
         </div>
 
         <hr>
@@ -361,9 +361,9 @@ function loadApplicationSidebar(appId) {
         if (short !== "SUB") {
             sidebarHTML += `
                 <div class="d-flex flex-row justify-content-center mb-2">
-                    <button 
-                        type="button" 
-                        class="btn 
+                    <button
+                        type="button"
+                        class="btn
             `;
             if (short === application.status) {
                 sidebarHTML += `btn-info disabled" disabled`;
@@ -413,3 +413,45 @@ function updateStatusAndSubmit(appId, newStatus) {
         alert(`The operation could not be performed. The server responded with the error:\n\n${ xhr.responseText }`);
     });
 }
+
+
+function listMembers(list, getMember, showCond) {
+
+  teamRoster = "<ul>";
+  team = ""
+  for (idx in list) {
+      var project = list[idx];
+      if (showCond(project)) {
+          var member = getMember(project);
+          team += `<li><b>${member.first_name} ${member.last_name}</b>: ${member.email_address}</li>`;
+      }
+  }
+  if (team === "") {
+    teamRoster += "<li>None yet!</li>";
+  } else {
+    teamRoster += team;
+  }
+  teamRoster += "</ul>";
+
+  return teamRoster
+}
+
+function renderTeamRoster() {
+    var teamRoster = "Please select a project first!";
+
+    const pId = $(projectFilterSelectQuery).val();
+    const project = appInfo.projects[pId];
+
+    if (pId > 0) {
+        teamRoster = `<h3>Team Roster for ${project.project_name}</h3>`;
+  
+        teamRoster += "<br><h4>Partners</h4>";
+        teamRoster += listMembers(appInfo.projectPartners, (x)=>x, (x)=>x.project == pId);
+  
+        teamRoster += "<br><h4>Students</h4>";
+        teamRoster += listMembers( appInfo.applications, (x)=>appInfo.students[x.student], (x)=>x.project == pId && x.status === "OFA");
+      }
+
+    $(applicationQuestionsQuery).empty().append(teamRoster);
+}
+
