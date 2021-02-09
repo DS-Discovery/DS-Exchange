@@ -17,11 +17,11 @@ from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 
 student_path = "student_sp2020.csv"
-partner_path = "partner_sp2020.csv"
+partner_path = "partner.csv"
 
 if __name__ == "__main__":
     df_student = pd.read_csv(student_path)
-    df_partner = pd.read_csv(partner_path)[:48]
+    df_partner = pd.read_csv(partner_path)
 
     # make sure all tables are empty
     Student.objects.all().delete()
@@ -89,6 +89,7 @@ if __name__ == "__main__":
                           project_category=row["Project Category"],
                           description=row[
                               "Please provide a brief description for your project that we can list on our website."],
+                          archived=row['Archived'],
                           semester="SP21", #TODO: default value.
                           )
         project.save()

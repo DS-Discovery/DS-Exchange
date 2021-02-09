@@ -25,6 +25,7 @@ def get_default_skills():
 
 
 class Semester(models.TextChoices):
+    FA20 = ("FA20", _("Fall 2020"))
     SP21 = ("SP21", _("Spring 2021"))
     FA21 = ("FA21", _("Fall 2021"))
     SP22 = ("SP22", _("Spring 2022"))
@@ -44,11 +45,11 @@ class Project(models.Model):
     organization = models.CharField(max_length=100)
     # semester = models.CharField(max_length=100)
     # year = models.CharField(max_length=100)
+    embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
     project_category = models.CharField(max_length=200, blank=True, null=True)
     student_num = models.IntegerField(default=0)
     description = models.CharField(max_length=5000)
-
     organization_description = models.CharField(max_length=1500, blank=True)
     timeline = models.CharField(max_length=1500, blank=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
@@ -72,6 +73,7 @@ class Project(models.Model):
             "id": self.id,
             "project_name": self.project_name,
             "organization": self.organization,
+            "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
             "project_category": self.project_category.split(";") if self.project_category is not None else [],
             "student_num": self.student_num,
@@ -92,7 +94,7 @@ class Partner(models.Model):
     email_address = models.EmailField(primary_key=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    
+
     projects = models.ManyToManyField(Project)
 
     def __str__(self):
@@ -103,6 +105,18 @@ class PartnerProjectInfo(models.Model):
     partner = models.ForeignKey(Partner, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.CharField(max_length=100)
+
+    def to_dict(self):
+        return {
+            "email_address": self.partner.email_address,
+            "first_name": self.partner.first_name,
+            "last_name": self.partner.last_name,
+            "project": self.project.id,
+        }
+
+
+    def __str__(self):
+        return f"{self.partner}+{self.project}"
 
 
 class Question(models.Model):

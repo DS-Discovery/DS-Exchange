@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.environ else 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     with open(BASE_DIR / 'secrets.yml') as f:
@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',
+    'archive.apps.ArchiveConfig',
     'user_profile.apps.UserProfileConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -147,6 +148,7 @@ CONSTANCE_CONFIG = {
     "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
     "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
     "APP_LIMIT": (6, "Number of applications any student can submit", int),
+    "CURRENT_SEMESTER": ('Spring 2021', "Current semester", str),
 }
 
 # Database
@@ -156,10 +158,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'discovery_db',
+        #'NAME': 'discoverydb',
         # 'USER': 'postgres',
         'USER': os.environ["DBUSER"] if "DBUSER" in os.environ else "postgres",
         # comment out own password before pushing to master
         'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
+        #'PASSWORD': "ly13579",
         # 'PASSWORD':,
         # 'HOST': '127.0.0.1',
         'HOST': os.environ["DBHOST"] if "DBHOST" in os.environ else "127.0.0.1",
