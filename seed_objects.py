@@ -17,11 +17,11 @@ from django.core.exceptions import ObjectDoesNotExist
 import pandas as pd
 
 student_path = "student_sp2020.csv"
-partner_path = "partner_sp2020.csv"
+partner_path = "partner.csv"
 
 if __name__ == "__main__":
     df_student = pd.read_csv(student_path)
-    df_partner = pd.read_csv(partner_path)[:48]
+    df_partner = pd.read_csv(partner_path)
 
     # make sure all tables are empty
     Student.objects.all().delete()
@@ -89,26 +89,28 @@ if __name__ == "__main__":
                           project_category=row["Project Category"],
                           description=row[
                               "Please provide a brief description for your project that we can list on our website."],
+                          archived=row['Archived'],
+                          semester="SP21", #TODO: default value.
                           )
         project.save()
 
         try:
-          partner_object, created = Partner.objects.get_or_create(  
-              email_address=row['Email Address'], 
-              first_name = row['First name'], 
-              last_name = row['Last name']  
-          ) 
-          # if not created: 
-          #     partner_object.first_name = row['First name'] 
-          #     partner_object.last_name = row['Last name'] 
-          partner_object.projects.add(project) 
+          partner_object, created = Partner.objects.get_or_create(
+              email_address=row['Email Address'],
+              first_name = row['First name'],
+              last_name = row['Last name']
+          )
+          # if not created:
+          #     partner_object.first_name = row['First name']
+          #     partner_object.last_name = row['Last name']
+          partner_object.projects.add(project)
 
 
-          print("partner_object", partner_object) 
-          print("partner_created", created) 
+          print("partner_object", partner_object)
+          print("partner_created", created)
         except:
           pass
-      
+
 
     # seeding applications
     for _, row in df_student.iterrows():
