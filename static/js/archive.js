@@ -51,7 +51,7 @@ function clickProject(projectNum) {
 function replaceDescription(project) {
     $(descriptionQuery).empty();
 
-    var htmlTemp = project.embed_link
+    var htmlTemp = project.embed_link;
     $(descriptionQuery).append(`
         <h5>${ project.project_name }</h5>
         <p class="mt-4"><strong>Project Deliverable</strong></p>
