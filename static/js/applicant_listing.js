@@ -414,6 +414,95 @@ function updateStatusAndSubmit(appId, newStatus) {
     });
 }
 
+function downloadApplicants() {
+  var data = {}
+  const student_col = ["email_address", "first_name", "last_name", "college", "major",
+                       "year", "resume_link", "general_question", "additional_skills",
+                       "is_scholar"]
+  var skill = $(skillFilterSelectQuery).val();
+  var filterSkills = false;
+  var level;
+  if (skill !== "None") {
+      filterSkills = true
+      level = $(levelFilterSelectQuery).val();
+  }
+
+  const pId = $(projectFilterSelectQuery).val();
+  const project = appInfo.projects[pId];
+
+  for (appId in appInfo.applications) {
+      var app = appInfo.applications[appId];
+      var questions = appInfo.projects[app.project].questions;
+      var answers = app.answers;
+      var student = appInfo.students[app.student];
+      if (app.project == pId && (!filterSkills || student.skills[skill] === level)) {
+        // Student Information
+        student_col.forEach(function(column){
+          if (!data[column]) {
+              data[column] = [];
+          }
+          data[column].push(appInfo.students[app.student][column]);
+        })
+
+        // Student Skills
+        for (const [ column, value ] of Object.entries(appInfo.students[app.student].skills)) {
+            if (!data[column]) {
+                data[column] = [];
+            }
+            data[column].push(value);
+        }
+
+        //Application Answers
+        for (i = 0; i < questions.length; i++) {
+            var question = questions[i];
+            if (!data[question]) {
+                data[question] = [];
+            }
+
+            var answer = "NUH-UH";
+            for (j = 0; j < answers.length; j++) {
+                if (answers[j].question == question.id) {
+                    answer = answers[j];
+                }
+            };
+
+            if (answer === "NUH-UH") {
+                data[question].push(null);
+            } else {
+                data[question].push(answer.answer_text);
+            }
+        }
+      }
+  }
+
+  data_matrix = [];
+  for (const [ key, value ] of Object.entries(data)) {
+      row = [key];
+      row.push.apply(row, value);
+      data_matrix.push(row);
+  }
+
+  csv = "";
+  // Assume all the same length
+  if (data_matrix.length > 0) {
+    for (var j = 0; j < data_matrix[0].length; j++) {
+        for (var i = 0; i < data_matrix.length; i++) {
+            csv += "\"" + `${data_matrix[i][j]}`.replace(/"/g, "'") + "\"";
+            if (i == data_matrix.length - 1) {
+              csv += "\n";
+            } else {
+              csv += ",";
+            }
+        }
+    }
+  }
+
+  var hiddenElement = document.createElement('a');
+  hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+  hiddenElement.target = '_blank';
+  hiddenElement.download = `${appInfo.projects[pId].project_name} Applicants.csv`;
+  hiddenElement.click();
+}
 
 function listMembers(list, getMember, showCond) {
 
@@ -454,4 +543,3 @@ function renderTeamRoster() {
 
     $(applicationQuestionsQuery).empty().append(teamRoster);
 }
-
