@@ -18,29 +18,23 @@ def display_student_team_roster(request):
         raise PermissionDenied("User is not authenticated")  
    
     student = Student.objects.get(email_address = email)
+    
     try:
         project = Application.objects.get(student = student, status= "OFA").project
-    except:
-        project = None
+    except ObjectDoesNotExist:
+        messages.info(request, "You must be a member of a project team to view the roster.")
+        return redirect("/projects")
 
     context = {}
-    context['isPartner'] = False 
-    if project != None:
-        context["project"] = project
+    context["project"] = project
 
-        applications = Application.objects.filter(project=project)
-        students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
-        projectPartners = PartnerProjectInfo.objects.filter(project=project)
-        print(applications, students, project, projectPartners)
-
-       
-        context['students'] = students
-        context['projectPartners'] = projectPartners
-        
-    else:
-        context["project"] = project
-
-
+    applications = Application.objects.filter(project=project, status="OFA")
+    students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
+    projectPartners = PartnerProjectInfo.objects.filter(project=project)
+    print(applications, students, project, projectPartners)
+    
+    context['students'] = students
+    context['projectPartners'] = projectPartners
     
     return render(request, "roster/roster.html", context=context)
     
