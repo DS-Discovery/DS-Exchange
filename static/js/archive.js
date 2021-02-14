@@ -56,6 +56,6 @@ function replaceDescription(project) {
         <h5>${ project.project_name }</h5>
         <p class="mt-4"><strong>Project Deliverable</strong></p>
     `);
-    $(descriptionQuery).append(htmlTemp);
+    $(descriptionQuery).append(`<iframe src= "${ htmlTemp }" width="770" height="500"></iframe>`);
 }
 
