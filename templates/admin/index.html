@@ -7,8 +7,15 @@
 {% block sidebar %}
 <div id="content-related">
     <div class="module" id="recent-actions-module">
-        <h2>Overview</h2>
-        <p><a href='overview.html'>See more</a></p>
+        <h2>{% translate 'Analytics' %}</h2>
+        <ul class="actionlist">
+          <li>
+              <a href='overview'>{% translate 'Overview' %}</a>
+          </li>
+          <li>
+              <a href='status_summary'>{% translate 'Status summary' %}</a>
+          </li>
+        </ul>
         <h2>{% translate 'Recent actions' %}</h2>
         <h3>{% translate 'My actions' %}</h3>
             {% load log %}
