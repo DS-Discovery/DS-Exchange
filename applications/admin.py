@@ -11,7 +11,7 @@ class ApplicationResource(resources.ModelResource):
 
 
 class ApplicationAdmin(ImportExportModelAdmin):
-    
+
     resource_class = ApplicationResource
     list_display = ('id', 'project', 'student', 'status')
     ordering = ('id', )

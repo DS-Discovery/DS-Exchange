@@ -16,15 +16,19 @@ Including another URLconf
 
 # from django.conf.urls import handler403, handler404
 from django.contrib import admin
+from discovery.admin import admin_site
 from django.urls import include, path
 from django.views.generic import TemplateView
 
 from .views import status_400, status_403, status_404, status_500
 
+# Copy over models to custom admin site.
+admin_site._registry.update(admin.site._registry)
+
 urlpatterns = [
     path('', TemplateView.as_view(template_name="home.html")),
     path('accounts/', include('allauth.urls')),
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),
     path('applications/', include('applications.urls')),
     path('profile/', include('user_profile.urls')),
     path('projects/', include('projects.urls')),
