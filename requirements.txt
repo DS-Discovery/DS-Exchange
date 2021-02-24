@@ -8,4 +8,3 @@ django-flags
 PyYAML
 django-gmailapi-backend
 django-import-export
-django_tables2
