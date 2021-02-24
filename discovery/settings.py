@@ -30,7 +30,7 @@ DEBUG = True
 if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     with open(BASE_DIR / 'secrets.yml') as f:
         addl_config = yaml.full_load(f.read())
-    
+
     assert isinstance(addl_config, dict), f"Additional environment variables invalid: {addl_config}"
     os.environ.update(addl_config)
 
@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'django_tables2', # for custom admin tables
 ]
 
 MIDDLEWARE = [
@@ -227,7 +228,7 @@ ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = None
-ACCOUNT_LOGOUT_ON_GET = True #url accounts/logout 
+ACCOUNT_LOGOUT_ON_GET = True #url accounts/logout
 ACCOUNT_USER_DISPLAY = 'user_profile.views.get_user_email'
 
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'

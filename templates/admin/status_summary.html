@@ -1,2 +1,58 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
+{% load django_tables2 %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">{% endblock %}
+
+{% block content %}
+{% render_table table %}
+<script>
+  let pagination = document.getElementsByClassName('pagination');
+
+let classNames = [];
+let hrefs = [];
+let texts = [];
+
+let admin_format = document.createElement('p');
+admin_format.className = "paginator";
+document.getElementsByClassName('table-container')[0].appendChild(admin_format);
+
+for (let counter=0; counter < pagination.length; counter++){
+	let children = pagination[counter].children;
+	for (let i = 0; i < children.length; i++) {
+  		let tableChild = children[i];
+		  classNames.push(tableChild.classList.value);
+      texts.push(tableChild.innerText);
+      hrefs.push(tableChild.firstElementChild.getAttribute('href'));
+	}
+	let parent = pagination[counter].parentNode;
+  parent.removeChild(pagination[counter]);
+}
+
+for (let counter=0; counter < classNames.length; counter++){
+	if (classNames[counter] === "active") {
+		let page = document.createElement('span');
+		page.appendChild(document.createTextNode(texts[counter]));
+		page.setAttribute('class', 'this-page');
+		admin_format.appendChild(page);
+	} else if (texts[counter] === "...") {
+		let page = document.createElement('span');
+		page.appendChild(document.createTextNode(texts[counter]));
+		page.setAttribute('class', 'this-page');
+		admin_format.appendChild(page);
+	} else if (classNames[counter] === "next") {
+		let page = document.createElement('a');
+		page.appendChild(document.createTextNode(texts[counter]));
+		page.setAttribute('class', 'end');
+		page.setAttribute('href', hrefs[counter]);
+		admin_format.appendChild(page);
+	} else {
+		let page = document.createElement('a');
+		page.appendChild(document.createTextNode(texts[counter]));
+		page.setAttribute('href', hrefs[counter]);
+		admin_format.appendChild(page);
+	}
+  admin_format.innerHTML += '\n';
+}
+</script>
+{% endblock %}
