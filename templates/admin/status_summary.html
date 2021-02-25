@@ -1,5 +1,6 @@
 {% extends "admin/base_site.html" %}
 {% load i18n static %}
+{% load render_table from django_tables2 %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -11,19 +12,27 @@
 <form class="actions">
     <label>Filter:
       <select name="filter" required="">
-        <option value="all">Show all students</option>
-        <option value="data_scholars">Show only Data Scholars</option>
+        <option value="all" {% if filter == "all"%}selected{% endif %}>Show all students</option>
+        <option value="data_scholars" {% if filter == "data_scholars"%}selected{% endif %}>Show only Data Scholars</option>
       </select>
     </label>
     <br/><br/>
     <label>Group:
       <select name="group" required="">
-        <option value="student">Show statuses by students</option>
-        <option value="project">Show statuses by projects</option>
+        <option value="student" {% if group_col == "student"%}selected{% endif %}>Show statuses by students</option>
+        <option value="project" {% if group_col == "project"%}selected{% endif %}>Show statuses by projects</option>
+      </select>
+    </label>
+    <br/><br/>
+    <label>Semester:
+      <select name="semester" required="">
+        {% for s_short, s_long in semester.choices %}
+        <option value={{ s_short }} {% if sem_col == s_short %}selected{% endif %}>{{ s_long }}</option>
+        {% endfor %}
       </select>
     </label>
     <br/>
     <button type="submit" class="button" title="Run the selected action">Go</button>
 </form>
-{{table|safe}}
+{% render_table table %}
 {% endblock %}

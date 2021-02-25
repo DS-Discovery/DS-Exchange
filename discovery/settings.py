@@ -92,6 +92,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'django_tables2', # for custom admin tables
 ]
 
 MIDDLEWARE = [
@@ -124,7 +125,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'discovery.wsgi.application'
-
+DJANGO_TABLES2_TEMPLATE = "admin/table.html"
 
 # Django Flags
 # https://cfpb.github.io/django-flags/
