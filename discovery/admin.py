@@ -36,7 +36,6 @@ class DiscoveryAdmin(AdminSite):
         urls = super(DiscoveryAdmin, self).get_urls()
         additional_urls = [
             url(r'status_summary/', status_summary),
-            url(r'overview/', overview),
         ]
         return additional_urls + urls
 
@@ -108,14 +107,5 @@ def status_summary(request):
        sem_col=sem_col,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
-
-@staff_member_required
-def overview(request):
-    # ...
-    context = dict(
-       title='Overview',
-       has_permission=request.user.is_authenticated,
-    )
-    return TemplateResponse(request, "admin/overview.html", context)
 
 admin_site = DiscoveryAdmin(name='discovery_admin')
