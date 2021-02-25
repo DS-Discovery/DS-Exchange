@@ -10,6 +10,8 @@ from students.models import Student, DataScholar
 from django.forms import model_to_dict
 import pandas as pd
 import django_tables2 as tables
+from django_tables2.export.views import ExportMixin
+from django_tables2.export.export import TableExport
 
 # Helper
 def col_name(name):
@@ -23,7 +25,8 @@ for col in total + group:
     col_rename[col] = col_name(col).replace('_', ' ')
 col_order = group + status + total
 
-class TrackingTable(tables.Table):
+class TrackingTable(ExportMixin, tables.Table):
+    export_formats = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
     for column in col_order:
         if column in status:
             cmd = f'{column} = tables.Column(orderable=True, verbose_name="{col_rename[column]}")'
@@ -47,6 +50,7 @@ def status_summary(request):
     filter = request.GET.get('filter', 'all')
     group_col = request.GET.get('group', 'student')
     sem_col = request.GET.get('semester', 'SP21')
+    export_format = request.GET.get('_export', None)
 
     sort_col = col_name(sort_col)
     group_col = col_name(group_col)
@@ -96,6 +100,12 @@ def status_summary(request):
 
     table.exclude = set(group).difference(col_list)
 
+
+    if TableExport.is_valid_format(export_format):
+        print(sem_col)
+        exporter = TableExport(export_format, table)
+        return exporter.response('status_tracking.{}'.format(export_format))
+
     context = dict(
        title='Status summary',
        has_permission=request.user.is_authenticated,
@@ -105,6 +115,7 @@ def status_summary(request):
        filter=filter,
        group_col=group_col,
        sem_col=sem_col,
+       export_support=table.export_formats,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
 

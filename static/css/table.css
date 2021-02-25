@@ -6,6 +6,18 @@
   content:'▲';
 }
 
+.table-container {
+  width: 70%;
+  float: left;
+}
+
+.user-tools {
+  width: 20%;
+  padding: 20px;
+  background: #f8f8f8;
+  float: right;
+}
+
 .paginator * {
   margin-right: 5px;
 }

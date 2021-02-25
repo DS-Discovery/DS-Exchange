@@ -8,31 +8,51 @@
 <link rel="stylesheet" type="text/css" href="{% static "css/table.css" %}">
 {% endblock %}
 
-{% block content %}
-<form class="actions">
-    <label>Filter:
-      <select name="filter" required="">
-        <option value="all" {% if filter == "all"%}selected{% endif %}>Show all students</option>
-        <option value="data_scholars" {% if filter == "data_scholars"%}selected{% endif %}>Show only Data Scholars</option>
-      </select>
-    </label>
-    <br/><br/>
-    <label>Group:
-      <select name="group" required="">
-        <option value="student" {% if group_col == "student"%}selected{% endif %}>Show statuses by students</option>
-        <option value="project" {% if group_col == "project"%}selected{% endif %}>Show statuses by projects</option>
-      </select>
-    </label>
-    <br/><br/>
-    <label>Semester:
-      <select name="semester" required="">
-        {% for s_short, s_long in semester.choices %}
-        <option value={{ s_short }} {% if sem_col == s_short %}selected{% endif %}>{{ s_long }}</option>
+{% block sidebar %}
+<span class="user-tools">
+  <h1>Tools</h1>
+  <form class="actions">
+      <label>Filter:
+        <select name="filter" required="">
+          <option value="all" {% if filter == "all"%}selected{% endif %}>Show all students</option>
+          <option value="data_scholars" {% if filter == "data_scholars"%}selected{% endif %}>Show only Data Scholars</option>
+        </select>
+      </label>
+      <br/><br/>
+      <label>Group:
+        <select name="group" required="">
+          <option value="student" {% if group_col == "student"%}selected{% endif %}>Show statuses by students</option>
+          <option value="project" {% if group_col == "project"%}selected{% endif %}>Show statuses by projects</option>
+        </select>
+      </label>
+      <br/><br/>
+      <label>Semester:
+        <select name="semester" required="">
+          {% for s_short, s_long in semester.choices %}
+          <option value={{ s_short }} {% if sem_col == s_short %}selected{% endif %}>{{ s_long }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <br/>
+      <button type="submit" class="button" title="Run the selected action">Go</button>
+  </form>
+  <form class="actions">
+      <select name="_export" required="">
+        <option value="" selected="">---------</option>
+        {% for format in export_support %}
+        <option value={{ format }}>{{ format }}</option>
         {% endfor %}
       </select>
-    </label>
-    <br/>
-    <button type="submit" class="button" title="Run the selected action">Go</button>
-</form>
+      <input type="hidden" name="filter" value={{ filter }}>
+      <input type="hidden" name="group" value={{ group_col }}>
+      <input type="hidden" name="semester" value={{ sem_col }}>
+      <button type="submit" class="button" title="Export">Export</button>
+  </form>
+
+</select>
+</span>
+{% endblock %}
+
+{% block content %}
 {% render_table table %}
 {% endblock %}
