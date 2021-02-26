@@ -13,6 +13,14 @@ import django_tables2 as tables
 from django_tables2.export.views import ExportMixin
 from django_tables2.export.export import TableExport
 
+class DiscoveryAdmin(AdminSite):
+    def get_urls(self):
+        urls = super(DiscoveryAdmin, self).get_urls()
+        additional_urls = [
+            url(r'status_summary/', status_summary),
+        ]
+        return additional_urls + urls
+
 # Helper
 def col_name(name):
     return name.title()
@@ -33,15 +41,6 @@ class TrackingTable(ExportMixin, tables.Table):
         else:
             cmd = f'{column} = tables.Column(orderable=True, verbose_name="{col_rename[column]}")'
         exec(cmd)
-
-class DiscoveryAdmin(AdminSite):
-    def get_urls(self):
-        urls = super(DiscoveryAdmin, self).get_urls()
-        additional_urls = [
-            url(r'status_summary/', status_summary),
-        ]
-        return additional_urls + urls
-
 
 # Custom Views
 @staff_member_required
@@ -102,7 +101,6 @@ def status_summary(request):
 
 
     if TableExport.is_valid_format(export_format):
-        print(sem_col)
         exporter = TableExport(export_format, table)
         return exporter.response('status_tracking.{}'.format(export_format))
 
@@ -111,11 +109,15 @@ def status_summary(request):
        has_permission=request.user.is_authenticated,
        site_url=True,
        table=table,
-       semester=Semester,
-       filter=filter,
-       group_col=group_col,
-       sem_col=sem_col,
+       # Allowable Values
+       filter_support=[('all', 'students'), ('data_scholars', 'Data Scholars')],
+       group_support=[('student', 'students'), ('project', 'projects')],
+       semester_support=[(s[0], s[1]) for s in Semester.choices],
        export_support=table.export_formats,
+       # Current Filters
+       filter=filter,
+       group=group_col,
+       semester=sem_col,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
 

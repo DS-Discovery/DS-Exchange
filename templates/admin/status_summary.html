@@ -12,29 +12,31 @@
 <span class="user-tools">
   <h1>Tools</h1>
   <form class="actions">
-      <label>Filter:
+      <label>{% translate 'Filter:' %}
         <select name="filter" required="">
-          <option value="all" {% if filter == "all"%}selected{% endif %}>Show all students</option>
-          <option value="data_scholars" {% if filter == "data_scholars"%}selected{% endif %}>Show only Data Scholars</option>
+          {% for value, option in filter_support %}
+          <option value={{ value }} {% if filter == value %}selected{% endif %}>{% translate 'Show for all' %} {% translate option %}</option>
+          {% endfor %}
         </select>
       </label>
       <br/><br/>
-      <label>Group:
+      <label>{% translate 'Group:' %}
         <select name="group" required="">
-          <option value="student" {% if group_col == "student"%}selected{% endif %}>Show statuses by students</option>
-          <option value="project" {% if group_col == "project"%}selected{% endif %}>Show statuses by projects</option>
+          {% for value, option in group_support %}
+          <option value={{ value }} {% if filter == value %}selected{% endif %}>{% translate 'Show statuses by' %} {% translate option %}</option>
+          {% endfor %}
         </select>
       </label>
       <br/><br/>
-      <label>Semester:
+      <label>{% translate 'Semester:' %}
         <select name="semester" required="">
-          {% for s_short, s_long in semester.choices %}
-          <option value={{ s_short }} {% if sem_col == s_short %}selected{% endif %}>{{ s_long }}</option>
+          {% for value, option in semester_support %}
+          <option value={{ value }} {% if semester == value %}selected{% endif %}> {% translate option %}</option>
           {% endfor %}
         </select>
       </label>
       <br/>
-      <button type="submit" class="button" title="Run the selected action">Go</button>
+      <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
   </form>
   <form class="actions">
       <select name="_export" required="">
@@ -44,9 +46,9 @@
         {% endfor %}
       </select>
       <input type="hidden" name="filter" value={{ filter }}>
-      <input type="hidden" name="group" value={{ group_col }}>
-      <input type="hidden" name="semester" value={{ sem_col }}>
-      <button type="submit" class="button" title="Export">Export</button>
+      <input type="hidden" name="group" value={{ group }}>
+      <input type="hidden" name="semester" value={{ semester }}>
+      <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
   </form>
 
 </select>
