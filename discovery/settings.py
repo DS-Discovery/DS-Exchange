@@ -17,7 +17,6 @@ import yaml
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -26,6 +25,9 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.enviro
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+
+if not os.path.exists('/home/site/wwwroot/'):
+    os.makedirs('/home/site/wwwroot/')
 
 if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     with open(BASE_DIR / 'secrets.yml') as f:
