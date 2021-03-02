@@ -9,3 +9,5 @@ PyYAML
 django-gmailapi-backend
 django-import-export
 django_tables2
+django-constance[database]
+django-picklefield

@@ -40,3 +40,4 @@ def get_attr(obj, attr):
 @register.filter
 def is_group_member(user, group_name):
     return user.groups.filter(name=group_name).exists()
+

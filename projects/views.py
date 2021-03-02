@@ -12,6 +12,7 @@ from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
+from constance import config
 from flags.state import flag_enabled
 
 from applications.forms import AnswerForm
@@ -20,7 +21,7 @@ from students.models import Student
 
 from .forms import EditProjectForm
 from .models import Partner, PartnerProjectInfo, Project, Question
-
+from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
@@ -34,15 +35,21 @@ def list_projects(request):
     # if email is None:
     #     return redirect('/profile/login')
 
-    return render(request, 'projects/listing.html', {"projects_json": get_projects_json()})
+    projects_json = get_projects_json()
+    for i, project in list(enumerate(projects_json['projects']))[::-1]:
+        if Application.objects.filter(project_id=project['id']).count() >= config.HIDE_PROJECT_APPLICATION_THRESHOLD:
+            projects_json['projects'].pop(i)
+
+    return render(request, 'projects/listing.html', {"projects_json": projects_json})
 
 
 def get_projects_json():
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
-        d["num_applicants"] = Application.objects.filter(project=p).count()
-        projects.append(d)
+        if d['semester'] == config.CURRENT_SEMESTER:
+            d["num_applicants"] = Application.objects.filter(project=p).count()
+            projects.append(d)
 
     projects = sorted(projects, key=lambda d: d["project_name"])
 
@@ -88,11 +95,11 @@ def apply(request, project_name):
 
     count = Application.objects.filter(student = student).count()
 
-    if count > 2 and not student.is_scholar:
-        messages.info(request, 'You have already applied to 3 projects.')
+    if count > config.APP_LIMIT - 1 and not student.is_scholar:
+        messages.info(request, f'You have already applied to {config.APP_LIMIT} projects.')
         return redirect('/projects')
-    elif count > 5 and student.is_scholar:
-        messages.info(request, 'You have already applied to 6 projects.')
+    elif count > config.SCHOLAR_APP_LIMIT - 1 and student.is_scholar:
+        messages.info(request, f'You have already applied to {config.SCHOLAR_APP_LIMIT} projects.')
         return redirect('/projects')
 
     count = Application.objects.filter(student = student, project = project).count()
@@ -259,3 +266,4 @@ def send_app_confirmation_email(app):
     )
 
     print(f"Sent confirmation email to {app.student.email_address}")
+

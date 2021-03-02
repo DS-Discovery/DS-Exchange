@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.environ else 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     with open(BASE_DIR / 'secrets.yml') as f:
@@ -66,6 +66,7 @@ ALLOWED_HOSTS = [
     # 'discovery-application.azurewebsites.net', # old host
     'dsdiscovery.org',
     'ds-discovery.azurewebsites.net',
+    'ds-discovery-staging.azurewebsites.net',
     "127.0.0.1",
 ]
 
@@ -74,9 +75,11 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
+    'constance', # constance
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',
+    'archive.apps.ArchiveConfig',
     'user_profile.apps.UserProfileConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -93,6 +96,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'django_tables2', # for custom admin tables
+    'constance.backends.database', # constance
 ]
 
 MIDDLEWARE = [
@@ -133,8 +137,20 @@ DJANGO_TABLES2_TEMPLATE = "admin/table.html"
 FLAGS = {
     'APPLICATIONS_REVIEWABLE': [],
     'APPLICATIONS_OPEN': [],
+    # 'HIDE_PROJECT_APPLICATION_THRESHOLD': [],
 }
 
+
+# Constance (singleton settings in the databse)
+# https://django-constance.readthedocs.io/en/latest/index.html
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_CONFIG = {
+    "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
+    "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
+    "APP_LIMIT": (6, "Number of applications any student can submit", int),
+    "CURRENT_SEMESTER": ('Spring 2021', "Current semester", str),
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
@@ -143,10 +159,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'discovery_db',
+        #'NAME': 'discoverydb',
         # 'USER': 'postgres',
         'USER': os.environ["DBUSER"] if "DBUSER" in os.environ else "postgres",
         # comment out own password before pushing to master
         'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
+        #'PASSWORD': "ly13579",
         # 'PASSWORD':,
         # 'HOST': '127.0.0.1',
         'HOST': os.environ["DBHOST"] if "DBHOST" in os.environ else "127.0.0.1",
@@ -218,7 +236,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = 4
+SITE_ID = os.environ.get("SITE_ID") if os.environ.get("SITE_ID") is not None else 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
