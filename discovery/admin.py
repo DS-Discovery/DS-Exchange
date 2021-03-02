@@ -10,6 +10,7 @@ from students.models import Student, DataScholar
 from django.forms import model_to_dict
 import pandas as pd
 import django_tables2 as tables
+from constance import config
 from django_tables2.export.views import ExportMixin
 from django_tables2.export.export import TableExport
 from django_tables2.paginators import LazyPaginator
@@ -36,6 +37,7 @@ group = [col_name('Student'), col_name('First_Name'), col_name('Last_Name'), col
 for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
+inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
 
 class TrackingTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
@@ -53,7 +55,7 @@ def status_summary(request, pages=10):
     sort_query = request.GET.get('sort', 'total')
     filter_query = request.GET.get('filter', 'all')
     group_query = request.GET.get('group', 'student')
-    semester_query = request.GET.get('semester', 'SP21')
+    semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
 
