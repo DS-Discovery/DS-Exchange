@@ -15,7 +15,7 @@
       <label>{% translate 'Filter:' %}
         <select name="filter" required="">
           {% for value, option in filter_support %}
-          <option value={{ value }} {% if filter == value %}selected{% endif %}>{% translate 'Show for all' %} {% translate option %}</option>
+          <option value={{ value }} {% if filter_query == value %}selected{% endif %}>{% translate 'Show for all' %} {% translate option %}</option>
           {% endfor %}
         </select>
       </label>
@@ -23,7 +23,7 @@
       <label>{% translate 'Group:' %}
         <select name="group" required="">
           {% for value, option in group_support %}
-          <option value={{ value }} {% if filter == value %}selected{% endif %}>{% translate 'Show statuses by' %} {% translate option %}</option>
+          <option value={{ value }} {% if group_query == value %}selected{% endif %}>{% translate 'Show statuses by' %} {% translate option %}</option>
           {% endfor %}
         </select>
       </label>
@@ -31,7 +31,7 @@
       <label>{% translate 'Semester:' %}
         <select name="semester" required="">
           {% for value, option in semester_support %}
-          <option value={{ value }} {% if semester == value %}selected{% endif %}> {% translate option %}</option>
+          <option value={{ value }} {% if semester_query == value %}selected{% endif %}> {% translate option %}</option>
           {% endfor %}
         </select>
       </label>
@@ -39,15 +39,15 @@
       <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
   </form>
   <form class="actions">
-      <select name="_export" required="">
+      <select name="export" required="">
         <option value="" selected="">---------</option>
         {% for format in export_support %}
         <option value={{ format }}>{{ format }}</option>
         {% endfor %}
       </select>
-      <input type="hidden" name="filter" value={{ filter }}>
-      <input type="hidden" name="group" value={{ group }}>
-      <input type="hidden" name="semester" value={{ semester }}>
+      <input type="hidden" name="filter" value={{ filter_query }}>
+      <input type="hidden" name="group" value={{ group_query }}>
+      <input type="hidden" name="semester" value={{ semester_query }}>
       <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
   </form>
 

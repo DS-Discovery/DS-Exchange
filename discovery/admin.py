@@ -12,6 +12,7 @@ import pandas as pd
 import django_tables2 as tables
 from django_tables2.export.views import ExportMixin
 from django_tables2.export.export import TableExport
+from django_tables2.paginators import LazyPaginator
 
 class DiscoveryAdmin(AdminSite):
     def get_urls(self):
@@ -23,47 +24,52 @@ class DiscoveryAdmin(AdminSite):
 
 # Helper
 def col_name(name):
-    return name.title()
+    return name.title().replace(' ', '_')
 
-col_rename = {col_name(t[0]):col_name(str(t[1])) for t in Application.ApplicationStatus.choices}
+def verbose_name(name):
+    return name.title().replace('_', ' ')
+
+col_rename = {col_name(t[0]):verbose_name(str(t[1])) for t in Application.ApplicationStatus.choices}
 status = list(col_rename.keys())
 total = [col_name('Total')]
 group = [col_name('Student'), col_name('First_Name'), col_name('Last_Name'), col_name('Project')]
 for col in total + group:
-    col_rename[col] = col_name(col).replace('_', ' ')
+    col_rename[col] = verbose_name(col)
 col_order = group + status + total
 
 class TrackingTable(ExportMixin, tables.Table):
-    export_formats = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
+    export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
     for column in col_order:
         if column in status:
             cmd = f'{column} = tables.Column(orderable=True, verbose_name="{col_rename[column]}")'
         else:
             cmd = f'{column} = tables.Column(orderable=True, verbose_name="{col_rename[column]}")'
         exec(cmd)
+    paginator_class = LazyPaginator
 
 # Custom Views
 @staff_member_required
-def status_summary(request):
-    sort_col = request.GET.get('sort', 'total')
-    filter = request.GET.get('filter', 'all')
-    group_col = request.GET.get('group', 'student')
-    sem_col = request.GET.get('semester', 'SP21')
-    export_format = request.GET.get('_export', None)
+def status_summary(request, pages=10):
+    sort_query = request.GET.get('sort', 'total')
+    filter_query = request.GET.get('filter', 'all')
+    group_query = request.GET.get('group', 'student')
+    semester_query = request.GET.get('semester', 'SP21')
+    export_query = request.GET.get('export', None)
+    page_query = request.GET.get("page", 1)
 
-    sort_col = col_name(sort_col)
-    group_col = col_name(group_col)
+    sort_query = col_name(sort_query)
+    group_query = col_name(group_query)
 
     extra = []
-    if group_col ==  col_name('Student'):
-        extra = ['First_Name', 'Last_Name']
-    col = col_name(group_col)
-    col_list = extra + [col] + status + [col_name('Total')]
+    if group_query == col_name('Student'):
+        extra = [col_name('First_Name'), col_name('Last_Name')]
+    col = col_name(group_query)
+    table_col = extra + [col] + status + [col_name('Total')]
 
-    projs = Project.objects.filter(semester=sem_col)
+    projs = Project.objects.filter(semester=semester_query.upper())
     filtered = Application.objects.filter(project__in=projs)
 
-    if filter == 'data_scholars':
+    if filter_query == 'data_scholars':
         ds = DataScholar.objects.values('email_address')
         filtered = filtered.filter(student__in=ds)
 
@@ -77,32 +83,32 @@ def status_summary(request):
         for s in status:
             df[col_name(s)] = df[col_name('status')] == s.upper()
         df[col_name('Total')] = 1
-        table = df.groupby(group_col).sum()
-
+        table = df.groupby(group_query).sum()
         table.reset_index(inplace=True)
 
-        if group_col == col_name('Project'):
-            table[group_col] = [Project.objects.get(id=id).project_name for id in table[group_col]]
-        elif group_col ==  col_name('Student'):
-            table[col_name('First_Name')] = [Student.objects.get(email_address=id).first_name for id in table[group_col]]
-            table[col_name('Last_Name')] = [Student.objects.get(email_address=id).last_name for id in table[group_col]]
+        if group_query == col_name('Project'):
+            table[group_query] = [Project.objects.get(id=id).project_name for id in table[group_query]]
+        elif group_query ==  col_name('Student'):
+            table[col_name('First_Name')] = [Student.objects.get(email_address=id).first_name for id in table[group_query]]
+            table[col_name('Last_Name')] = [Student.objects.get(email_address=id).last_name for id in table[group_query]]
 
-        table = table[col_list]
+        table = table[table_col]
 
         table_row_list = []
+        # table.iloc to reduce amount of conversion needed? Will need to order the data here instead of when converted to table.
         for _, row in table.iterrows():
             table_row_list.append(row.to_dict())
 
     table = TrackingTable(table_row_list)
-    table.order_by = sort_col
-    table.paginate(page=request.GET.get("page", 1), per_page=10)
+    table.paginate(page=page_query, per_page=pages)
+    table.order_by = sort_query
+    # Hide columns not used by the table
+    table.exclude = set(col_order).difference(table_col)
 
-    table.exclude = set(group).difference(col_list)
-
-
-    if TableExport.is_valid_format(export_format):
-        exporter = TableExport(export_format, table)
-        return exporter.response('status_tracking.{}'.format(export_format))
+    # To export filtered table
+    if TableExport.is_valid_format(export_query):
+        exporter = TableExport(export_query, table)
+        return exporter.response('status_tracking.{}'.format(export_query))
 
     context = dict(
        title='Status summary',
@@ -113,11 +119,11 @@ def status_summary(request):
        filter_support=[('all', 'students'), ('data_scholars', 'Data Scholars')],
        group_support=[('student', 'students'), ('project', 'projects')],
        semester_support=[(s[0], s[1]) for s in Semester.choices],
-       export_support=table.export_formats,
+       export_support=table.export_querys,
        # Current Filters
-       filter=filter,
-       group=group_col,
-       semester=sem_col,
+       filter_query=filter_query,
+       group_query=group_query,
+       semester_query=semester_query,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
 
