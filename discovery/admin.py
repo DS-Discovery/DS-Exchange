@@ -38,6 +38,7 @@ for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
 inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
+filters = [('data_scholar', 'Is Data Scholars')] + [(s, f'Has status: {col_rename[s]}') for s in status]
 
 class TrackingTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
@@ -53,7 +54,7 @@ class TrackingTable(ExportMixin, tables.Table):
 @staff_member_required
 def status_summary(request, pages=10):
     sort_query = request.GET.get('sort', 'total')
-    filter_query = request.GET.get('filter', 'all')
+    filter_query = [f for f, _ in filters if bool(request.GET.get(f, False))]
     group_query = request.GET.get('group', 'student')
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
     export_query = request.GET.get('export', None)
@@ -71,7 +72,8 @@ def status_summary(request, pages=10):
     projs = Project.objects.filter(semester=semester_query.upper())
     filtered = Application.objects.filter(project__in=projs)
 
-    if filter_query == 'data_scholars':
+    # Data Scholar Filter
+    if 'data_scholar' in filter_query:
         ds = DataScholar.objects.values('email_address')
         filtered = filtered.filter(student__in=ds)
 
@@ -96,8 +98,12 @@ def status_summary(request, pages=10):
 
         table = table[table_col]
 
+        # Status Filter
+        for s in status:
+            if s in filter_query:
+                table = table[[i > 0 for i in table[s]]]
+
         table_row_list = []
-        # table.iloc to reduce amount of conversion needed? Will need to order the data here instead of when converted to table.
         for _, row in table.iterrows():
             table_row_list.append(row.to_dict())
 
@@ -111,14 +117,14 @@ def status_summary(request, pages=10):
     if TableExport.is_valid_format(export_query):
         exporter = TableExport(export_query, table)
         return exporter.response('status_tracking.{}'.format(export_query))
-
+        
     context = dict(
        title='Status summary',
        has_permission=request.user.is_authenticated,
        site_url=True,
        table=table,
        # Allowable Values
-       filter_support=[('all', 'students'), ('data_scholars', 'Data Scholars')],
+       filter_support=filters,
        group_support=[('student', 'students'), ('project', 'projects')],
        semester_support=[(s[0], s[1]) for s in Semester.choices],
        export_support=table.export_querys,

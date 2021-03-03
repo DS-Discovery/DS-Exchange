@@ -12,14 +12,6 @@
 <span class="user-tools">
   <h1>Tools</h1>
   <form class="actions">
-      <label>{% translate 'Filter:' %}
-        <select name="filter" required="">
-          {% for value, option in filter_support %}
-          <option value={{ value }} {% if filter_query == value %}selected{% endif %}>{% translate 'Show for all' %} {% translate option %}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <br/><br/>
       <label>{% translate 'Group:' %}
         <select name="group" required="">
           {% for value, option in group_support %}
@@ -35,6 +27,12 @@
           {% endfor %}
         </select>
       </label>
+      <br/><br/>
+      <label>{% translate 'Show students that meet the selected conditions:' %}</label>
+        {% for value, option in filter_support %}
+        <br/>
+        <label><input type="checkbox" name={{ value }} value=True {% if value in filter_query %}checked{% endif %}/> {% translate option %}</label>
+        {% endfor %}
       <br/>
       <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
   </form>
@@ -45,7 +43,9 @@
         <option value={{ format }}>{{ format }}</option>
         {% endfor %}
       </select>
-      <input type="hidden" name="filter" value={{ filter_query }}>
+      {% for value in filter_query %}
+      <input type="hidden" name={{ value }} value=True>
+      {% endfor %}
       <input type="hidden" name="group" value={{ group_query }}>
       <input type="hidden" name="semester" value={{ semester_query }}>
       <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
