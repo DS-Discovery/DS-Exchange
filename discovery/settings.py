@@ -24,10 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.environ else 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-if not os.path.exists('/home/site/wwwroot/'):
-    os.makedirs('/home/site/wwwroot/')
+DEBUG = True
 
 if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     with open(BASE_DIR / 'secrets.yml') as f:
