@@ -1,0 +1,30 @@
+.asc::before {
+  content:'▼';
+}
+
+.desc::before {
+  content:'▲';
+}
+
+.table-container {
+  width: 70%;
+  float: left;
+}
+
+.user-tools {
+  width: 20%;
+  padding: 20px;
+  background: #f8f8f8;
+  float: right;
+}
+
+.paginator * {
+  margin-right: 5px;
+}
+
+form {
+  padding: 10px 0 20px 0;
+input[type="checkbox"] {
+  margin-left: 10px;
+  margin-right: 5px;
+}
