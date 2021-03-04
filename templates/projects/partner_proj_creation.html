@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load helperfuncs %}
+
+
+{% block container_class %}
+container
+{% endblock %}
+
+
+{% block content %}
+
+<h3>Create New Project</h3>
+
+<div class="d-flex flex-column">
+    <div class="col-8">
+
+        <form action="" method="post" class="mb-5">
+            {% csrf_token %}
+            <table>
+            {% for field in form %}
+                <div class="form-group">
+                    <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
+                </div>
+            {% endfor %}
+            </table>
+
+            <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);">
+            <input class="btn btn-light" type="submit" value="Submit">
+        </form>
+
+    </div>
+</div>
+
+<script>
+    addCharacterLimit("textarea[name='general_question']", 1000);
+
+    const skillLevelSpiel = "<h6 class='my-2'>Please enter you skill level in each of the technologies or techniques below.</h6>";
+    $("select.skill-dropdown").first().parent().before(skillLevelSpiel);
+
+    {% for skill in student.skills %}
+        {% with student.skills|index:skill as skillLevel %}
+            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
+        {% endwith %}
+    {% endfor %}
+</script>
+
+{% endblock %}
