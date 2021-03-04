@@ -20,8 +20,8 @@ from applications.models import Answer, Application
 from students.models import Student
 
 from .forms import EditProjectForm
-from .forms import PartnerProjCreation
-from .models import Partner, PartnerProjectInfo, Project, Question, PartnerNewProj
+from .forms import PartnerProjCreationForm
+from .models import Partner, PartnerProjectInfo, Project, Question
 from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
@@ -271,16 +271,12 @@ def send_app_confirmation_email(app):
 
 def proj_creation(request):
     if request.method == 'POST':
-        form = PartnerNewProj(request.POST)
+        form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
-            organization_name = form.cleaned_data['organization']
-            organization_description = form.cleaned_data['organization_description']
-            organization_website = form.cleaned_data['organization_website']
-            how_did_you_hear_about_us = form.cleaned_data['how_did_you_hear_about_us']
             form.save()
 
-    form = PartnerProjCreation()
+    form = PartnerProjCreationForm()
     return render(request, 'projects/partner_proj_creation.html', {'form' : form})

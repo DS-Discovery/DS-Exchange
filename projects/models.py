@@ -40,7 +40,9 @@ class Semester(models.TextChoices):
 class Project(models.Model):
 
     sem_mapping = {k: v for k, v in Semester.choices}
-
+    email = models.EmailField(max_length=50, default = '')
+    first_name = models.CharField(max_length=50, default = '')
+    last_name = models.CharField(max_length=50, default = '')
     project_name = models.CharField(max_length=200)
     organization = models.CharField(max_length=100)
     # semester = models.CharField(max_length=100)
@@ -70,6 +72,9 @@ class Project(models.Model):
 
     def to_dict(self):
         return {
+            'email': self.email,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
             "id": self.id,
             "project_name": self.project_name,
             "organization": self.organization,
@@ -146,35 +151,6 @@ class Question(models.Model):
 
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
-
-class PartnerNewProj(models.Model):
-    email = models.EmailField(max_length=50, default="")
-    first_name = models.CharField(max_length=50, default="")
-    last_name = models.CharField(max_length=50, default="")
-    organization_name = models.CharField(max_length=100, default="")
-    organization_description = models.TextField(default="")
-    organization_website = models.URLField(default="")
-    how_did_you_hear_about_us = models.CharField(max_length=1, choices=
-    (
-        ('a', 'We reached out to you'),
-        ('b', 'Through a reference'),
-        ('c', 'Social media'),
-        ('d', 'Our website'),
-        ('e', 'Prior participation'),
-        ('f', 'Other')
-    ), default="")
-
-
-    def __str__(self):
-        return {
-            'email': self.email,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'organization_name': self.organization_name,
-            'organization_description': self.organization_description,
-            'organization_website': self.organization_website,
-            'how_did_you_hear_about_us': self.how_did_you_hear_about_us,
-        }
 
 
 from applications.models import Application
