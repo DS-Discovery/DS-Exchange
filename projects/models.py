@@ -40,19 +40,30 @@ class Semester(models.TextChoices):
 class Project(models.Model):
 
     sem_mapping = {k: v for k, v in Semester.choices}
-    email = models.EmailField(max_length=50, default = '')
-    first_name = models.CharField(max_length=50, default = '')
-    last_name = models.CharField(max_length=50, default = '')
-    project_name = models.CharField(max_length=200)
-    organization = models.CharField(max_length=100)
+    email = models.EmailField(max_length=50, blank=True)
+    first_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50, blank=True)
+    organization = models.CharField(max_length=100, blank=True)
+    organization_description = models.TextField(max_length=2000, blank=True)
+    organization_website = models.URLField(blank=True)
+    marketing_channel = models.CharField(max_length=1, choices=
+    (
+        ('a', 'We reached out to you'),
+        ('b', 'Through a reference'),
+        ('c', 'Social media'),
+        ('d', 'Our website'),
+        ('e', 'Prior participation'),
+        ('f', 'Other')
+    ), blank=True)
+    other_marketing_channel = models.CharField(max_length=100,  blank=True, null=True)
     # semester = models.CharField(max_length=100)
     # year = models.CharField(max_length=100)
     embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
     project_category = models.CharField(max_length=200, blank=True, null=True)
+    project_name = models.CharField(max_length=200)
     student_num = models.IntegerField(default=0)
-    description = models.CharField(max_length=5000)
-    organization_description = models.CharField(max_length=1500, blank=True)
+    description = models.TextField(max_length=5000)
     timeline = models.CharField(max_length=1500, blank=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset = models.CharField(max_length=50, blank=True)
@@ -79,7 +90,7 @@ class Project(models.Model):
             "project_name": self.project_name,
             "organization": self.organization,
             "embed_link": self.embed_link,
-            "semester": self.sem_mapping[self.semester],
+            "semester": self.semester,
             "project_category": self.project_category.split(";") if self.project_category is not None else [],
             "student_num": self.student_num,
             "description": self.description,

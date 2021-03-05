@@ -9,7 +9,27 @@ container
 
 {% block content %}
 
-<h3>Create New Project</h3>
+<h3>DS Discovery Project Application</h3>
+
+    <p>Discovery connects undergraduates with hands-on, team-based opportunities in cutting-edge data research projects at UC Berkeley,
+    government agencies, community groups, and entrepreneurial ventures. Through partnership with Discovery, project partners will
+    have the opportunity to:</p>
+    <ul>
+      <li>Increase your capacity to take on data-centric projects, at any level of complexity</li>
+      <li>Collaborate with UC Berkeley’s world-class data science students</li>
+      <li>Create cutting edge machine learning, neural network, and AI algorithms to get new insights and tangible results from your data science projects</li>
+      <li>Rely on an infrastructure of technical and project management support for your student team</li>
+      <li>Join our network of professors, graduate and undergraduate students, and past project partners such as NASA, UCSF, Creative Commons, BART and more.</li>
+      <li>Access free cloud computing and data storage resources.</li>
+    </ul>
+    <p>Discovery is dedicated to providing top-notch data science capacity to our project partners while also fostering a unique learning environment for our students.
+        Students are expected to have a single project that they can work on through the duration of their engagement with the project partner. Discovery student
+        researchers are not interns that can be assigned tasks ad hoc throughout the semester, though it is expected that research goals might shift occasionally.
+        <br><br>Applications will be accepted and reviewed on a rolling basis through January 8th, 2021. If accepted into the program, Discovery projects will receive
+        student applications for review on January 25th. Project partners are responsible for interviewing and selecting the students they would like to work with.
+        We will be in touch throughout the process to guide and support project partners as you form your Discovery teams!<br><br>For specific inquiries about our program
+        email <a href="mailto:ds-discovery@berkeley.edu">ds-discovery@berkeley.edu</a>.<br><br>To learn more about the program visit
+        <a href="https://data.berkeley.edu/research/discovery">https://data.berkeley.edu/research/discovery</a>.</p><br>
 
 <div class="d-flex flex-column">
     <div class="col-8">
@@ -18,6 +38,14 @@ container
             {% csrf_token %}
             <table>
             {% for field in form %}
+                {% if forloop.counter == 1 %}
+                    <h3>Section 1</h3><br>
+                {% endif %}
+                {% if forloop.counter == 9 %}
+                    <br><h3>Section 2: Project Details</h3><br>
+                    <p>Please provide details for the project that we can share on our website and with students.
+                        <br><strong>Note: If you are proposing more than one project - you need to resubmit this form for each project you propose!</strong></p><br>
+                {% endif %}
                 <div class="form-group">
                     <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
                 </div>

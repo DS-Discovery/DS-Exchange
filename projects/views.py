@@ -65,7 +65,7 @@ def apply(request, project_name):
     # check to see if that partner project exists, if so, get the questions for it
     try:
         project = Project.objects.get(project_name=project_name)
-        questions = Question.objects.filter(project = project)#.order_by('question_num')
+        questions = Question.objects.filter(project=project)  # .order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist.")
 
@@ -75,11 +75,11 @@ def apply(request, project_name):
     else:
         messages.info("You must be logged in to apply to a project.")
         return redirect('/')
-    
+
     try:
-        student = Student.objects.get(email_address = email)
+        student = Student.objects.get(email_address=email)
     except ObjectDoesNotExist:
-        if Partner.objects.filter(email_address = email).count() > 0:
+        if Partner.objects.filter(email_address=email).count() > 0:
             messages.info(request, "You must be a student to apply to projects.")
             return redirect("/projects")
         else:
@@ -88,13 +88,13 @@ def apply(request, project_name):
 
     if not flag_enabled('APPLICATIONS_OPEN'):
         messages.info(
-            request, 
+            request,
             "Applications are currently closed. If you believe you have received "
             "this message in error, please email ds-discovery@berkeley.edu."
         )
         return redirect("/projects")
 
-    count = Application.objects.filter(student = student).count()
+    count = Application.objects.filter(student=student).count()
 
     if count > config.APP_LIMIT - 1 and not student.is_scholar:
         messages.info(request, f'You have already applied to {config.APP_LIMIT} projects.')
@@ -103,17 +103,18 @@ def apply(request, project_name):
         messages.info(request, f'You have already applied to {config.SCHOLAR_APP_LIMIT} projects.')
         return redirect('/projects')
 
-    count = Application.objects.filter(student = student, project = project).count()
+    count = Application.objects.filter(student=student, project=project).count()
 
     if count > 0:
         # raise Http404("Student already has an application submitted")
         messages.info(request, 'You have already applied to this project.')
         return redirect('/projects')
 
-    #if this form is submitted, then we want to save the answers
+    # if this form is submitted, then we want to save the answers
     if request.method == 'POST':
 
         post = request.POST.copy()
+
         # print(post)
 
         def querydict_to_dict(query_dict):
@@ -127,17 +128,17 @@ def apply(request, project_name):
 
         is_valid = True
         question_ids = list(post.keys())
-        
+
         ans_list = []
         # creating individual answers
         for q_id in question_ids:
             if q_id == "csrfmiddlewaretoken":
                 continue
-            
+
             if len(post[q_id].strip()) == 0:
                 is_valid = False
                 break
-            
+
             new_ans = request.POST.copy()
             new_ans_keys = list(new_ans.keys())
             q_num = 0
@@ -153,7 +154,7 @@ def apply(request, project_name):
                         answer_text = asDict[q_id]
                     else:
                         answer_text = ";".join(asDict[q_id])
-    
+
                 new_ans.pop(new_k)
 
             new_ans['question'] = Question.objects.get(id=q_num)
@@ -167,7 +168,7 @@ def apply(request, project_name):
             try:
                 application = Application.objects.get(student=student, project=project)
             except:
-                 application = Application(student=student, project=project, status = "SUB")
+                application = Application(student=student, project=project, status="SUB")
 
             application.save()
 
@@ -181,19 +182,19 @@ def apply(request, project_name):
 
                 if form.is_valid():
                     # print("Is valid")
-                    
+
                     question = form.cleaned_data['question']
 
                     try:
                         a = Answer.objects.get(student=student, application=application, question=question)
                         a.answer_text = form.cleaned_data['answer_text']
-                    
+
                     except:
                         a = Answer(
-                            student=student, application = application, question = question, 
-                            answer_text = form.cleaned_data['answer_text']
+                            student=student, application=application, question=question,
+                            answer_text=form.cleaned_data['answer_text']
                         )
-                    
+
                     a.save()
                     answers.append(a)
 
@@ -202,10 +203,10 @@ def apply(request, project_name):
                     application.delete()
                     for a in answers:
                         a.delete()
-                    
+
                     logger.error(f"Invalid answer for application {application}:\n{form}")
                     messages.info(
-                        request, 
+                        request,
                         'Your application was invalid and could not be processed. If this error persists, '
                         'please contact ds-discovery@berkeley.edu.'
                     )
@@ -229,16 +230,16 @@ def apply(request, project_name):
 
             messages.info(request, 'Your application has been submitted successfully!')
             return redirect('/projects')
-        
+
         else:
             messages.info(
-                request, 
+                request,
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
             return redirect(request.path_info)
-    
-    else: # GET
+
+    else:  # GET
         form = AnswerForm()
 
     args = {}
@@ -249,7 +250,7 @@ def apply(request, project_name):
 
     if request.user.is_authenticated:
         print(questions)
-        return render(request, 'projects/application.html', {'questions': questions, 'project' : project, 'form' : form})
+        return render(request, 'projects/application.html', {'questions': questions, 'project': project, 'form': form})
     else:
         raise PermissionDenied("User is not logged in.")
 
@@ -276,7 +277,15 @@ def proj_creation(request):
             email = form.cleaned_data['email']
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
+            organization = form.cleaned_data['organization']
+            organization_description = form.cleaned_data['organization_description']
+            organization_website = form.cleaned_data['organization_website']
+            marketing_channel = form.cleaned_data['marketing_channel']
+            other_marketing_channel = form.cleaned_data['other_marketing_channel']
+            project_name = form.cleaned_data['project_name']
+            project_category = form.cleaned_data['project_category']
+            description = form.cleaned_data['description']
             form.save()
 
     form = PartnerProjCreationForm()
-    return render(request, 'projects/partner_proj_creation.html', {'form' : form})
+    return render(request, 'projects/partner_proj_creation.html', {'form': form})
