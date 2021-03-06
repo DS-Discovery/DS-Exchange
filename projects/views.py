@@ -269,23 +269,46 @@ def send_app_confirmation_email(app):
 
     print(f"Sent confirmation email to {app.student.email_address}")
 
-
+@login_required
 def proj_creation(request):
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            first_name = form.cleaned_data['first_name']
-            last_name = form.cleaned_data['last_name']
-            organization = form.cleaned_data['organization']
-            organization_description = form.cleaned_data['organization_description']
-            organization_website = form.cleaned_data['organization_website']
-            marketing_channel = form.cleaned_data['marketing_channel']
-            other_marketing_channel = form.cleaned_data['other_marketing_channel']
-            project_name = form.cleaned_data['project_name']
-            project_category = form.cleaned_data['project_category']
-            description = form.cleaned_data['description']
-            form.save()
+            proj = Project(organization=form.cleaned_data['organization'],
+                          project_name=form.cleaned_data['project_name'],
+                          project_category=form.cleaned_data['project_category'],
+                          description=form.cleaned_data['description'],
+                          semester="FA21",
+                          organization_description=form.cleaned_data['organization_description'],
+                          other_marketing_channel=form.cleaned_data['other_marketing_channel'],
+                          marketing_channel=form.cleaned_data['marketing_channel'],
+                          organization_website = form.cleaned_data['organization_website']
+                          )
+            proj.save()
+            p = Partner(
+                email_address = email, 
+                first_name = form.cleaned_data['first_name'], 
+                last_name = form.cleaned_data['last_name'],
+            )
+            p.save()
+            p.projects.add(proj)
+            link = PartnerProjectInfo(
+                project = proj,
+                partner = p,
+                role = "Sponsor"
+            )
+            link.save()
+            return redirect('/profile')
+        else:
+            logger.error(f"Invalid form for partner {partner}:\n{form}")
+            messages.info(
+                request, 
+                'Your application was invalid and could not be processed. If this error persists, '
+                'please contact ds-discovery@berkeley.edu.'
+            )
+            return redirect('/profile')
+    else:
+        form = PartnerProjCreationForm()
+        return render(request, 'projects/partner_proj_creation.html', {'form': form})
 
-    form = PartnerProjCreationForm()
-    return render(request, 'projects/partner_proj_creation.html', {'form': form})
