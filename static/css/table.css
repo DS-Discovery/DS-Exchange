@@ -7,8 +7,9 @@
 }
 
 .table-container {
-  width: 70%;
+  width: 75%;
   float: left;
+  overflow-x: scroll;
 }
 
 .user-tools {
@@ -20,6 +21,10 @@
 
 .paginator * {
   margin-right: 5px;
+}
+
+.toggle {
+  cursor: pointer;
 }
 
 form {

@@ -38,6 +38,8 @@ for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
 inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
+ds_query = 'data_scholar'
+filters = [(ds_query, 'Is Data Scholars')] + [(s, f'Has status: {col_rename[s]}') for s in status]
 
 class TrackingTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
@@ -53,7 +55,8 @@ class TrackingTable(ExportMixin, tables.Table):
 @staff_member_required
 def status_summary(request, pages=10):
     sort_query = request.GET.get('sort', 'total')
-    filter_query = request.GET.get('filter', 'all')
+    filter_in_query = [f for f, _ in filters if request.GET.get(f, False) == "IN"]
+    filter_out_query = [f for f, _ in filters if request.GET.get(f, False) == "OUT"]
     group_query = request.GET.get('group', 'student')
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
     export_query = request.GET.get('export', None)
@@ -71,9 +74,13 @@ def status_summary(request, pages=10):
     projs = Project.objects.filter(semester=semester_query.upper())
     filtered = Application.objects.filter(project__in=projs)
 
-    if filter_query == 'data_scholars':
-        ds = DataScholar.objects.values('email_address')
+    # Data Scholar Filter
+    ds = DataScholar.objects.values('email_address')
+    if ds_query in filter_in_query:
         filtered = filtered.filter(student__in=ds)
+    if ds_query in filter_out_query:
+        filtered = filtered.exclude(student__in=ds)
+
 
     df = pd.DataFrame([model_to_dict(row) for row in filtered])
 
@@ -96,14 +103,22 @@ def status_summary(request, pages=10):
 
         table = table[table_col]
 
+        # Status Filter
+        for s in status:
+            cond = (table[s] > 0)
+            if s in filter_in_query:
+                table = table[cond]
+            elif s in filter_out_query:
+                table = table[~(cond)]
+
         table_row_list = []
-        # table.iloc to reduce amount of conversion needed? Will need to order the data here instead of when converted to table.
         for _, row in table.iterrows():
             table_row_list.append(row.to_dict())
 
     table = TrackingTable(table_row_list)
-    table.paginate(page=page_query, per_page=pages)
     table.order_by = sort_query
+    table.paginate(page=page_query, per_page=pages)
+    print(sort_query)
     # Hide columns not used by the table
     table.exclude = set(col_order).difference(table_col)
 
@@ -118,13 +133,14 @@ def status_summary(request, pages=10):
        site_url=True,
        table=table,
        # Allowable Values
-       filter_support=[('all', 'students'), ('data_scholars', 'Data Scholars')],
+       filter_support=filters,
        group_support=[('student', 'students'), ('project', 'projects')],
        semester_support=[(s[0], s[1]) for s in Semester.choices],
        export_support=table.export_querys,
        # Current Filters
-       filter_query=filter_query,
-       group_query=group_query,
+       filter_in_query=filter_in_query,
+       filter_out_query=filter_out_query,
+       group_query=request.GET.get('group', 'student'),
        semester_query=semester_query,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
