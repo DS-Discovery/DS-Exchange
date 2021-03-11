@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+import django_filters
 
 
 def get_default_skills():
@@ -90,7 +91,7 @@ class Project(models.Model):
             "project_name": self.project_name,
             "organization": self.organization,
             "embed_link": self.embed_link,
-            "semester": self.semester,
+            "semester": self.sem_mapping[self.semester],
             "project_category": self.project_category.split(";") if self.project_category is not None else [],
             "student_num": self.student_num,
             "description": self.description,
