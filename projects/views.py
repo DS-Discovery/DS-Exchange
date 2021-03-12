@@ -40,7 +40,12 @@ def list_projects(request):
         if Application.objects.filter(project_id=project['id']).count() >= config.HIDE_PROJECT_APPLICATION_THRESHOLD:
             projects_json['projects'].pop(i)
 
-    return render(request, 'projects/listing.html', {"projects_json": projects_json})
+    context = {
+        "projects_json": projects_json,
+        "selected": request.GET.get('selected', ''),
+    }
+
+    return render(request, 'projects/listing.html', context)
 
 
 def get_projects_json():
@@ -74,7 +79,7 @@ def apply(request, project_name):
     else:
         messages.info("You must be logged in to apply to a project.")
         return redirect('/')
-    
+
     try:
         student = Student.objects.get(email_address = email)
     except ObjectDoesNotExist:
@@ -87,7 +92,7 @@ def apply(request, project_name):
 
     if not flag_enabled('APPLICATIONS_OPEN'):
         messages.info(
-            request, 
+            request,
             "Applications are currently closed. If you believe you have received "
             "this message in error, please email ds-discovery@berkeley.edu."
         )
@@ -126,17 +131,17 @@ def apply(request, project_name):
 
         is_valid = True
         question_ids = list(post.keys())
-        
+
         ans_list = []
         # creating individual answers
         for q_id in question_ids:
             if q_id == "csrfmiddlewaretoken":
                 continue
-            
+
             if len(post[q_id].strip()) == 0:
                 is_valid = False
                 break
-            
+
             new_ans = request.POST.copy()
             new_ans_keys = list(new_ans.keys())
             q_num = 0
@@ -152,7 +157,7 @@ def apply(request, project_name):
                         answer_text = asDict[q_id]
                     else:
                         answer_text = ";".join(asDict[q_id])
-    
+
                 new_ans.pop(new_k)
 
             new_ans['question'] = Question.objects.get(id=q_num)
@@ -180,19 +185,19 @@ def apply(request, project_name):
 
                 if form.is_valid():
                     # print("Is valid")
-                    
+
                     question = form.cleaned_data['question']
 
                     try:
                         a = Answer.objects.get(student=student, application=application, question=question)
                         a.answer_text = form.cleaned_data['answer_text']
-                    
+
                     except:
                         a = Answer(
-                            student=student, application = application, question = question, 
+                            student=student, application = application, question = question,
                             answer_text = form.cleaned_data['answer_text']
                         )
-                    
+
                     a.save()
                     answers.append(a)
 
@@ -201,10 +206,10 @@ def apply(request, project_name):
                     application.delete()
                     for a in answers:
                         a.delete()
-                    
+
                     logger.error(f"Invalid answer for application {application}:\n{form}")
                     messages.info(
-                        request, 
+                        request,
                         'Your application was invalid and could not be processed. If this error persists, '
                         'please contact ds-discovery@berkeley.edu.'
                     )
@@ -228,15 +233,15 @@ def apply(request, project_name):
 
             messages.info(request, 'Your application has been submitted successfully!')
             return redirect('/projects')
-        
+
         else:
             messages.info(
-                request, 
+                request,
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
             return redirect(request.path_info)
-    
+
     else: # GET
         form = AnswerForm()
 
@@ -266,4 +271,3 @@ def send_app_confirmation_email(app):
     )
 
     print(f"Sent confirmation email to {app.student.email_address}")
-

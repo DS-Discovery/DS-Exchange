@@ -9,7 +9,7 @@ const mdConverter = new showdown.Converter();
 
 var projects;
 
-function loadProjects() {
+function loadProjects(selectedProj) {
     projects = JSON.parse($(projectJSONQuery).text()).projects;
 
     // trim category whitespace
@@ -21,6 +21,17 @@ function loadProjects() {
 
     listProjects([...Array(projects.length).keys()]);
     loadCategoryFilter();
+
+
+    let projId = parseInt(selectedProj);
+    if (projId && projId > 0) {
+        for (i = 0; i < projects.length; i++) {
+            if (projects[i].id == projId) {
+              clickProject(i);
+              return;
+            }
+        }
+    }
 }
 
 function loadCategoryFilter() {
@@ -68,10 +79,10 @@ function listProjects(projectIdxs) {
         var project =  projects[projectIdxs[i]];
         console.log(project);
         $("div#project-list").append(`
-            <button 
-                type="button" 
-                class="list-group-item list-group-item-action project" 
-                id="project-${ projectIdxs[i] }" 
+            <button
+                type="button"
+                class="list-group-item list-group-item-action project"
+                id="project-${ projectIdxs[i] }"
                 onclick='clickProject(${ projectIdxs[i] })'
             >${ project.project_name }</button>
         `);
@@ -118,7 +129,7 @@ function replaceDescription(project) {
         <h5>${ project.project_name }</h5>
         <p class="mt-4"><strong>Project Description</strong></p>
         ${ htmlDescription }
-        
+
         <p class="mt-4"><strong>Project Timeline</strong></p>
         ${ htmlTimeline }
 
