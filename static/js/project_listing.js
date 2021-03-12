@@ -98,6 +98,17 @@ function clickProject(projectNum) {
     loadSidebar(project);
 }
 
+function projectLink(projId) {
+  var e = document.createElement("textarea");
+  e.value = window.location.origin + window.location.pathname + "?selected=" + projId;
+  e.setAttribute("readonly", "");
+  e.style = {position: "absolute", left: "-9999px"};
+  document.body.appendChild(e);
+  e.select();
+  document.execCommand("copy");
+  document.body.removeChild(e);
+}
+
 function replaceDescription(project) {
     $(descriptionQuery).empty();
 
@@ -126,7 +137,7 @@ function replaceDescription(project) {
     var htmlOrgDescription = mdConverter.makeHtml(project.organization_description)
 
     $(descriptionQuery).append(`
-        <h5>${ project.project_name }</h5>
+        <h5>${ project.project_name }<span class="copy" onclick="projectLink(${ project.id })">🔗</span></h5>
         <p class="mt-4"><strong>Project Description</strong></p>
         ${ htmlDescription }
 
