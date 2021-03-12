@@ -137,7 +137,8 @@ function replaceDescription(project) {
     var htmlOrgDescription = mdConverter.makeHtml(project.organization_description)
 
     $(descriptionQuery).append(`
-        <h5>${ project.project_name }<span class="copy" onclick="projectLink(${ project.id })">🔗</span></h5>
+        <h5 style="display: inline;">${ project.project_name }</h5>
+        <span class="copy" onclick="projectLink(${ project.id })">🔗</span>
         <p class="mt-4"><strong>Project Description</strong></p>
         ${ htmlDescription }
 
