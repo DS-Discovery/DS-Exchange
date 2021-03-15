@@ -71,3 +71,22 @@ div.column-pane {
   border-color: rgba(0,0,0,.1);
   width:100%;
 }
+
+.copy {
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.copy:hover::after {
+  content: "copy link!";
+  background-color: #f8f9fa;
+  padding: 4px 10px 4px 10px;
+  margin: 6px;
+}
+
+.copy:active::after {
+  content: "copied!";
+  background-color: #f8f9fa;
+  padding: 4px 10px 4px 10px;
+  margin: 6px;
+}
