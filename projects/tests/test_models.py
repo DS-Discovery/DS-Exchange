@@ -3,34 +3,6 @@ from ..models import Semester, Project, Partner, PartnerProjectInfo, Question
 
 class ProjectTestCase(TestCase):
 
-# class Project(models.Model):
-
-    # sem_mapping = {k: v for k, v in Semester.choices}
-    #
-    # project_name = models.CharField(max_length=200)
-    # organization = models.CharField(max_length=100)
-    # # semester = models.CharField(max_length=100)
-    # # year = models.CharField(max_length=100)
-    # embed_link = models.CharField(max_length=400, blank = True, null=True,)
-    # semester = models.CharField(max_length=4, choices=Semester.choices)
-    # project_category = models.CharField(max_length=200, blank=True, null=True)
-    # student_num = models.IntegerField(default=0)
-    # description = models.CharField(max_length=5000)
-    # organization_description = models.CharField(max_length=1500, blank=True)
-    # timeline = models.CharField(max_length=1500, blank=True)
-    # project_workflow = models.CharField(max_length=1000, blank=True)
-    # dataset = models.CharField(max_length=50, blank=True)
-    # deliverable = models.CharField(max_length=1000, blank=True)
-    # skillset = models.JSONField(default=get_default_skills, null=False)
-    # additional_skills = models.CharField(max_length=500, blank=True)
-    # technical_requirements = models.CharField(max_length=500, blank=True)
-    # # models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
-    # # TODO: dropdown for skills in admin view
-    #
-    # @property
-    # def num_applications(self):
-    #     return Application.objects.filter(project=self).count()
-    #
     # def __str__(self):
     #     return self.project_name
     #
@@ -96,6 +68,9 @@ class ProjectTestCase(TestCase):
         for key in self.project_values.keys():
             value = self.project_values[key]
             eval(f"self.assertEqual(self.project.{key}, {repr(value)})")
+
+    def test_new_has_no_applicants(self):
+        self.assertEqual(cls.project.num_applications(), 0)
 
     # def test_it_has_timestamps(self):
     #     self.assertIsInstance(self.actor.last_update, datetime)
