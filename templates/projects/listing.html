@@ -9,7 +9,7 @@
 
 
 {% block first_column %}
-    
+
 <div class="list-group list-group-flush" id="project-list">
     <p>No projects are available.</p>
 </div>
@@ -51,7 +51,7 @@
 
 <script>
     // This makes a request to gather all projects and load them
-    $(document).ready(loadProjects);
+    $(document).ready(function() {loadProjects('{{ selected }}')});
 </script>
 
 {% endblock %}
