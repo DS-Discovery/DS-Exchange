@@ -63,6 +63,11 @@ class PartnerProjCreationForm(forms.ModelForm):
             'meet_regularly',
             'survey_response',
             'environment',
+
+            # section 5
+            'optional_q1',
+            'optional_q2',
+            'optional_q3',
         )
 
         labels = {
@@ -92,4 +97,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             "survey_response": "The Discovery program will regularly send out short surveys to assess the progress of projects - "
                                "can you commit to responding to all surveys?",
             "environment": "Can you commit to ensuring a safe, professional, and inclusive work environment for the students working on the project?",
+            "optional_q1": "Do you have any additional questions for applicants (question 1)?",
+            "optional_q2": "Do you have any additional questions for applicants (question 2)?",
+            "optional_q3": "Do you have any additional questions for applicants (question 3)?",
         }

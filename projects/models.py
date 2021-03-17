@@ -51,6 +51,9 @@ class Project(models.Model):
     other_project_category = models.CharField(max_length=100,  blank=True, null=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset_availability = models.BooleanField(choices=((True, 'Yes'), (False, 'No')), default=True)
+    optional_q1 = models.CharField(max_length=200, blank=True, null=True)
+    optional_q2 = models.CharField(max_length=200, blank=True, null=True)
+    optional_q3 = models.CharField(max_length=200, blank=True, null=True)
     num_students = models.CharField(max_length=1, choices=
     (
         ('a', '3'),

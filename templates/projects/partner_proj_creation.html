@@ -78,7 +78,11 @@ container
                 {% if forloop.counter == 24 %}
                     <br><h3>Section 4: Project Agreement</h3><br>
                     <p>A formal MOU will be sent to your listed email address for you to review and sign upon the acceptance of your project application.
-                        Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.
+                        Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.</p>
+                {% endif %}
+                {% if forloop.counter == 27 %}
+                    <br><h3>Section 4: Additional Questions?</h3><br>
+                    <p>This section is <u>optional</u>, and depends on your organization's preferences.</p>
                 {% endif %}
                 <div class="form-group">
                     <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
