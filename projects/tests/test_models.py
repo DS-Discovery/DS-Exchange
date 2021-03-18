@@ -1,41 +1,22 @@
 from django.test import TestCase
-from ..models import Semester, Project, Partner, PartnerProjectInfo, Question
+from applications.models import Application
+from students.models import Student
+from projects.models import Semester, Project, Partner, PartnerProjectInfo, Question
 
 class ProjectTestCase(TestCase):
-
-    # def __str__(self):
-    #     return self.project_name
-    #
-    # def to_dict(self):
-    #     return {
-    #         "id": self.id,
-    #         "project_name": self.project_name,
-    #         "organization": self.organization,
-    #         "embed_link": self.embed_link,
-    #         "semester": self.sem_mapping[self.semester],
-    #         "project_category": self.project_category.split(";") if self.project_category is not None else [],
-    #         "student_num": self.student_num,
-    #         "description": self.description,
-    #         "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
-    #         "organization_description": self.organization_description,
-    #         "timeline": self.timeline,
-    #         "project_workflow": self.project_workflow,
-    #         "dataset": self.dataset,
-    #         "deliverable": self.deliverable,
-    #         "skillset": self.skillset,
-    #         "additional_skills": self.additional_skills,
-    #         "technical_requirements": self.technical_requirements,
-    #     }
-    #  #
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.project_values = { "project_name":"Test Project Name",
+        cls.project_0_categories = []
+        cls.project_1_categories = ["Testing"]
+        cls.project_2_categories = ["Testing", "Data Science"]
+
+        cls.project_values_0 = { "project_name":"Test Project Name",
                                 "organization":"Test Organization",
                                 "embed_link":"https://www.testproject.org",
                                 "semester":"SP21",
-                                "project_category":"Testing",
+                                "project_category":";".join(cls.project_0_categories),
                                 "student_num":10,
                                 "description":"This is the description of a test project.",
                                 "organization_description":"This is the description of the test organization.",
@@ -46,34 +27,169 @@ class ProjectTestCase(TestCase):
                                 "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
                                 "additional_skills":"Positive attitude is a MUST.",
                                 "technical_requirements":"ML background." }
-        cls.project = Project.objects.create(
-            project_name=cls.project_values["project_name"],
-            organization=cls.project_values["organization"],
-            embed_link=cls.project_values["embed_link"],
-            semester=cls.project_values["semester"],
-            project_category=cls.project_values["project_category"],
-            student_num=cls.project_values["student_num"],
-            description=cls.project_values["description"],
-            organization_description=cls.project_values["organization_description"],
-            timeline=cls.project_values["timeline"],
-            project_workflow=cls.project_values["project_workflow"],
-            dataset=cls.project_values["dataset"],
-            deliverable=cls.project_values["deliverable"],
-            skillset=cls.project_values["skillset"],
-            additional_skills=cls.project_values["additional_skills"],
-            technical_requirements=cls.project_values["technical_requirements"]
-        )
+        cls.project_values_1 = { "project_name":"Test Project Name",
+                                "organization":"Test Organization",
+                                "embed_link":"https://www.testproject.org",
+                                "semester":"SP21",
+                                "project_category":";".join(cls.project_1_categories),
+                                "student_num":10,
+                                "description":"This is the description of a test project.",
+                                "organization_description":"This is the description of the test organization.",
+                                "timeline":"Soon...",
+                                "project_workflow":"We use Agile.",
+                                "dataset":"Photographs provided by the MET.",
+                                "deliverable":"Computer vision algorithm to identify time periods.",
+                                "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
+                                "additional_skills":"Positive attitude is a MUST.",
+                                "technical_requirements":"ML background." }
+        cls.project_values_2 = { "project_name":"Test Project Name",
+                                "organization":"Test Organization",
+                                "embed_link":"https://www.testproject.org",
+                                "semester":"SP21",
+                                "project_category":";".join(cls.project_2_categories),
+                                "student_num":10,
+                                "description":"This is the description of a test project.",
+                                "organization_description":"This is the description of the test organization.",
+                                "timeline":"Soon...",
+                                "project_workflow":"We use Agile.",
+                                "dataset":"Photographs provided by the MET.",
+                                "deliverable":"Computer vision algorithm to identify time periods.",
+                                "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
+                                "additional_skills":"Positive attitude is a MUST.",
+                                "technical_requirements":"ML background." }
+
+        cls.project_0 = Project.objects.create(**cls.project_values_0)
+        cls.project_1 = Project.objects.create(**cls.project_values_1)
+        cls.project_2 = Project.objects.create(**cls.project_values_2)
+
+        cls.student_A = Student.objects.create(email_address="a@berkeley.edu")
+        cls.student_B = Student.objects.create(email_address="b@berkeley.edu")
 
     def test_fields_as_expected(self):
-        for key in self.project_values.keys():
-            value = self.project_values[key]
-            eval(f"self.assertEqual(self.project.{key}, {repr(value)})")
+        for key in self.project_values_0.keys():
+            value = self.project_values_0[key]
+            eval(f"self.assertEqual(self.project_0.{key}, {repr(value)})")
 
-    def test_new_has_no_applicants(self):
-        self.assertEqual(cls.project.num_applications(), 0)
+    def test_starting_applications_count(self):
+        self.assertEqual(self.project_0.num_applications, 0)
 
-    # def test_it_has_timestamps(self):
-    #     self.assertIsInstance(self.actor.last_update, datetime)
+    def test_applications_count_add_application(self):
+        application = Application.objects.create(project=self.project_0, student_id=self.student_A.id)
+        self.assertEqual(self.project_0.num_applications, 1)
 
+    def test_applications_count_remove_application(self):
+        application = Application.objects.create(project=self.project_0, student_id=self.student_A.id)
+        application.delete()
+        self.assertEqual(self.project_0.num_applications, 0)
+
+    def test_applications_count_add_another_after_remove_application(self):
+        application = Application.objects.create(project=self.project_0, student_id=self.student_A.id)
+        application.delete()
+        application = Application.objects.create(project=self.project_0, student_id=self.student_B.id)
+        self.assertEqual(self.project_0.num_applications, 1)
+
+    def test_applications_count_add_application_after_remove_for_same_student(self):
+        application = Application.objects.create(project=self.project_0, student_id=self.student_A.id)
+        application.delete()
+        application = Application.objects.create(project=self.project_0, student_id=self.student_A.id)
+        self.assertEqual(self.project_0.num_applications, 1)
+
+    def test_string_repr_is_proj_name(self):
+        self.assertEqual(str(self.project_0), self.project_values_0["project_name"])
+
+    def test_dict_repr_starting_question_count(self):
+        self.assertEqual(len(self.project_0.to_dict()['questions']), 0)
+
+    def test_dict_repr_gets_right_questions(self):
+        project_0_q_text = "project 0"
+        project_1_q_text = "project 1"
+
+        project_0_q = Question.objects.create(project=cls.project_0, question_text=project_0_q_text)
+        project_1_q = Question.objects.create(project=cls.project_1, question_text=project_1_q_text)
+
+        project_0_dict_q = self.project_0.to_dict()['questions']
+        project_1_dict_q = self.project_1.to_dict()['questions']
+        project_2_dict_q = self.project_2.to_dict()['questions']
+
+        self.assertEqual(len(project_0_dict_q), 1)
+        self.assertEqual(len(project_1_dict_q), 1)
+        self.assertEqual(len(project_2_dict_q), 0)
+
+        self.assertEqual(project_0_dict_q[0]['question_text'], project_0_q_text)
+        self.assertEqual(project_1_dict_q[0]['question_text'], project_1_q_text)
+
+    def test_dict_repr_no_categories(self):
+        dict_repr = {
+            "id": self.project_0.id,
+            "project_name": self.project_0.project_name,
+            "organization": self.project_0.organization,
+            "embed_link": self.project_0.embed_link,
+            "semester": self.project_0.sem_mapping[self.project_0.semester],
+            "project_category": self.project_0_categories,
+            "student_num": self.project_0.student_num,
+            "description": self.project_0.description,
+            "questions": [q.to_dict() for q in Question.objects.filter(project=self.project_0)],
+            "organization_description": self.project_0.organization_description,
+            "timeline": self.project_0.timeline,
+            "project_workflow": self.project_0.project_workflow,
+            "dataset": self.project_0.dataset,
+            "deliverable": self.project_0.deliverable,
+            "skillset": self.project_0.skillset,
+            "additional_skills": self.project_0.additional_skills,
+            "technical_requirements": self.project_0.technical_requirements,
+        }
+        proj_repr = self.project_0.to_dict()
+        for key in dict_repr:
+                self.assertEqual(proj_repr[key], dict_repr[key])
+
+    def test_dict_repr_one_category(self):
+        dict_repr = {
+            "id": self.project_1.id,
+            "project_name": self.project_1.project_name,
+            "organization": self.project_1.organization,
+            "embed_link": self.project_1.embed_link,
+            "semester": self.project_1.sem_mapping[self.project_1.semester],
+            "project_category": self.project_1_categories,
+            "student_num": self.project_1.student_num,
+            "description": self.project_1.description,
+            "questions": [q.to_dict() for q in Question.objects.filter(project=self.project_1)],
+            "organization_description": self.project_1.organization_description,
+            "timeline": self.project_1.timeline,
+            "project_workflow": self.project_1.project_workflow,
+            "dataset": self.project_1.dataset,
+            "deliverable": self.project_1.deliverable,
+            "skillset": self.project_1.skillset,
+            "additional_skills": self.project_1.additional_skills,
+            "technical_requirements": self.project_1.technical_requirements,
+        }
+        proj_repr = self.project_1.to_dict()
+        for key in dict_repr:
+                self.assertEqual(proj_repr[key], dict_repr[key])
+
+    def test_dict_repr_two_categories(self):
+        dict_repr = {
+            "id": self.project_2.id,
+            "project_name": self.project_2.project_name,
+            "organization": self.project_2.organization,
+            "embed_link": self.project_2.embed_link,
+            "semester": self.project_2.sem_mapping[self.project_2.semester],
+            "project_category": self.project_2_categories,
+            "student_num": self.project_2.student_num,
+            "description": self.project_2.description,
+            "questions": [q.to_dict() for q in Question.objects.filter(project=self.project_2)],
+            "organization_description": self.project_2.organization_description,
+            "timeline": self.project_2.timeline,
+            "project_workflow": self.project_2.project_workflow,
+            "dataset": self.project_2.dataset,
+            "deliverable": self.project_2.deliverable,
+            "skillset": self.project_2.skillset,
+            "additional_skills": self.project_2.additional_skills,
+            "technical_requirements": self.project_2.technical_requirements,
+        }
+        proj_repr = self.project_2.to_dict()
+        for key in dict_repr:
+                self.assertEqual(proj_repr[key], dict_repr[key])
+
+# Partner, PartnerProjectInfo, Question
 class ModelsTestCase(TestCase):
     pass
