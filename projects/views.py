@@ -283,7 +283,23 @@ def proj_creation(request):
                           organization_description=form.cleaned_data['organization_description'],
                           other_marketing_channel=form.cleaned_data['other_marketing_channel'],
                           marketing_channel=form.cleaned_data['marketing_channel'],
-                          organization_website = form.cleaned_data['organization_website']
+                          organization_website = form.cleaned_data['organization_website'],
+                          timeline=form.cleaned_data['timeline'],
+                          project_workflow=form.cleaned_data['project_workflow'],
+                          dataset_availability=form.cleaned_data['dataset_availability'],
+                          deliverable=form.cleaned_data['deliverable'],
+                          skillset=form.cleaned_data['skillset'],
+                          additional_skills=form.cleaned_data['additional_skills'],
+                          technical_requirements=form.cleaned_data['technical_requirements'],
+                          num_students=form.cleaned_data['num_students'],
+                          other_num_students=form.cleaned_data['other_num_students'],
+                          cloud_creds=form.cleaned_data['cloud_creds'],
+                          meet_regularly=form.cleaned_data['meet_regularly'],
+                          other_project_category=form.cleaned_data['other_project_category'],
+                          hce_intern=form.cleaned_data['hce_intern'],
+                          optional_q1=form.cleaned_data['optional_q1'],
+                          optional_q2=form.cleaned_data['optional_q2'],
+                          optional_q3=form.cleaned_data['optional_q3']
                           )
             proj.save()
             p = Partner(
