@@ -190,6 +190,11 @@ class ProjectTestCase(TestCase):
         for key in dict_repr:
                 self.assertEqual(proj_repr[key], dict_repr[key])
 
-# Partner, PartnerProjectInfo, Question
-class ModelsTestCase(TestCase):
+class PartnerTestCase(TestCase):
+    pass
+
+class PartnerProjectInfoTestCase(TestCase):
+    pass
+
+class QuestionTestCase(TestCase):
     pass
