@@ -191,7 +191,112 @@ class ProjectTestCase(TestCase):
                 self.assertEqual(proj_repr[key], dict_repr[key])
 
 class PartnerTestCase(TestCase):
-    pass
+    
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.partner_0_info = {
+        "email_address":"ab@berkeley.edu"
+        "first_name":"a"
+        "last_name":"b"
+        }
+        cls.partner_1_info = {
+        "email_address":"cd@berkeley.edu"
+        "first_name":"c"
+        "last_name":"d"
+        }
+        cls.partner_2_info = {
+        "email_address":"ef@berkeley.edu"
+        "first_name":"e"
+        "last_name":"f"
+        }
+        cls.partner_0 = Partner.objects.create(**cls.partner_0_info)
+        cls.partner_1 = Partner.objects.create(**cls.partner_1_info)
+        cls.partner_2 = Partner.objects.create(**cls.partner_2_info)
+
+    def test_fields_as_expected(self):
+        for key in self.partner_0_info.keys():
+            value = self.partner_0_info[key]
+            eval(f"self.assertEqual(self.partner_0.{key}, {repr(value)})")
+
+    def test_starting_projects_count(self):
+        self.assertEqual(self.partner_0.projects.count(), 0)
+
+    def test_projects_count_add_project(self):
+        project_0 = Project.objects.create()
+
+        self.assertEqual(self.partner_0.projects.count(), 0)
+        self.assertEqual(self.partner_1.projects.count(), 0)
+        self.assertEqual(self.partner_2.projects.count(), 0)
+
+        self.partner_0.projects.add(project_0)
+
+        self.assertEqual(self.partner_1.projects.count(), 0)
+        self.assertEqual(self.partner_2.projects.count(), 0)
+
+        self.assertEqual(self.partner_0.projects.count(), 1)
+        self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
+
+        project_1 = Project.objects.create()
+
+        self.partner.partner_1.add(project_1)
+
+        self.assertEqual(self.partner_0.projects.count(), 1)
+        self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
+        self.assertEqual(self.partner_1.projects.count(), 1)
+        self.assertEqual(self.partner_1.projects.get(id=project_1.id), project_1)
+
+        self.assertEqual(self.partner_2.projects.count(), 0)
+
+    def test_projects_with_multiple_partners(self):
+        project_0 = Project.objects.create()
+
+        self.partner_0.projects.add(project_0)
+        self.partner_1.projects.add(project_0)
+
+        self.assertEqual(self.partner_0.projects.count(), 1)
+        self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
+        self.assertEqual(self.partner_1.projects.count(), 1)
+        self.assertEqual(self.partner_1.projects.get(id=project_1.id), project_0)
+        self.assertEqual(self.partner_2.projects.count(), 0)
+
+        project_1 = Project.objects.create()
+
+        self.partner.partner_1.add(project_1)
+        self.partner.partner_2.add(project_1)
+
+        self.assertEqual(self.partner_0.projects.count(), 1)
+        self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
+        self.assertEqual(self.partner_1.projects.count(), 2)
+        self.assertEqual(self.partner_1.projects.get(id=project_0.id), project_0)
+        self.assertEqual(self.partner_1.projects.get(id=project_1.id), project_1)
+        self.assertEqual(self.partner_2.projects.count(), 1)
+        self.assertEqual(self.partner_2.projects.get(id=project_1.id), project_1)
+
+
+    def test_projects_count_remove_project(self):
+        project_0 = Project.objects.create()
+
+        self.partner_0.projects.add(project_0)
+        self.partner_1.projects.add(project_0)
+        self.partner_1.projects.remove(project_0)
+
+        self.assertEqual(self.partner_0.projects.count(), 1)
+        self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
+
+        self.assertEqual(self.partner_1.projects.count(), 0)
+        self.assertEqual(self.partner_2.projects.count(), 0)
+
+
+    def test_projects_count_add_another_after_remove_project(self):
+        project_0 = Project.objects.create()
+
+        self.partner_0.projects.add(project_0)
+        self.partner_0.projects.remove(project_0)
+        self.partner_0.projects.add(project_0)
+
+        self.assertEqual(self.partner_0.projects.count(), 1)
+        self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
 
 class PartnerProjectInfoTestCase(TestCase):
     pass
