@@ -68,7 +68,7 @@ class ProjectTestCase(TestCase):
     def test_fields_as_expected(self):
         for key in self.project_values_0.keys():
             value = self.project_values_0[key]
-            eval(f"self.assertEqual(self.project_0.{key}, {repr(value)})")
+            self.assertEqual(eval(f'self.project_0.{key}'), value)
 
     def test_starting_applications_count(self):
         self.assertEqual(self.project_0.num_applications, 0)
@@ -104,8 +104,8 @@ class ProjectTestCase(TestCase):
         project_0_q_text = "project 0"
         project_1_q_text = "project 1"
 
-        project_0_q = Question.objects.create(project=cls.project_0, question_text=project_0_q_text)
-        project_1_q = Question.objects.create(project=cls.project_1, question_text=project_1_q_text)
+        project_0_q = Question.objects.create(project=self.project_0, question_text=project_0_q_text)
+        project_1_q = Question.objects.create(project=self.project_1, question_text=project_1_q_text)
 
         project_0_dict_q = self.project_0.to_dict()['questions']
         project_1_dict_q = self.project_1.to_dict()['questions']
@@ -195,32 +195,32 @@ class PartnerTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.partner_0_info = {
+        cls.partner_values_0 = {
         "email_address":"ab@berkeley.edu",
         "first_name":"a",
         "last_name":"b"
         }
-        cls.partner_1_info = {
+        cls.partner_values_1 = {
         "email_address":"cd@berkeley.edu",
         "first_name":"c",
         "last_name":"d"
         }
-        cls.partner_2_info = {
+        cls.partner_values_2 = {
         "email_address":"ef@berkeley.edu",
         "first_name":"e",
         "last_name":"f"
         }
-        cls.partner_0 = Partner.objects.create(**cls.partner_0_info)
-        cls.partner_1 = Partner.objects.create(**cls.partner_1_info)
-        cls.partner_2 = Partner.objects.create(**cls.partner_2_info)
+        cls.partner_0 = Partner.objects.create(**cls.partner_values_0)
+        cls.partner_1 = Partner.objects.create(**cls.partner_values_1)
+        cls.partner_2 = Partner.objects.create(**cls.partner_values_2)
 
     def test_string_repr_is_email_address(self):
-        self.assertEqual(str(self.partner_0), self.partner_0_info["email_address"])
+        self.assertEqual(str(self.partner_0), self.partner_values_0["email_address"])
 
     def test_fields_as_expected(self):
-        for key in self.partner_0_info.keys():
-            value = self.partner_0_info[key]
-            eval(f"self.assertEqual(self.partner_0.{key}, {repr(value)})")
+        for key in self.partner_values_0.keys():
+            value = self.partner_values_0[key]
+            self.assertEqual(eval(f'self.partner_0.{key}'), value)
 
     def test_starting_projects_count(self):
         self.assertEqual(self.partner_0.projects.count(), 0)
@@ -242,7 +242,7 @@ class PartnerTestCase(TestCase):
 
         project_1 = Project.objects.create()
 
-        self.partner.partner_1.add(project_1)
+        self.partner_1.projects.add(project_1)
 
         self.assertEqual(self.partner_0.projects.count(), 1)
         self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
@@ -260,13 +260,13 @@ class PartnerTestCase(TestCase):
         self.assertEqual(self.partner_0.projects.count(), 1)
         self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
         self.assertEqual(self.partner_1.projects.count(), 1)
-        self.assertEqual(self.partner_1.projects.get(id=project_1.id), project_0)
+        self.assertEqual(self.partner_1.projects.get(id=project_0.id), project_0)
         self.assertEqual(self.partner_2.projects.count(), 0)
 
         project_1 = Project.objects.create()
 
-        self.partner.partner_1.add(project_1)
-        self.partner.partner_2.add(project_1)
+        self.partner_1.projects.add(project_1)
+        self.partner_2.projects.add(project_1)
 
         self.assertEqual(self.partner_0.projects.count(), 1)
         self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
@@ -306,12 +306,12 @@ class PartnerProjectInfoTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.partner_info = {
+        cls.partner_values = {
         "email_address":"ab@berkeley.edu",
         "first_name":"a",
         "last_name":"b"
         }
-        cls.project_info = {
+        cls.project_values = {
         "project_name":"Test Project Name",
         "organization":"Test Organization",
         "embed_link":"https://www.testproject.org",
@@ -329,50 +329,33 @@ class PartnerProjectInfoTestCase(TestCase):
         "technical_requirements":"ML background."
         }
 
-        cls.partner = Partner.objects.create(**cls.partner_info)
-        cls.project = Project.objects.create(**cls.project_info)
+        cls.partner = Partner.objects.create(**cls.partner_values)
+        cls.project = Project.objects.create(**cls.project_values)
 
-        cls.partner_project_info = {
+        cls.partner_project_values = {
         "partner": cls.partner,
         "project": cls.project,
         "role": "Manager"
         }
 
-        cls.partner_project = PartnerProjectInfo.objects.create(**cls.partner_project_info)
+        cls.partner_project = PartnerProjectInfo.objects.create(**cls.partner_project_values)
 
     def test_string_repr_is_partner_project(self):
-        self.assertEqual(str(self.partner_0), f"{self.partner_project_info.partner}+{self.partner_project_info.project}")
+        self.assertEqual(str(self.partner_project), f"{self.partner_project.partner}+{self.partner_project.project}")
 
     def test_fields_as_expected(self):
-        for key in self.partner_project_info.keys():
-            value = self.partner_project[key]
-            eval(f"self.assertEqual(self.partner_project_info.{key}, {repr(value)})")
+        for key in self.partner_project_values.keys():
+            value = self.partner_project_values[key]
+            self.assertEqual(eval(f'self.partner_project.{key}'), value)
 
 
 
 class QuestionTestCase(TestCase):
-    # class Question(models.Model):
-    #     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    #     question_text = models.CharField(max_length=200)
-    #     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
-    #     question_data =  models.CharField(max_length=1000, null=True, blank=True)
-    #
-    #     def to_dict(self):
-    #         return {
-    #             "id": self.id,
-    #             "project": self.project.id,
-    #             "question_text": self.question_text,
-    #             "question_type": self.question_type,
-    #             "question_data": self.question_data,
-    #         }
-    #
-    #     def __str__(self):
-    #         return self.project.project_name + " - " + self.question_text
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.project_info = {
+        cls.project_values = {
         "project_name":"Test Project Name",
         "organization":"Test Organization",
         "embed_link":"https://www.testproject.org",
@@ -390,20 +373,32 @@ class QuestionTestCase(TestCase):
         "technical_requirements":"ML background."
         }
 
-        cls.project = Project.objects.create(**cls.project_info)
+        cls.project = Project.objects.create(**cls.project_values)
 
-        cls.question_info = {
+        cls.question_values = {
         "project": cls.project,
         "question_text": "Example question",
         "question_type": "text"
         }
 
-        cls.question = Question.objects.create(**cls.question_info)
+        cls.question = Question.objects.create(**cls.question_values)
 
     def test_string_repr_is_project_question(self):
         self.assertEqual(str(self.question), f"{self.question.project.project_name} - {self.question.question_text}")
 
-    # def test_fields_as_expected(self):
-    #     for key in self.partner_project_info.keys():
-    #         value = self.partner_project[key]
-    #         eval(f"self.assertEqual(self.partner_project_info.{key}, {repr(value)})")
+    def test_fields_as_expected(self):
+        for key in self.question_values.keys():
+            value = self.question_values[key]
+            self.assertEqual(eval(f'self.question.{key}'), value)
+
+    def test_dict_repr_no_categories(self):
+        dict_repr = {
+        "id": self.question.id,
+        "project": self.question.project.id,
+        "question_text": self.question.question_text,
+        "question_type": self.question.question_type,
+        "question_data": self.question.question_data,
+        }
+        question_repr = self.question.to_dict()
+        for key in question_repr:
+                self.assertEqual(question_repr[key], dict_repr[key])
