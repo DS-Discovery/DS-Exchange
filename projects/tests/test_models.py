@@ -12,7 +12,7 @@ class ProjectTestCase(TestCase):
         cls.project_1_categories = ["Testing"]
         cls.project_2_categories = ["Testing", "Data Science"]
 
-        cls.project_values_0 = { "project_name":"Test Project Name",
+        cls.project_values_0 = {"project_name":"Test Project Name",
                                 "organization":"Test Organization",
                                 "embed_link":"https://www.testproject.org",
                                 "semester":"SP21",
@@ -27,7 +27,7 @@ class ProjectTestCase(TestCase):
                                 "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
                                 "additional_skills":"Positive attitude is a MUST.",
                                 "technical_requirements":"ML background." }
-        cls.project_values_1 = { "project_name":"Test Project Name",
+        cls.project_values_1 = {"project_name":"Test Project Name",
                                 "organization":"Test Organization",
                                 "embed_link":"https://www.testproject.org",
                                 "semester":"SP21",
@@ -42,7 +42,7 @@ class ProjectTestCase(TestCase):
                                 "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
                                 "additional_skills":"Positive attitude is a MUST.",
                                 "technical_requirements":"ML background." }
-        cls.project_values_2 = { "project_name":"Test Project Name",
+        cls.project_values_2 = {"project_name":"Test Project Name",
                                 "organization":"Test Organization",
                                 "embed_link":"https://www.testproject.org",
                                 "semester":"SP21",
@@ -191,28 +191,31 @@ class ProjectTestCase(TestCase):
                 self.assertEqual(proj_repr[key], dict_repr[key])
 
 class PartnerTestCase(TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.partner_0_info = {
-        "email_address":"ab@berkeley.edu"
-        "first_name":"a"
+        "email_address":"ab@berkeley.edu",
+        "first_name":"a",
         "last_name":"b"
         }
         cls.partner_1_info = {
-        "email_address":"cd@berkeley.edu"
-        "first_name":"c"
+        "email_address":"cd@berkeley.edu",
+        "first_name":"c",
         "last_name":"d"
         }
         cls.partner_2_info = {
-        "email_address":"ef@berkeley.edu"
-        "first_name":"e"
+        "email_address":"ef@berkeley.edu",
+        "first_name":"e",
         "last_name":"f"
         }
         cls.partner_0 = Partner.objects.create(**cls.partner_0_info)
         cls.partner_1 = Partner.objects.create(**cls.partner_1_info)
         cls.partner_2 = Partner.objects.create(**cls.partner_2_info)
+
+    def test_string_repr_is_email_address(self):
+        self.assertEqual(str(self.partner_0), self.partner_0_info["email_address"])
 
     def test_fields_as_expected(self):
         for key in self.partner_0_info.keys():
@@ -299,7 +302,80 @@ class PartnerTestCase(TestCase):
         self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
 
 class PartnerProjectInfoTestCase(TestCase):
-    pass
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.partner_info = {
+        "email_address":"ab@berkeley.edu",
+        "first_name":"a",
+        "last_name":"b"
+        }
+        cls.project_info = {
+        "project_name":"Test Project Name",
+        "organization":"Test Organization",
+        "embed_link":"https://www.testproject.org",
+        "semester":"SP21",
+        "project_category":[],
+        "student_num":10,
+        "description":"This is the description of a test project.",
+        "organization_description":"This is the description of the test organization.",
+        "timeline":"Soon...",
+        "project_workflow":"We use Agile.",
+        "dataset":"Photographs provided by the MET.",
+        "deliverable":"Computer vision algorithm to identify time periods.",
+        "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
+        "additional_skills":"Positive attitude is a MUST.",
+        "technical_requirements":"ML background."
+        }
+
+        cls.partner = Partner.objects.create(**cls.partner_info)
+        cls.project = Partner.objects.create(**cls.project_info)
+
+        cls.partner_project_info = {
+        "partner": cls.partner,
+        "project": cls.project,
+        "role": "Manager"
+        }
+
+        cls.partner_project = Partner.objects.create(**cls.partner_project_info)
+
+    def test_string_repr_is_email_address(self):
+        self.assertEqual(str(self.partner_0), f"{self.partner_project_info.partner}+{self.partner_project_info.project}")
+
+    def test_fields_as_expected(self):
+        for key in self.partner_project_info.keys():
+            value = self.partner_project[key]
+            eval(f"self.assertEqual(self.partner_project_info.{key}, {repr(value)})")
+
+
 
 class QuestionTestCase(TestCase):
+    # class Question(models.Model):
+    #     question_choices = (
+    #         ('text','text'),
+    #         ('mc','multiple choice'),
+    #         ('dropdown', 'dropdown'),
+    #         ('checkbox','checkbox'),
+    #         ('multiselect','multiselect'),
+    #         ('range','range'),
+    #     )
+    #
+    #     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    #     # question_num = models.IntegerField(default=0)
+    #     question_text = models.CharField(max_length=200)
+    #     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
+    #     question_data =  models.CharField(max_length=1000, null=True, blank=True)
+    #
+    #     def to_dict(self):
+    #         return {
+    #             "id": self.id,
+    #             "project": self.project.id,
+    #             "question_text": self.question_text,
+    #             "question_type": self.question_type,
+    #             "question_data": self.question_data,
+    #         }
+    #
+    #     def __str__(self):
+    #         return self.project.project_name + " - " + self.question_text
+
     pass
