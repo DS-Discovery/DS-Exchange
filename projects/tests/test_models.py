@@ -302,6 +302,7 @@ class PartnerTestCase(TestCase):
         self.assertEqual(self.partner_0.projects.get(id=project_0.id), project_0)
 
 class PartnerProjectInfoTestCase(TestCase):
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -329,7 +330,7 @@ class PartnerProjectInfoTestCase(TestCase):
         }
 
         cls.partner = Partner.objects.create(**cls.partner_info)
-        cls.project = Partner.objects.create(**cls.project_info)
+        cls.project = Project.objects.create(**cls.project_info)
 
         cls.partner_project_info = {
         "partner": cls.partner,
@@ -337,9 +338,9 @@ class PartnerProjectInfoTestCase(TestCase):
         "role": "Manager"
         }
 
-        cls.partner_project = Partner.objects.create(**cls.partner_project_info)
+        cls.partner_project = PartnerProjectInfo.objects.create(**cls.partner_project_info)
 
-    def test_string_repr_is_email_address(self):
+    def test_string_repr_is_partner_project(self):
         self.assertEqual(str(self.partner_0), f"{self.partner_project_info.partner}+{self.partner_project_info.project}")
 
     def test_fields_as_expected(self):
@@ -351,17 +352,7 @@ class PartnerProjectInfoTestCase(TestCase):
 
 class QuestionTestCase(TestCase):
     # class Question(models.Model):
-    #     question_choices = (
-    #         ('text','text'),
-    #         ('mc','multiple choice'),
-    #         ('dropdown', 'dropdown'),
-    #         ('checkbox','checkbox'),
-    #         ('multiselect','multiselect'),
-    #         ('range','range'),
-    #     )
-    #
     #     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    #     # question_num = models.IntegerField(default=0)
     #     question_text = models.CharField(max_length=200)
     #     question_type = models.CharField(max_length=50, choices=question_choices, default='text')
     #     question_data =  models.CharField(max_length=1000, null=True, blank=True)
@@ -378,4 +369,41 @@ class QuestionTestCase(TestCase):
     #     def __str__(self):
     #         return self.project.project_name + " - " + self.question_text
 
-    pass
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.project_info = {
+        "project_name":"Test Project Name",
+        "organization":"Test Organization",
+        "embed_link":"https://www.testproject.org",
+        "semester":"SP21",
+        "project_category":[],
+        "student_num":10,
+        "description":"This is the description of a test project.",
+        "organization_description":"This is the description of the test organization.",
+        "timeline":"Soon...",
+        "project_workflow":"We use Agile.",
+        "dataset":"Photographs provided by the MET.",
+        "deliverable":"Computer vision algorithm to identify time periods.",
+        "skillset":"{'test skill A':'yes', 'test skill B':'ideally...'}",
+        "additional_skills":"Positive attitude is a MUST.",
+        "technical_requirements":"ML background."
+        }
+
+        cls.project = Project.objects.create(**cls.project_info)
+
+        cls.question_info = {
+        "project": cls.project,
+        "question_text": "Example question",
+        "question_type": "text"
+        }
+
+        cls.question = Question.objects.create(**cls.question_info)
+
+    def test_string_repr_is_project_question(self):
+        self.assertEqual(str(self.question), f"{self.question.project.project_name} - {self.question.question_text}")
+
+    # def test_fields_as_expected(self):
+    #     for key in self.partner_project_info.keys():
+    #         value = self.partner_project[key]
+    #         eval(f"self.assertEqual(self.partner_project_info.{key}, {repr(value)})")
