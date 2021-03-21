@@ -271,10 +271,12 @@ def send_app_confirmation_email(app):
 
 @login_required
 def proj_creation(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
             proj = Project(organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
                           project_category=form.cleaned_data['project_category'],
@@ -302,11 +304,15 @@ def proj_creation(request):
                           optional_q3=form.cleaned_data['optional_q3']
                           )
             proj.save()
-            p = Partner(
-                email_address = email, 
-                first_name = form.cleaned_data['first_name'], 
-                last_name = form.cleaned_data['last_name'],
-            )
+            p = Partner.objects.filter(email_address = email)
+            if len(p) > 0:
+                p = Partner.objects.get(email_address = email)
+            else:
+                p = Partner(
+                    email_address = email, 
+                    first_name = form.cleaned_data['first_name'], 
+                    last_name = form.cleaned_data['last_name'],
+                )
             p.save()
             p.projects.add(proj)
             link = PartnerProjectInfo(
@@ -317,8 +323,9 @@ def proj_creation(request):
             link.save()
             return redirect('/profile')
         else:
+            partner = Partner.objects.get(email_address = email)
             logger.error(f"Invalid form for partner {partner}:\n{form}")
-            messages.info(
+            messages.info( 
                 request, 
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
