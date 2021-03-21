@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block first_column %}
+
 <a type="button" class="btn btn-light" href="newproject">Create New Project</a>
 
 <div class="list-group list-group-flush" id="project-list">
@@ -50,7 +51,7 @@
 
 <script>
     // This makes a request to gather all projects and load them
-    $(document).ready(loadProjects);
+    $(document).ready(function() {loadProjects('{{ selected }}')});
 </script>
 
 {% endblock %}

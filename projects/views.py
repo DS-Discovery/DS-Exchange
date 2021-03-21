@@ -41,7 +41,12 @@ def list_projects(request):
         if Application.objects.filter(project_id=project['id']).count() >= config.HIDE_PROJECT_APPLICATION_THRESHOLD:
             projects_json['projects'].pop(i)
 
-    return render(request, 'projects/listing.html', {"projects_json": projects_json})
+    context = {
+        "projects_json": projects_json,
+        "selected": request.GET.get('selected', ''),
+    }
+
+    return render(request, 'projects/listing.html', context)
 
 
 def get_projects_json():
@@ -238,8 +243,7 @@ def apply(request, project_name):
                 'please contact ds-discovery@berkeley.edu.'
             )
             return redirect(request.path_info)
-
-    else:  # GET
+    else: # GET
         form = AnswerForm()
 
     args = {}
@@ -268,7 +272,7 @@ def send_app_confirmation_email(app):
     )
 
     print(f"Sent confirmation email to {app.student.email_address}")
-
+    
 @login_required
 def proj_creation(request):
     email = None
@@ -334,4 +338,3 @@ def proj_creation(request):
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})
-
