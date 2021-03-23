@@ -74,14 +74,14 @@ class ViewsTestCase(TestCase):
         settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
         project_name = self.project_values["project_name"]
         response = self.client.get(reverse('apply', args=(project_name,)))
-        apply_url = '/profile/login?next=/projects/Test%2520Project%2520Name/apply'
+        redirect_url = '/profile/login?next=/projects/Test%2520Project%2520Name/apply'
         self.assertRedirects(response,
-                             apply_url,
+                             redirect_url,
                              status_code=302,
                              target_status_code=302,
                              fetch_redirect_response=True)
 
-        response = self.client.get(apply_url)
+        response = self.client.get(redirect_url)
         auth_url = '/accounts/google/login'
         self.assertRedirects(response,
                              auth_url,
