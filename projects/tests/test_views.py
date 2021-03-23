@@ -65,10 +65,11 @@ class ViewsTestCase(TestCase):
         cls.admin = User.objects.create_superuser(**cls.admin_values)
         cls.project = Project.objects.create(**cls.project_values)
 
-    def test_access_not_logged_in(self):
+    def test_access_index_not_logged_in(self):
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
 
+    def test_access_apply_not_logged_in(self):
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
         settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
