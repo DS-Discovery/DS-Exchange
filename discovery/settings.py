@@ -148,7 +148,7 @@ CONSTANCE_CONFIG = {
     "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
     "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
     "APP_LIMIT": (6, "Number of applications any student can submit", int),
-    "CURRENT_SEMESTER": ('Spring 2021', "Current semester", str),
+    "CURRENT_SEMESTER": ("Fall 2021", "Current semester", str),
 }
 
 # Database
