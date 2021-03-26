@@ -75,7 +75,7 @@ class Project(models.Model):
             "organization": self.organization,
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
-            "project_category": self.project_category.split(";") if self.project_category is not '' else [],
+            "project_category": self.project_category.split(";") if self.project_category != '' else [],
             "student_num": self.student_num,
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
