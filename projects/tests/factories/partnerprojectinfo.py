@@ -6,5 +6,5 @@ class PartnerProjectInfoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'projects.PartnerProjectInfo'
     role = factory.Faker('word')
-    partner = PartnerFactory()
-    project = ProjectFactory()
+    partner = factory.SubFactory(PartnerFactory)
+    project = factory.SubFactory(ProjectFactory)
