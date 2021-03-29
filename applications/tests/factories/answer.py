@@ -6,7 +6,7 @@ from projects.tests.factories.question import QuestionFactory
 class AnswerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'applications.Answer'
-    student = StudentFactory()
-    application = ApplicationFactory()
-    question = QuestionFactory()
+    student = factory.SubFactory(StudentFactory)
+    application = factory.SubFactory(ApplicationFactory)
+    question = factory.SubFactory(QuestionFactory)
     answer_text = factory.Faker('paragraph')

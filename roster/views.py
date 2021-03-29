@@ -10,15 +10,24 @@ from projects.models import Partner, Project, PartnerProjectInfo
 from students.models import Student
 
 @login_required
-def display_student_team_roster(request):   
+def display_student_team_roster(request):
     email = None
     if request.user.is_authenticated:
             email = request.user.email
     else:
-        raise PermissionDenied("User is not authenticated")  
-   
-    student = Student.objects.get(email_address = email)
-    
+        raise PermissionDenied("User is not authenticated")
+
+    try:
+        student = Student.objects.get(email_address = email)
+    except Student.DoesNotExist:
+        try:
+            partner = Partner.objects.get(email_address = email)
+            messages.info(request, "Partners view the roster in applications.")
+            return redirect("/applications")
+        except Partner.DoesNotExist:
+            messages.info(request, "You must be a member of a project team to view the roster.")
+            return redirect("/")
+
     try:
         project = Application.objects.get(student = student, status= "OFA").project
     except ObjectDoesNotExist:
@@ -32,9 +41,8 @@ def display_student_team_roster(request):
     students = Student.objects.filter(email_address__in=applications.values_list("student", flat=True))
     projectPartners = PartnerProjectInfo.objects.filter(project=project)
     print(applications, students, project, projectPartners)
-    
+
     context['students'] = students
     context['projectPartners'] = projectPartners
-    
+
     return render(request, "roster/roster.html", context=context)
-    

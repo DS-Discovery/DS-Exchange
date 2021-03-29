@@ -73,6 +73,8 @@ def apply(request, project_name):
         questions = Question.objects.filter(project=project)  # .order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist.")
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist.")
 
     email = None
     if request.user.is_authenticated:
