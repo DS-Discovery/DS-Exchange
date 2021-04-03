@@ -6,52 +6,72 @@
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
 <link rel="stylesheet" type="text/css" href="{% static "css/table.css" %}">
+<script type="text/javascript" src="{% static "js/usertools.js" %}" defer></script>
 {% endblock %}
 
 {% block sidebar %}
 <span class="user-tools">
-  <h1>Tools</h1>
-  <form class="actions">
-      <label>{% translate 'Filter:' %}
-        <select name="filter" required="">
-          {% for value, option in filter_support %}
-          <option value={{ value }} {% if filter_query == value %}selected{% endif %}>{% translate 'Show for all' %} {% translate option %}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <br/><br/>
-      <label>{% translate 'Group:' %}
-        <select name="group" required="">
-          {% for value, option in group_support %}
-          <option value={{ value }} {% if group_query == value %}selected{% endif %}>{% translate 'Show statuses by' %} {% translate option %}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <br/><br/>
-      <label>{% translate 'Semester:' %}
-        <select name="semester" required="">
-          {% for value, option in semester_support %}
-          <option value={{ value }} {% if semester_query == value %}selected{% endif %}> {% translate option %}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <br/>
-      <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
-  </form>
-  <form class="actions">
-      <select name="export" required="">
-        <option value="" selected="">---------</option>
-        {% for format in export_support %}
-        <option value={{ format }}>{{ format }}</option>
+  <h1 id='tools'>{% translate 'Tools' %}</h1>
+  <div id='tools-drop'>
+    <form class="actions">
+        <h2 id='group'>{% translate 'Group' %}</h2>
+        <div id='group-drop'>
+          <select name="group" required="">
+            {% for value, option in group_support %}
+            <option value={{ value }} {% if group_query == value %}selected{% endif %}>{% translate 'Show statuses by' %} {% translate option %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <h2 id='semester'>{% translate 'Semester' %}</h2>
+        <div id='semester-drop'>
+          <select name="semester" required="">
+            {% for value, option in semester_support %}
+            <option value={{ value }} {% if semester_query == value %}selected{% endif %}> {% translate option %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <h2 id='filter'>{% translate 'Filter' %}</h2>
+        <div id='filter-drop'>
+        <h3 id='show'>{% translate 'Show' %}</h3>
+        <div id='show-drop'>
+        <label>{% translate 'Show students that meet the selected conditions.' %}</label>
+        {% for value, option in filter_support %}
+        <br/>
+        <label><input type="checkbox" name={{ value }} value="IN" {% if value in filter_in_query %}checked{% endif %}/> {% translate option %}</label>
         {% endfor %}
-      </select>
-      <input type="hidden" name="filter" value={{ filter_query }}>
-      <input type="hidden" name="group" value={{ group_query }}>
-      <input type="hidden" name="semester" value={{ semester_query }}>
-      <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
-  </form>
-
-</select>
+        </div>
+        <h3 id='hide'>{% translate 'Hide' %}</h3>
+        <div id='hide-drop'>
+        <label>{% translate 'Hide students that meet the selected conditions.' %}</label>
+          {% for value, option in filter_support %}
+          <br/>
+          <label><input type="checkbox" name={{ value }} value="OUT" {% if value in filter_out_query %}checked{% endif %}/> {% translate option %}</label>
+          {% endfor %}
+        </div>
+        </div>
+        <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
+    </form>
+    <form class="actions">
+        <h2 id='export'>{% translate 'Export' %}</h2>
+        <div id='export-drop'>
+        <select name="export" required="">
+          <option value="" selected="">---------</option>
+          {% for format in export_support %}
+          <option value={{ format }}>{{ format }}</option>
+          {% endfor %}
+        </select>
+        {% for filter in filter_in_query %}
+        <input type="hidden" name={{ filter }} value="IN">
+        {% endfor %}
+        {% for filter in filter_out_query %}
+        <input type="hidden" name={{ filter }} value="OUT">
+        {% endfor %}
+        <input type="hidden" name="group" value={{ group_query }}>
+        <input type="hidden" name="semester" value={{ semester_query }}>
+        </div>
+        <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
+    </form>
+  </div>
 </span>
 {% endblock %}
 

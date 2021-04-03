@@ -41,7 +41,12 @@ def list_projects(request):
         if Application.objects.filter(project_id=project['id']).count() >= config.HIDE_PROJECT_APPLICATION_THRESHOLD:
             projects_json['projects'].pop(i)
 
-    return render(request, 'projects/listing.html', {"projects_json": projects_json})
+    context = {
+        "projects_json": projects_json,
+        "selected": request.GET.get('selected', ''),
+    }
+
+    return render(request, 'projects/listing.html', context)
 
 
 def get_projects_json():
@@ -190,9 +195,7 @@ def apply(request, project_name):
                         a.answer_text = form.cleaned_data['answer_text']
 
                     except:
-                        a = Answer(
-                            student=student, application=application, question=question,
-                            answer_text=form.cleaned_data['answer_text']
+                        a = Answer(student=student, application = application, question = question, answer_text = form.cleaned_data['answer_text']
                         )
 
                     a.save()
@@ -239,7 +242,7 @@ def apply(request, project_name):
             )
             return redirect(request.path_info)
 
-    else:  # GET
+    else: # GET
         form = AnswerForm()
 
     args = {}
