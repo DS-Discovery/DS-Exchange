@@ -73,6 +73,8 @@ def apply(request, project_name):
         questions = Question.objects.filter(project=project)  # .order_by('question_num')
     except Question.DoesNotExist:
         raise Http404("Question does not exist.")
+    except Project.DoesNotExist:
+        raise Http404("Project does not exist.")
 
     email = None
     if request.user.is_authenticated:
@@ -195,8 +197,7 @@ def apply(request, project_name):
                         a.answer_text = form.cleaned_data['answer_text']
 
                     except:
-                        a = Answer(student=student, application = application, question = question, answer_text = form.cleaned_data['answer_text']
-                        )
+                        a = Answer(student=student, application = application, question = question, answer_text = form.cleaned_data['answer_text'])
 
                     a.save()
                     answers.append(a)
@@ -241,7 +242,6 @@ def apply(request, project_name):
                 'please contact ds-discovery@berkeley.edu.'
             )
             return redirect(request.path_info)
-
     else: # GET
         form = AnswerForm()
 
@@ -337,4 +337,3 @@ def proj_creation(request):
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})
-

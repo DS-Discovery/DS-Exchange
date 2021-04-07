@@ -19,7 +19,7 @@ class DiscoveryAdmin(AdminSite):
     def get_urls(self):
         urls = super(DiscoveryAdmin, self).get_urls()
         additional_urls = [
-            url(r'status_summary/', status_summary),
+            url('status_summary', status_summary, name='status_summary')
         ]
         return additional_urls + urls
 
@@ -81,7 +81,6 @@ def status_summary(request, pages=10):
     if ds_query in filter_out_query:
         filtered = filtered.exclude(student__in=ds)
 
-
     df = pd.DataFrame([model_to_dict(row) for row in filtered])
 
     if df.shape[0] == 0:
@@ -118,7 +117,6 @@ def status_summary(request, pages=10):
     table = TrackingTable(table_row_list)
     table.order_by = sort_query
     table.paginate(page=page_query, per_page=pages)
-    print(sort_query)
     # Hide columns not used by the table
     table.exclude = set(col_order).difference(table_col)
 
