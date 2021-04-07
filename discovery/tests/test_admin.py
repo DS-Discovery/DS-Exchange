@@ -40,7 +40,7 @@ class AdminTestCase(TestCase):
         cls.project = ProjectFactory()
 
         cls.groupTypes = ['student', 'project']
-        cls.semesters=[s[0] for s in Semester.choices]
+        cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
         cls.filters = ['data_scholar','Sub','Rni','Int','Rwi','Ofs','Ofr','Ofa']
         cls.filterStates = ['IN','OUT']
@@ -51,7 +51,7 @@ class AdminTestCase(TestCase):
         self.assertEqual(response.context.get("semester_query"), semester)
         self.assertEqual(response.context.get("group_query"), groupType)
 
-        if (not filterArrayDict == None):
+        if not filterArrayDict == None:
             self.assertEqual(response.context.get("filter_in_query").sort(), filterArrayDict['IN'].sort())
             self.assertEqual(response.context.get("filter_out_query").sort(), filterArrayDict['OUT'].sort())
 
@@ -59,52 +59,52 @@ class AdminTestCase(TestCase):
             for i in filterArrayDict['IN']:
                 selectedFilterSet.append(i)
 
-            if (len(selectedFilterSet) == 0):
+            if len(selectedFilterSet) == 0:
                 selectedFilterSet = self.filters.copy()
 
             for i in filterArrayDict['OUT']:
-                if (i in selectedFilterSet):
+                if i in selectedFilterSet:
                     selectedFilterSet.remove(i)
         else:
             selectedFilterSet = self.filters.copy()
 
         table = response.context.get("table")
         expectedTableRows = 0
-        if (groupType == 'student'):
+        if groupType == 'student':
             # Return only applied student
             for i in table.paginated_rows.data:
                 statusList= []
                 expectedRowCt = 0
                 for j in appList:
-                    if (j.project.semester == semester and j.student.email_address == i['Student'] and j.status in selectedFilterSet):
-                        if (('data_scholar' in selectedFilterSet) or not j.student.is_scholar()):
+                    if j.project.semester == semester and j.student.email_address == i['Student'] and j.status in selectedFilterSet:
+                        if ('data_scholar' in selectedFilterSet) or not j.student.is_scholar():
                             expectedRowCt = expectedRowCt + 1
                             statusList.append(j.status)
 
-                if (expectedRowCt > 0):
+                if expectedRowCt > 0:
                     self.assertEqual(i['Total'], expectedRowCt)
                     expectedTableRows = expectedTableRows + 1
                     for k in self.filters:
-                        if (not k == 'data_scholar'):
+                        if not k == 'data_scholar':
                             self.assertEqual(i[k], statusList.count(k.upper()))
         else:
             for i in table.paginated_rows.data:
                 statusList = []
                 expectedRowCt = 0
                 for j in appList:
-                    if (j.project.semester == semester and j.project.project_name == i['Project'] and j.status in selectedFilterSet):
-                        if (('data_scholar' in selectedFilterSet) or not j.student.is_scholar()):
+                    if j.project.semester == semester and j.project.project_name == i['Project'] and j.status in selectedFilterSet:
+                        if ('data_scholar' in selectedFilterSet) or not j.student.is_scholar():
                             expectedRowCt = expectedRowCt + 1
                             statusList.append(j.status)
 
-                if (expectedRowCt > 0):
+                if expectedRowCt > 0:
                     self.assertEqual(i['Total'], expectedRowCt)
                     expectedTableRows = expectedTableRows + 1
                     for k in self.filters:
-                        if (not k == 'data_scholar'):
+                        if not k == 'data_scholar':
                             self.assertEqual(i[k], statusList.count(k.upper()))
 
-        if (expectedTableRows > 0):
+        if expectedTableRows > 0:
             self.assertEqual(len(response.context.get("table").paginated_rows.data), expectedTableRows)
 
     def test_access_status_summary_not_logged_in(self):
