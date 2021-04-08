@@ -160,21 +160,8 @@ class AdminTestCase(TestCase):
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        AppCt = random.randint(1, 10)
-        for i in range(0, AppCt):
-            ApplicationFactory(project=self.project)
-
         response = self.client.get(reverse('admin:status_summary'))
         self.assertEqual(response.status_code, 200)
-
-        # default settings
-        current_sem = [item for item in response.context.get("semester_support") if item[1] == config.CURRENT_SEMESTER]
-        self.assertEqual(response.context.get("title"), "Status summary")
-        self.assertEqual(response.context.get("semester_query"), current_sem[0][0])
-        self.assertEqual(response.context.get("group_query"), "student")
-        self.assertEqual(len(response.context.get("filter_in_query")), 0)
-
-        self.assertEqual(len(response.context.get("table").paginated_rows.data), AppCt)
 
     def test_status_summary_group_random_app(self):
         appCt = random.randint(1, 10)
