@@ -197,10 +197,7 @@ def apply(request, project_name):
                         a.answer_text = form.cleaned_data['answer_text']
 
                     except:
-                        a = Answer(
-                            student=student, application=application, question=question,
-                            answer_text=form.cleaned_data['answer_text']
-                        )
+                        a = Answer(student=student, application = application, question = question, answer_text = form.cleaned_data['answer_text'])
 
                     a.save()
                     answers.append(a)
@@ -274,7 +271,7 @@ def send_app_confirmation_email(app):
     )
 
     print(f"Sent confirmation email to {app.student.email_address}")
-    
+
 @login_required
 def proj_creation(request):
     email = None
