@@ -1,4 +1,8 @@
 import factory
+from faker import Faker
+import random
+
+fake = Faker()
 
 class ProjectFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -7,7 +11,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     organization = factory.Faker('word')
     embed_link = factory.Faker('url')
     semester = 'SP21'
-    project_category = factory.LazyAttribute(lambda o: ';'.join(factory.Faker('words')))
+    project_category = factory.LazyAttribute(lambda o: ';'.join(fake.words(random.randint(1, 9))))
     student_num = factory.Faker('random_number')
     description = factory.Faker('paragraph')
     organization_description = factory.Faker('paragraph')
