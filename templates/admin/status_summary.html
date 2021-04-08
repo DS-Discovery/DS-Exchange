@@ -30,23 +30,39 @@
             {% endfor %}
           </select>
         </div>
-        <h2 id='filter'>{% translate 'Filter' %}</h2>
+        <h2 id='display'>{% translate 'Applicant Filter' %}</h2>
+        <div id='display-drop'>
+          <select name="applicant" required="">
+            {% for value, option in applicant_support %}
+            <option value={{ value }} {% if applicant_query == value %}selected{% endif %}> {% translate option %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <h2 id='filter'>{% translate 'Status Filter' %}</h2>
         <div id='filter-drop'>
         <h3 id='show'>{% translate 'Show' %}</h3>
         <div id='show-drop'>
-        <label>{% translate 'Show students that meet the selected conditions.' %}</label>
+        <label>{% translate 'Show students that meet ANY of the selected conditions.' %}</label>
         {% for value, option in filter_support %}
         <br/>
         <label><input type="checkbox" name={{ value }} value="IN" {% if value in filter_in_query %}checked{% endif %}/> {% translate option %}</label>
         {% endfor %}
+        <div>
+          <button id="showSelect" class="show select button">{% translate 'Select all' %}</button>
+          <button id="showDeselect" class="show deselect button">{% translate 'Deselect all' %}</button>
+        </div>
         </div>
         <h3 id='hide'>{% translate 'Hide' %}</h3>
         <div id='hide-drop'>
-        <label>{% translate 'Hide students that meet the selected conditions.' %}</label>
+        <label>{% translate 'Hide students that meet ANY the selected conditions.' %}</label>
           {% for value, option in filter_support %}
           <br/>
           <label><input type="checkbox" name={{ value }} value="OUT" {% if value in filter_out_query %}checked{% endif %}/> {% translate option %}</label>
           {% endfor %}
+          <div>
+            <button id="hideSelect" class="hide select button">{% translate 'Select all' %}</button>
+            <button id="hideDeselect" class="hide deselect button">{% translate 'Deselect all' %}</button>
+          </div>
         </div>
         </div>
         <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>

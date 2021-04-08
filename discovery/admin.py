@@ -40,7 +40,7 @@ for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
 inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
-filters = [('All', 'All'), ('None', 'None')] + [(s, f'Has status: {col_rename[s]}') for s in status]
+filters = [(s, f'Has status: {col_rename[s]}') for s in status]
 
 class TrackingTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
@@ -56,25 +56,17 @@ class TrackingTable(ExportMixin, tables.Table):
 @staff_member_required
 def status_summary(request, pages=10):
     sort_query = request.GET.get('sort', 'total')
-    filter_in_query = [f for f, _ in filters if request.GET.get(f, False) == "IN" and f != 'All' and f != 'None']
-    filter_out_query = [f for f, _ in filters if request.GET.get(f, False) == "OUT" and f != 'All' and f != 'None']
+    filter_in_query = [f for f, _ in filters if request.GET.get(f, False) == "IN"]
+    filter_out_query = [f for f, _ in filters if request.GET.get(f, False) == "OUT"]
     group_query = request.GET.get('group', 'student')
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
-    applicant_query = request.GET.get('applicant','student')
+    applicant_query = request.GET.get('applicant','students')
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
 
     sort_query = col_name(sort_query)
     formatted_group_query = col_name(group_query)
     formatted_applicant_query = col_name(applicant_query)
-    if request.GET.get('All', False) == 'IN':
-        filter_in_query = [f for f, _ in filters if f != 'All' and f != 'None']
-    if request.GET.get('All', False) == 'OUT':
-        filter_out_query = [f for f, _ in filters if f != 'All' and f != 'None']
-    if request.GET.get('None', False) == 'IN':
-        filter_in_query = []
-    if request.GET.get('None', False) == 'OUT':
-        filter_out_query = []
 
     extra = []
     if formatted_group_query == col_name('Student'):
@@ -145,7 +137,7 @@ def status_summary(request, pages=10):
        # Allowable Values
        filter_support=filters,
        group_support=[('student', 'students'), ('project', 'projects')],
-       applicant_support=[('student', 'Show all students'), ('scholars', 'Show only Data Scholars')],
+       applicant_support=[('students', 'Show all students'), ('scholars', 'Show only Data Scholars')],
        semester_support=[(s[0], s[1]) for s in Semester.choices],
        export_support=table.export_querys,
        # Current Filters
