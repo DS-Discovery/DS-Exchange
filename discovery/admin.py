@@ -28,6 +28,8 @@ def col_name(name):
     return name.title().replace(' ', '_')
 
 def verbose_name(name):
+    if name == 'Total':
+        return 'Total Applications'
     return name.title().replace('_', ' ')
 
 col_rename = {col_name(t[0]):verbose_name(str(t[1])) for t in Application.ApplicationStatus.choices}
@@ -38,8 +40,7 @@ for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
 inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
-ds_query = 'data_scholar'
-filters = [(ds_query, 'Is Data Scholars')] + [(s, f'Has status: {col_rename[s]}') for s in status]
+filters = [('All', 'All'), ('None', 'None')] + [(s, f'Has status: {col_rename[s]}') for s in status]
 
 class TrackingTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
@@ -55,31 +56,38 @@ class TrackingTable(ExportMixin, tables.Table):
 @staff_member_required
 def status_summary(request, pages=10):
     sort_query = request.GET.get('sort', 'total')
-    filter_in_query = [f for f, _ in filters if request.GET.get(f, False) == "IN"]
-    filter_out_query = [f for f, _ in filters if request.GET.get(f, False) == "OUT"]
+    filter_in_query = [f for f, _ in filters if request.GET.get(f, False) == "IN" and f != 'All' and f != 'None']
+    filter_out_query = [f for f, _ in filters if request.GET.get(f, False) == "OUT" and f != 'All' and f != 'None']
     group_query = request.GET.get('group', 'student')
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
+    applicant_query = request.GET.get('applicant','student')
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
 
     sort_query = col_name(sort_query)
-    group_query = col_name(group_query)
+    formatted_group_query = col_name(group_query)
+    formatted_applicant_query = col_name(applicant_query)
+    if request.GET.get('All', False) == 'IN':
+        filter_in_query = [f for f, _ in filters if f != 'All' and f != 'None']
+    if request.GET.get('All', False) == 'OUT':
+        filter_out_query = [f for f, _ in filters if f != 'All' and f != 'None']
+    if request.GET.get('None', False) == 'IN':
+        filter_in_query = []
+    if request.GET.get('None', False) == 'OUT':
+        filter_out_query = []
 
     extra = []
-    if group_query == col_name('Student'):
+    if formatted_group_query == col_name('Student'):
         extra = [col_name('First_Name'), col_name('Last_Name')]
-    col = col_name(group_query)
-    table_col = extra + [col] + status + [col_name('Total')]
+    table_col = extra + [formatted_group_query] + status + [col_name('Total')]
 
     projs = Project.objects.filter(semester=semester_query.upper())
     filtered = Application.objects.filter(project__in=projs)
 
     # Data Scholar Filter
     ds = DataScholar.objects.values('email_address')
-    if ds_query in filter_in_query:
+    if formatted_applicant_query == col_name('Scholars'):
         filtered = filtered.filter(student__in=ds)
-    if ds_query in filter_out_query:
-        filtered = filtered.exclude(student__in=ds)
 
     df = pd.DataFrame([model_to_dict(row) for row in filtered])
 
@@ -91,24 +99,28 @@ def status_summary(request, pages=10):
         for s in status:
             df[col_name(s)] = df[col_name('status')] == s.upper()
         df[col_name('Total')] = 1
-        table = df.groupby(group_query).sum()
+        table = df.groupby(formatted_group_query).sum()
         table.reset_index(inplace=True)
 
-        if group_query == col_name('Project'):
-            table[group_query] = [Project.objects.get(id=id).project_name for id in table[group_query]]
-        elif group_query ==  col_name('Student'):
-            table[col_name('First_Name')] = [Student.objects.get(email_address=id).first_name for id in table[group_query]]
-            table[col_name('Last_Name')] = [Student.objects.get(email_address=id).last_name for id in table[group_query]]
+        if formatted_group_query == col_name('Project'):
+            table[formatted_group_query] = [Project.objects.get(id=id).project_name for id in table[formatted_group_query]]
+        elif formatted_group_query ==  col_name('Student'):
+            table[col_name('First_Name')] = [Student.objects.get(email_address=id).first_name for id in table[formatted_group_query]]
+            table[col_name('Last_Name')] = [Student.objects.get(email_address=id).last_name for id in table[formatted_group_query]]
 
         table = table[table_col]
 
         # Status Filter
+        in_indices = []
+        out_indices = []
         for s in status:
-            cond = (table[s] > 0)
+            cond = [i for i, val in zip(table.index, table[s]) if val > 0]
             if s in filter_in_query:
-                table = table[cond]
+                in_indices.extend(cond)
             elif s in filter_out_query:
-                table = table[~(cond)]
+                out_indices.extend(cond)
+        indices = list(set(in_indices).difference(set(out_indices)))
+        table = table.iloc[indices]
 
         table_row_list = []
         for _, row in table.iterrows():
@@ -133,12 +145,14 @@ def status_summary(request, pages=10):
        # Allowable Values
        filter_support=filters,
        group_support=[('student', 'students'), ('project', 'projects')],
+       applicant_support=[('student', 'Show all students'), ('scholars', 'Show only Data Scholars')],
        semester_support=[(s[0], s[1]) for s in Semester.choices],
        export_support=table.export_querys,
        # Current Filters
        filter_in_query=filter_in_query,
        filter_out_query=filter_out_query,
-       group_query=request.GET.get('group', 'student'),
+       group_query=group_query,
+       applicant_query=applicant_query,
        semester_query=semester_query,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
