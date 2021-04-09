@@ -68,6 +68,9 @@ def status_summary(request, pages=10):
     formatted_group_query = col_name(group_query)
     formatted_applicant_query = col_name(applicant_query)
 
+    if not filter_in_query and not filter_out_query:
+        filter_in_query = [f for f, _ in filters]
+
     extra = []
     if formatted_group_query == col_name('Student'):
         extra = [col_name('First_Name'), col_name('Last_Name')]
