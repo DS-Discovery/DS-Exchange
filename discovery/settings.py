@@ -157,13 +157,13 @@ CONSTANCE_CONFIG = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'NAME': 'discovery_db',
-        'NAME': 'discoverydb',
+        'NAME': 'discovery_db',
+        #'NAME': 'discoverydb',
         # 'USER': 'postgres',
         'USER': os.environ["DBUSER"] if "DBUSER" in os.environ else "postgres",
         # comment out own password before pushing to master
-        #'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
-        'PASSWORD': "ly13579",
+        'PASSWORD': os.environ["DBPASS"] if "DBPASS" in os.environ else "root",
+        #'PASSWORD': "ly13579",
         # 'PASSWORD':,
         # 'HOST': '127.0.0.1',
         'HOST': os.environ["DBHOST"] if "DBHOST" in os.environ else "127.0.0.1",
