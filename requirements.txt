@@ -11,3 +11,5 @@ django-import-export
 django_tables2
 django-constance[database]
 django-picklefield
+factory_boy
+factory_djoy

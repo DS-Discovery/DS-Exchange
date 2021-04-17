@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load helperfuncs %}
+
+
+{% block container_class %}
+container
+{% endblock %}
+
+
+{% block content %}
+
+<h3>DS Discovery Project Application</h3>
+
+    <p>Discovery connects undergraduates with hands-on, team-based opportunities in cutting-edge data research projects at UC Berkeley,
+    government agencies, community groups, and entrepreneurial ventures. Through partnership with Discovery, project partners will
+    have the opportunity to:</p>
+    <ul>
+      <li>Increase your capacity to take on data-centric projects, at any level of complexity</li>
+      <li>Collaborate with UC Berkeley’s world-class data science students</li>
+      <li>Create cutting edge machine learning, neural network, and AI algorithms to get new insights and tangible results from your data science projects</li>
+      <li>Rely on an infrastructure of technical and project management support for your student team</li>
+      <li>Join our network of professors, graduate and undergraduate students, and past project partners such as NASA, UCSF, Creative Commons, BART and more.</li>
+      <li>Access free cloud computing and data storage resources.</li>
+    </ul>
+    <p>Discovery is dedicated to providing top-notch data science capacity to our project partners while also fostering a unique learning environment for our students.
+        Students are expected to have a single project that they can work on through the duration of their engagement with the project partner. Discovery student
+        researchers are not interns that can be assigned tasks ad hoc throughout the semester, though it is expected that research goals might shift occasionally.
+        <br><br>Applications will be accepted and reviewed on a rolling basis through January 8th, 2021. If accepted into the program, Discovery projects will receive
+        student applications for review on January 25th. Project partners are responsible for interviewing and selecting the students they would like to work with.
+        We will be in touch throughout the process to guide and support project partners as you form your Discovery teams!<br><br>For specific inquiries about our program
+        email <a href="mailto:ds-discovery@berkeley.edu", target="_blank">ds-discovery@berkeley.edu</a>.<br><br>To learn more about the program visit
+        <a href="https://data.berkeley.edu/research/discovery", target="_blank">data.berkeley.edu/research/discovery</a>.</p><br>
+
+<div class="d-flex flex-column">
+    <div class="col-8">
+
+        <form action="" method="post" class="mb-5">
+            {% csrf_token %}
+            <table>
+            {% for field in form %}
+                {% if forloop.counter == 1 %}
+                    <h3>Section 1</h3><br>
+                {% endif %}
+                {% if forloop.counter == 9 %}
+                    <br><h3>Section 2: Project Details</h3><br>
+                    <p>Please provide details for the project that we can share on our website and with students.
+                        <br><strong>Note: If you are proposing more than one project - you need to resubmit this form for each project you propose!</strong></p><br>
+                {% endif %}
+                {% if forloop.counter == 13 %}
+                <br><p><strong>Provide a brief timeline around how you see your project developing throughout the semester.</strong></p>
+                <p style="font-size:12px;">Keep in mind you will have 12 working weeks in a semester with your Discovery Student Team.
+                    We understand that over the course of the semester, projects may evolve or change, and that's okay!
+                    Please provide a rough timeline estimating what you think would be the best and most feasible progression of your project.
+                    An example breakdown would look like: Phase 1 (Week 1-3): Cleaning the Data; Phase 2 (Week 4-5): Organize the data into a queryable relational database;
+                Phase 3 (Week 6-10): Prototype and refine a a front-end mock up that allows users to interact with the database.</p>
+                {% endif %}
+                {% if forloop.counter == 14 %}
+                <br><p><strong>How do you envision your project workflow to look like? </strong></p>
+                <p style="font-size:12px;">Things to possibly include: guidelines around communication, if students will be broken up
+                    into teams and what aspect of the project would each sub team be working on, frequency of check-ins (please note that
+                    Discovery requires you to meet with your student team atleast once a week), breakdown of daily/weekly recurring student
+                    responsibilities (if any), how many people on your team will be in touch with the student team etc. </p>
+                {% endif %}
+                {% if forloop.counter == 17 %}
+                    <br><h3>Section 3: Project Requirements</h3><br>
+                {% endif %}
+                {% if forloop.counter == 23 %}
+                <br><p><strong>Would you be open to hosting a Research Intern from the Human Context and Ethics (HCE) team in addition to your Discovery Student Team?</strong></p>
+                <p style="font-size:12px;">HCE collaborates with the Discovery program by placing a Research Intern from the HCE team on Discovery teams as a participant/observer.
+                    The Research Intern will be responsible for identifying HCE issues in the Discovery Team's work and communicating them to project members.
+                    The Intern will keep a detailed journal of ethnographic observations about the Discovery Team's work, will be responsible for researching the social contexts of
+                    the Team's research project, and will use their findings to produce a curricular intervention in the form of a case study for the new Data Science Ethos Lifecycle.
+                    This Lifecycle may then be developed to help teach future Discovery students about the Human Contexts and Ethics of data science research. Although they are not
+                    expected to do the same technical work as other Discovery students (due to the quantity of work they , the Research Intern will be considered a member of your team.
+                    They will participate in all meetings and offer feedback and input on research design decisions from an HCE perspective. The student will be supervised simultaneously
+                    by Professor Ari Edmundson as part of a parallel research seminar.</p>
+                {% endif %}
+                {% if forloop.counter == 24 %}
+                    <br><h3>Section 4: Project Agreement</h3><br>
+                    <p>A formal MOU will be sent to your listed email address for you to review and sign upon the acceptance of your project application.
+                        Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.</p>
+                {% endif %}
+                {% if forloop.counter == 27 %}
+                    <br><h3>Section 4: Additional Questions?</h3><br>
+                    <p>This section is <u>optional</u>, and depends on your organization's preferences.</p>
+                {% endif %}
+                <div class="form-group">
+                    <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
+                </div>
+            {% endfor %}
+            </table>
+
+            <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);">
+            <input class="btn btn-light" type="submit" value="Submit">
+        </form>
+
+    </div>
+</div>
+
+<script>
+    addCharacterLimit("textarea[name='general_question']", 1000);
+
+    const skillLevelSpiel = "<h6 class='my-2'>Please enter you skill level in each of the technologies or techniques below.</h6>";
+    $("select.skill-dropdown").first().parent().before(skillLevelSpiel);
+
+    {% for skill in student.skills %}
+        {% with student.skills|index:skill as skillLevel %}
+            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
+        {% endwith %}
+    {% endfor %}
+</script>
+
+{% endblock %}
