@@ -13,3 +13,4 @@ django-constance[database]
 django-picklefield
 factory_boy
 factory_djoy
+codecov
