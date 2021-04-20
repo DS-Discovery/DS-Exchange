@@ -41,11 +41,10 @@ def list_projects(request):
 
 
 def get_projects_json():
+
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
-        print(d['semester'])
-        print(config.CURRENT_SEMESTER)
         if d['semester'] != config.CURRENT_SEMESTER:
             projects.append(d)
 

@@ -312,8 +312,8 @@ def proj_creation(request):
                 p = Partner.objects.get(email_address = email)
             else:
                 p = Partner(
-                    email_address = email, 
-                    first_name = form.cleaned_data['first_name'], 
+                    email_address = email,
+                    first_name = form.cleaned_data['first_name'],
                     last_name = form.cleaned_data['last_name'],
                 )
             p.save()
@@ -328,8 +328,8 @@ def proj_creation(request):
         else:
             partner = Partner.objects.get(email_address = email)
             logger.error(f"Invalid form for partner {partner}:\n{form}")
-            messages.info( 
-                request, 
+            messages.info(
+                request,
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
