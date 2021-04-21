@@ -277,6 +277,9 @@ def proj_creation(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
+    if Partner.objects.filter(email_address=email).count() == 0:
+        messages.info(request, "You must be a partner to create projects.")
+        return redirect("/projects")
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
