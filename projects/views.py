@@ -280,7 +280,8 @@ def proj_creation(request):
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
-            proj = Project(organization=form.cleaned_data['organization'],
+            proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
+                          organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
                           project_category=form.cleaned_data['project_category'],
                           description=form.cleaned_data['description'],
@@ -293,7 +294,6 @@ def proj_creation(request):
                           project_workflow=form.cleaned_data['project_workflow'],
                           dataset_availability=form.cleaned_data['dataset_availability'],
                           deliverable=form.cleaned_data['deliverable'],
-                          skillset=form.cleaned_data['skillset'],
                           additional_skills=form.cleaned_data['additional_skills'],
                           technical_requirements=form.cleaned_data['technical_requirements'],
                           num_students=form.cleaned_data['num_students'],

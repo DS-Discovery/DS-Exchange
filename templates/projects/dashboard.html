@@ -1,0 +1,42 @@
+{% extends 'three_column_view.html' %}
+{% load static %}
+
+{% block extra_head %}
+<script src="{% static 'js/dashboard_listing.js' %}"></script>
+
+{% endblock %}
+
+{% block first_column %}
+
+<div class="list-group list-group-flush" id="project-list">
+    <p>No projects are available.</p>
+</div>
+
+{% endblock %}
+
+
+{% block second_column %}
+
+<div class="mx-2 my-3" id="description">
+
+    <p>No project selected.</p>
+
+</div>
+
+{% endblock %}
+
+
+{% block third_column %}
+
+<div id="project-sidebar">
+
+</div>
+
+{{ projects_json|json_script:"projects-json" }}
+
+<script>
+    // This makes a request to gather all projects and load them
+    $(document).ready(function() {loadProjects('{{ selected }}')});
+</script>
+
+{% endblock %}
