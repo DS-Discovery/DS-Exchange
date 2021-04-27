@@ -4,7 +4,7 @@ from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 
 from applications.models import Application
-from projects.models import Semester, Project
+from projects.models import Semester, Project, PartnerProjectInfo
 from students.models import Student, DataScholar
 
 from django.forms import model_to_dict
@@ -35,7 +35,9 @@ def verbose_name(name):
 col_rename = {col_name(t[0]):verbose_name(str(t[1])) for t in Application.ApplicationStatus.choices}
 status = list(col_rename.keys())
 total = [col_name('Total')]
-group = [col_name('Student'), col_name('First_Name'), col_name('Last_Name'), col_name('Project')]
+student_group = [col_name('Student'), col_name('First_Name'), col_name('Last_Name')]
+project_group = [col_name('Project'), col_name('Contact')]
+group = student_group + project_group
 for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
@@ -73,8 +75,10 @@ def status_summary(request, pages=10):
 
     extra = []
     if formatted_group_query == col_name('Student'):
-        extra = [col_name('First_Name'), col_name('Last_Name')]
-    table_col = extra + [formatted_group_query] + status + [col_name('Total')]
+        extra = student_group
+    if formatted_group_query == col_name('Project'):
+        extra = project_group
+    table_col = extra + status + [col_name('Total')]
 
     projs = Project.objects.filter(semester=semester_query.upper())
     filtered = Application.objects.filter(project__in=projs)
@@ -98,6 +102,7 @@ def status_summary(request, pages=10):
         table.reset_index(inplace=True)
 
         if formatted_group_query == col_name('Project'):
+            table[col_name('Contact')] = [", ".join([ppi.partner.email_address for ppi in PartnerProjectInfo.objects.filter(project=Project.objects.get(id=id))]) for id in table[formatted_group_query]]
             table[formatted_group_query] = [Project.objects.get(id=id).project_name for id in table[formatted_group_query]]
         elif formatted_group_query ==  col_name('Student'):
             table[col_name('First_Name')] = [Student.objects.get(email_address=id).first_name for id in table[formatted_group_query]]
