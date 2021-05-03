@@ -1,6 +1,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from django.conf import settings
 
@@ -20,7 +21,11 @@ class ArchiveTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.selenium = webdriver.Chrome(r'C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe')
+
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        cls.selenium = webdriver.Chrome(r'C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe', options=chrome_options)
+
         sem_map = {k:v for k, v in Project.sem_mapping.items()}
         cls.short_current_semester = 'SP21'
         cls.current_semester = sem_map[cls.short_current_semester]
@@ -38,14 +43,6 @@ class ArchiveTest(StaticLiveServerTestCase):
         "Dataset":"dataset", "Deliverables":"deliverable", "Additional Skills":"additional_skills", "Technical Requirements":"technical_requirements"}
 
         cls.projectOrganizationStr = "Project Organization: "
-
-    @classmethod
-    def tearDownClass(cls):
-        #cls.selenium.close()
-        cls._tearDownClassInternal()
-        cls.selenium.quit()
-        #cls._live_server_modified_settings.disable()
-        super().tearDownClass()
 
     def page_validation(self, projList, appList = None):
 
