@@ -4,12 +4,15 @@ import random
 
 import json
 
+from students.models import Student
+
 fake = Faker()
 
 def generate_skills(arg):
     skillset = {}
     for _ in range(1,random.randint(1, 9)):
-         skillset[fake.word()] = fake.word()
+         # skillset[random.choice(list(Student.default_skills))] = random.choice(list(filter(None, Student.skill_levels_options.values())))
+        skillset[fake.word()] = fake.word()
     return skillset
 
 class ProjectFactory(factory.django.DjangoModelFactory):
