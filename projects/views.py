@@ -283,7 +283,44 @@ def proj_creation(request):
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
-            proj = Project(organization=form.cleaned_data['organization'],
+            skills_and_levels = {
+                "Python": form.cleaned_data["Python"],
+                "R": form.cleaned_data["R"],
+                "SQL": form.cleaned_data["SQL"],
+                "Tableau/Looker": form.cleaned_data["Tableau/Looker"],
+                "Data Visualization": form.cleaned_data["Data Visualization"],
+                "Data Manipulation": form.cleaned_data["Data Manipulation"],
+                "Text Analysis": form.cleaned_data["Text Analysis"],
+                "Machine Learning/Deep Learning": form.cleaned_data["Machine Learning/Deep Learning"],
+                "Geospatial Data, Tools and Libraries": form.cleaned_data["Geospatial Data, Tools and Libraries"],
+                "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
+                "Mobile App Development": form.cleaned_data["Mobile App Development"],
+                "Cloud Computing": form.cleaned_data["Cloud Computing"],
+                "communication": form.cleaned_data["communication"],
+                "self-motivation": form.cleaned_data["self-motivation"],
+                "leadership": form.cleaned_data["leadership"],
+                "responsibility": form.cleaned_data["responsibility"],
+                "teamwork": form.cleaned_data["teamwork"],
+                "problem solving": form.cleaned_data["problem solving"],
+                "decisiveness": form.cleaned_data["decisiveness"],
+                "good time management": form.cleaned_data["good time management"],
+                "flexibility": form.cleaned_data["flexibility"]
+            }
+            for i in skills_and_levels.keys():
+                if skills_and_levels[i] == 'FA':
+                    skills_and_levels[i] = 'Familiar'
+                elif skills_and_levels[i] == 'BE':
+                    skills_and_levels[i] = 'Beginner'
+                elif skills_and_levels[i] == 'IN':
+                    skills_and_levels[i] = 'Intermediate'
+                elif skills_and_levels[i] == 'AD':
+                    skills_and_levels[i] = 'Advanced'
+                elif skills_and_levels[i] == 'NE':
+                    skills_and_levels[i] = 'No Experience'
+                else:
+                    continue
+            proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
+                          organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
                           project_category=form.cleaned_data['project_category'],
                           description=form.cleaned_data['description'],
@@ -296,7 +333,7 @@ def proj_creation(request):
                           project_workflow=form.cleaned_data['project_workflow'],
                           dataset_availability=form.cleaned_data['dataset_availability'],
                           deliverable=form.cleaned_data['deliverable'],
-                          skillset=form.cleaned_data['skillset'],
+                          skillset=skills_and_levels,
                           additional_skills=form.cleaned_data['additional_skills'],
                           technical_requirements=form.cleaned_data['technical_requirements'],
                           num_students=form.cleaned_data['num_students'],

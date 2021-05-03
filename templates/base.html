@@ -51,7 +51,6 @@
                         <!-- </li> -->
                     </ul>
 
-
                     {% if not user.is_authenticated %}
                         <a href="/profile/login">Log In with Google</a>
                     {% else %}
@@ -61,7 +60,7 @@
                 </div>
             </div>
         </nav>
-
+        
         <div class="{% block container_class %}container-fluid{% endblock %} mt-3">
 
             <div class="container" id="messages">
