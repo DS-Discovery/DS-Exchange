@@ -9,8 +9,8 @@ function toggle(id) {
   }
 }
 
-function toggle_select(id, select) {
-  let elem = document.getElementById(id+'-drop');
+function toggle_select(select) {
+  let elem = document.getElementById('filter-drop');
   let nodes = elem.childNodes;
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].nodeName.toLowerCase() == 'label' &&
@@ -29,9 +29,8 @@ function add_onclick(id) {
 
 function select_toggle_onclick(id) {
   let elem = document.getElementById(id);
-  let check_id = elem.classList.contains('show')? 'show' : 'hide';
   let select_mode = elem.classList.contains('select')? true : false;
-  elem.onclick = function() { toggle_select(check_id, select_mode) };
+  elem.onclick = function() { toggle_select( select_mode) };
 }
-['tools', 'group', 'semester', 'filter', 'show', 'hide', 'export'].forEach(add_onclick);
-['showSelect', 'showDeselect', 'hideSelect', 'hideDeselect'].forEach(select_toggle_onclick);
+['tools', 'group', 'semester', 'filter', 'export'].forEach(add_onclick);
+['showSelect', 'showDeselect'].forEach(select_toggle_onclick);

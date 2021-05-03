@@ -30,7 +30,7 @@ class Student(models.Model):
     }
 
     skill_levels_inverse = {v: k for k, v in skill_levels_options.items()}
-    
+
     skill_levels = skill_levels_options.items()
 
     default_skills = get_default_skills()

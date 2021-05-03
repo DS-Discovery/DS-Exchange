@@ -38,10 +38,9 @@
             {% endfor %}
           </select>
         </div>
-        <h2 id='filter'>{% translate 'Status Filter' %}</h2>
+        <!-- <h2 id='filter'>{% translate 'Status Filter' %}</h2>
+        <p>TODO: Any or all as dropdown</p>
         <div id='filter-drop'>
-        <h3 id='show'>{% translate 'Show' %}</h3>
-        <div id='show-drop'>
         <label>{% translate 'Show students that meet ANY of the selected conditions.' %}</label>
         {% for value, option in filter_support %}
         <br/>
@@ -51,20 +50,7 @@
           <button id="showSelect" class="show select button">{% translate 'Select all' %}</button>
           <button id="showDeselect" class="show deselect button">{% translate 'Deselect all' %}</button>
         </div>
-        </div>
-        <h3 id='hide'>{% translate 'Hide' %}</h3>
-        <div id='hide-drop'>
-        <label>{% translate 'Hide students that meet ANY the selected conditions.' %}</label>
-          {% for value, option in filter_support %}
-          <br/>
-          <label><input type="checkbox" name={{ value }} value="OUT" {% if value in filter_out_query %}checked{% endif %}/> {% translate option %}</label>
-          {% endfor %}
-          <div>
-            <button id="hideSelect" class="hide select button">{% translate 'Select all' %}</button>
-            <button id="hideDeselect" class="hide deselect button">{% translate 'Deselect all' %}</button>
-          </div>
-        </div>
-        </div>
+        </div> -->
         <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
     </form>
     <form class="actions">
