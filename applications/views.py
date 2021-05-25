@@ -64,7 +64,7 @@ def list_student_applications(request):
         "projects": [a.project for a in all_apps],
     }
 
-   
+
     if not no_apps:
 
         context["active_application"] = None
@@ -112,7 +112,7 @@ def list_project_applicants(request):
     #         return redirect("/applications")
     # else:
     if len(projects) == 0:
-        messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
+        messages.info(request, "You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
         return redirect("/")
         # project_wanted = projects[0]
 
