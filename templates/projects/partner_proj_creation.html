@@ -64,7 +64,10 @@ container
                 {% if forloop.counter == 17 %}
                     <br><h3>Section 3: Project Requirements</h3><br>
                 {% endif %}
-                {% if forloop.counter == 23 %}
+                {% if forloop.counter == 19 %}
+                    <br><h4>* Please Refer to Section 5 to select skills needed for the project. *</h4><br>
+                {% endif %}
+                {% if forloop.counter == 22 %}
                 <br><p><strong>Would you be open to hosting a Research Intern from the Human Context and Ethics (HCE) team in addition to your Discovery Student Team?</strong></p>
                 <p style="font-size:12px;">HCE collaborates with the Discovery program by placing a Research Intern from the HCE team on Discovery teams as a participant/observer.
                     The Research Intern will be responsible for identifying HCE issues in the Discovery Team's work and communicating them to project members.
@@ -75,18 +78,21 @@ container
                     They will participate in all meetings and offer feedback and input on research design decisions from an HCE perspective. The student will be supervised simultaneously
                     by Professor Ari Edmundson as part of a parallel research seminar.</p>
                 {% endif %}
-                {% if forloop.counter == 24 %}
+                {% if forloop.counter == 23 %}
                     <br><h3>Section 4: Project Agreement</h3><br>
                     <p>A formal MOU will be sent to your listed email address for you to review and sign upon the acceptance of your project application.
                         Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.</p>
                 {% endif %}
-                {% if forloop.counter == 27 %}
+                {% if forloop.counter == 26 %}
                     <br><h3>Section 4: Additional Questions?</h3><br>
                     <p>This section is <u>optional</u>, and depends on your organization's preferences.</p>
                 {% endif %}
                 <div class="form-group">
                     <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
                 </div>
+                {% if forloop.counter == 28 %}
+                    <br><h3>Section 5: Skillset Needed for the Project</h3><br>
+                {% endif %}
             {% endfor %}
             </table>
 
@@ -96,18 +102,4 @@ container
 
     </div>
 </div>
-
-<script>
-    addCharacterLimit("textarea[name='general_question']", 1000);
-
-    const skillLevelSpiel = "<h6 class='my-2'>Please enter you skill level in each of the technologies or techniques below.</h6>";
-    $("select.skill-dropdown").first().parent().before(skillLevelSpiel);
-
-    {% for skill in student.skills %}
-        {% with student.skills|index:skill as skillLevel %}
-            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
-        {% endwith %}
-    {% endfor %}
-</script>
-
 {% endblock %}
