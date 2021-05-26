@@ -6,13 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from flags.state import flag_enabled
-
 from students.models import Student
 from projects.models import Partner, PartnerProjectInfo
 
 from .forms import EditStudentSignupForm
 
+from constance import config
 
 logger = logging.getLogger(__name__)
 
@@ -38,14 +37,14 @@ def student_signup(request):
         if form.is_valid():
 
             s = Student(
-                email_address = email, 
-                first_name = form.cleaned_data['first_name'], 
+                email_address = email,
+                first_name = form.cleaned_data['first_name'],
                 last_name = form.cleaned_data['last_name'],
-                student_id = form.cleaned_data['student_id'], 
-                college = form.cleaned_data['college'], 
-                major = form.cleaned_data['major'], 
-                year = form.cleaned_data['year'], 
-                resume_link= form.cleaned_data['resume_link'], 
+                student_id = form.cleaned_data['student_id'],
+                college = form.cleaned_data['college'],
+                major = form.cleaned_data['major'],
+                year = form.cleaned_data['year'],
+                resume_link= form.cleaned_data['resume_link'],
                 general_question = form.cleaned_data['general_question']
             )
 
@@ -58,17 +57,17 @@ def student_signup(request):
             s.save()
 
             return redirect('/profile')
-        
+
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
             messages.info(
-                request, 
+                request,
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
             return redirect('/profile')
 
-    else: 
+    else:
         form = EditStudentSignupForm()
         return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
 
@@ -78,10 +77,10 @@ def edit_student_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
-    
-    if not flag_enabled('APPLICATIONS_OPEN'):
+
+    if not config.APPLICATIONS_OPEN:
         messages.info(
-            request, 
+            request,
             "Applications are currently closed and applicants are not longer allowed to edit their profiles. "
             "If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
         )
@@ -109,17 +108,17 @@ def edit_student_profile(request):
             student.update(_skills = skills)
 
             return redirect('/profile')
-        
+
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
             messages.info(
-                request, 
+                request,
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
             return redirect('/profile')
 
-    else: 
+    else:
         student = Student.objects.get(email_address = email)
         data = student.__dict__
         form = EditStudentSignupForm(initial = data)
@@ -135,7 +134,7 @@ def view_student_profile(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
-    
+
     student_exists = Student.objects.filter(email_address = email).exists()
 
     if not student_exists:
@@ -155,7 +154,7 @@ def view_partner_profile(request):
 
     context = Partner.objects.get(email_address = email)
     relationship = PartnerProjectInfo.objects.filter(partner = context)
-   
+
     projects = [p.project for p in relationship]
     projectPartnerRoles = {}
     for p in projects:

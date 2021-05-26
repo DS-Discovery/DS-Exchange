@@ -13,7 +13,6 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from constance import config
-from flags.state import flag_enabled
 
 from applications.forms import AnswerForm
 from applications.models import Answer, Application
@@ -93,7 +92,7 @@ def apply(request, project_name):
             messages.info(request, "You have not yet signed up. Please complete the signup form to continue.")
             return redirect("/profile/signup")
 
-    if not flag_enabled('APPLICATIONS_OPEN'):
+    if not config.APPLICATIONS_OPEN:
         messages.info(
             request,
             "Applications are currently closed. If you believe you have received "

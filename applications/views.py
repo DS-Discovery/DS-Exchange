@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, SuspiciousOperation
 from django.http import HttpResponse
 from django.shortcuts import Http404, redirect, render
+from constance import config
 
 from applications.models import Answer, Application
 from projects.models import Partner, Project, PartnerProjectInfo
@@ -135,7 +136,8 @@ def list_project_applicants(request):
             "skills": skills,
             "levels": levels,
             "projectPartners": projectPartners,
-        }
+        },
+        "apps_reviewable": config.APPLICATIONS_REVIEWABLE,
     }
 
     return render(request, 'applications/review_applicants.html', context)
