@@ -4,6 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
+from django.forms import CharField, ChoiceField, ModelForm, Select, Textarea, TextInput
 
 from allauth.account.forms import LoginForm
 from allauth.socialaccount.forms import SignupForm
@@ -26,7 +27,10 @@ class EditProjectForm(forms.ModelForm):
 
 
 class PartnerProjCreationForm(forms.ModelForm):
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for s, l in self.instance.skillset.items():
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
     class Meta:
         model = Project
         fields = (
@@ -53,7 +57,6 @@ class PartnerProjCreationForm(forms.ModelForm):
             # section 3
             'num_students',
             'other_num_students',
-            'skillset',
             'technical_requirements',
             'additional_skills',
             'cloud_creds',
@@ -70,6 +73,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             'optional_q3',
         )
 
+
         labels = {
             "email": "Email address",
             "marketing_channel": "How did you hear about us?",
@@ -85,8 +89,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             "dataset_availability": "Do you have a dataset readily available?",
             "num_students": "How many student researchers (8-10 hrs/week) do you anticipate needing?",
             "other_num_students": "If you chose Other, specify the number below. We recommend onboarding 3-5 students.",
-            "skillset": "Are there any specific technical skills student researchers will need to work on this project?",
-            "technical_requirements": "Please further narrow down your technical requirements, if possible. For example, you can use this space to specify languages "
+            "technical_requirements": "Please further narrow down your technical requirements, if possible, in this textbox. For example, you can use this space to specify languages "
                                  "(Swift, PHP, HTML/CSS, JS), packages/libraries (NLTK, Spacy, Pandas, Seaborn, Sklearn, OpenCV), cloud computing platforms (Azure, GCP, AWS) etc. "
                                  "Filling this out ensures that student applications match your project requirements as closely as possible.",
             "additional_skills": "Any additional qualities or skills that you would value in a student that are not mentioned in the above two questions?",
