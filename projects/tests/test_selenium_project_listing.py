@@ -195,11 +195,11 @@ class ProjectListingTest(StaticLiveServerTestCase):
 
     def test_access_list_projects_current_semester(self):
         projCt = random.randint(1, 10)
-        appCt = random.randint(1, 10)
-        partnerCt = random.randint(1, 10)
+        # appCt = random.randint(1, 10)
+        # partnerCt = random.randint(1, 10)
         projList = []
-        appList = []
-        partnerList = []
+        # appList = []
+        # partnerList = []
 
         for i in range(0, projCt):
             projList.append(ProjectFactory(semester=self.short_current_semester))
@@ -292,18 +292,22 @@ class ProjectListingTest(StaticLiveServerTestCase):
 
     def test_access_create_new_project_user_logon(self):
         self.user_login(self.user)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
         self.new_project_invalid_login_validation()
 
     def test_access_create_new_project_admin_logon(self):
         self.user_login(self.admin)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
         self.new_project_invalid_login_validation()
 
     def test_access_create_new_project_student_logon(self):
         self.user_login(self.student)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
         self.new_project_invalid_login_validation()
 
     def test_access_create_new_project_partner_logon(self):
         self.user_login(self.partner)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
 
         newproj_button = self.selenium.find_element_by_xpath('//a[@href="newproject"]')
         newproj_button.click()

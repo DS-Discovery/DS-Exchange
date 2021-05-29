@@ -43,7 +43,7 @@ class ViewsTestCase(TestCase):
     def test_access_apply_not_logged_in(self):
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -69,7 +69,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
@@ -81,7 +81,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -102,7 +102,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -123,7 +123,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -136,7 +136,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': False}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (False, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -160,7 +160,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -185,7 +185,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (1, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -210,7 +210,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (1, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))
@@ -231,7 +231,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project = ProjectFactory()
         project_name = project.project_name
@@ -247,7 +247,7 @@ class ViewsTestCase(TestCase):
 
         settings.CONSTANCE_CONFIG['APP_LIMIT'] = (10, "Number of applications any student can submit", int)
         settings.CONSTANCE_CONFIG['SCHOLAR_APP_LIMIT'] = (10, "Number of applications a Data Scholar can submit", int)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': True}]
+        settings.CONSTANCE_CONFIG['APPLICATIONS_OPEN'] = (True, "Whether applications are open", bool)
 
         project_name = self.project.project_name
         response = self.client.get(reverse('apply', args=(project_name,)))

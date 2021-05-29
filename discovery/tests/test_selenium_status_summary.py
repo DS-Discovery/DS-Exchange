@@ -9,18 +9,15 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
-
-from constance import config
-
+from factory_djoy import UserFactory
 from projects.tests.factories.project import ProjectFactory
 from applications.tests.factories.application import ApplicationFactory
 from projects.tests.factories.partnerprojectinfo import PartnerProjectInfoFactory
-
-from factory_djoy import UserFactory
 from user_profile.tests.factories.admin import AdminFactory
 from projects.tests.factories.partner import PartnerFactory
 from students.tests.factories.student import StudentFactory
 from students.tests.factories.datascholar import DataScholarFactory
+
 from projects.models import Semester, Project
 
 import json
@@ -51,7 +48,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
         cls.applicantTypes = ['students', 'scholars']
 
         chrome_options = Options()
-        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument('--disable-gpu')
@@ -59,7 +56,11 @@ class StatusSummaryTest(StaticLiveServerTestCase):
         chrome_options.add_argument("--ignore-certificate-errors")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        cls.selenium = webdriver.Chrome(r'C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe', options=chrome_options)
+        chromedriver = settings.WEBDRIVER
+        os.environ["webdriver.chrome.driver"] = chromedriver
+        driver = webdriver.Chrome(chromedriver)
+
+        cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
         cls.logonRedirect = cls.live_server_url + "/admin/login/?next=/admin/status_summary"
 
@@ -236,14 +237,17 @@ class StatusSummaryTest(StaticLiveServerTestCase):
 
     def test_access_status_summary_user_login(self):
         self.user_login(self.user)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
 
     def test_access_status_summary_partner_login(self):
         self.user_login(self.partner)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
 
     def test_access_status_summary_student_login(self):
         self.user_login(self.student)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
 
     def test_access_status_summary_admin_login(self):

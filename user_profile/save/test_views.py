@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import auth
+from constance import config
 from django.contrib.messages import get_messages
 from factory_djoy import UserFactory
 from user_profile.tests.factories.admin import AdminFactory
@@ -44,7 +45,7 @@ class ViewsTestCase(TestCase):
                              target_status_code=200,
                              fetch_redirect_response=True
                             )
-    
+
     def test_student_logged_in_with_profile(self):
         self.client.login(username=self.student.username, password=self.password)
         user = auth.get_user(self.client)
@@ -52,7 +53,7 @@ class ViewsTestCase(TestCase):
         response = self.client.get('/profile')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'student_profile.html')
-    
+
     def test_partner_logged_in_with_profile(self):
         self.client.login(username=self.partner.username, password=self.password)
         user = auth.get_user(self.client)
@@ -65,7 +66,7 @@ class ViewsTestCase(TestCase):
         self.client.login(username=self.student.username, password=self.password)
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
-        settings.FLAGS['APPLICATIONS_OPEN'] = [{'condition': 'boolean', 'value': False}]
+        config.APPLICATIONS_OPEN = False
         response = self.client.get('/profile/edit')
         self.assertRedirects(response,
                              '/profile',
