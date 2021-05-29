@@ -34,7 +34,7 @@ class PartnerProjCreationForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = (
-            # section 1
+            # About You
             'email',
             'first_name',
             'last_name',
@@ -44,7 +44,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             'marketing_channel',
             'other_marketing_channel',
 
-            # section 2
+            # Project Details
             'project_name',
             'project_category',
             'other_project_category',
@@ -53,24 +53,22 @@ class PartnerProjCreationForm(forms.ModelForm):
             'project_workflow',
             'dataset_availability',
             'deliverable',
-
-            # section 3
             'num_students',
             'other_num_students',
-            'technical_requirements',
-            'additional_skills',
             'cloud_creds',
             'hce_intern',
 
-            # section 4
+            # Project Partner Agreement
             'meet_regularly',
             'survey_response',
             'environment',
 
-            # section 5
+            # Specification for Student Applicants
             'optional_q1',
             'optional_q2',
             'optional_q3',
+            'technical_requirements',
+            'additional_skills',
         )
 
 
