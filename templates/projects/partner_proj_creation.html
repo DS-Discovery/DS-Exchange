@@ -22,14 +22,12 @@ container
       <li>Join our network of professors, graduate and undergraduate students, and past project partners such as NASA, UCSF, Creative Commons, BART and more.</li>
       <li>Access free cloud computing and data storage resources.</li>
     </ul>
-    <p>Discovery is dedicated to providing top-notch data science capacity to our project partners while also fostering a unique learning environment for our students.
-        Students are expected to have a single project that they can work on through the duration of their engagement with the project partner. Discovery student
-        researchers are not interns that can be assigned tasks ad hoc throughout the semester, though it is expected that research goals might shift occasionally.
-        <br><br>Applications will be accepted and reviewed on a rolling basis through January 8th, 2021. If accepted into the program, Discovery projects will receive
-        student applications for review on January 25th. Project partners are responsible for interviewing and selecting the students they would like to work with.
-        We will be in touch throughout the process to guide and support project partners as you form your Discovery teams!<br><br>For specific inquiries about our program
-        email <a href="mailto:ds-discovery@berkeley.edu", target="_blank">ds-discovery@berkeley.edu</a>.<br><br>To learn more about the program visit
-        <a href="https://data.berkeley.edu/research/discovery", target="_blank">data.berkeley.edu/research/discovery</a>.</p><br>
+    <p>Discovery is dedicated to providing top-notch data science capacity to our project partners while also fostering a unique learning environment for our students. 
+        Project partners should design projects so that a team of students can be engaged over the course of a single or multiple semesters (a semester is about 12 weeks of work). 
+        Projects should include a strong data component, and a dataset must be available by the start of the semester. Project partners can submit multiple projects, 
+        but each student can only work on a single Discovery project in a given semester.<br><br>Every semester we receive hundreds of applications from students with a wide range of experience levels, 
+        backgrounds and interests - the perfect students for your project are out there! The trick to successfully recruiting the best students for your team is to be as specific as possible in the Project Details section. 
+        Please contact <a href="mailto:ds-discovery@berkeley.edu", target="_blank">ds-discovery@berkeley.edu</a> with any questions about the application.</p><br>
 
 <div class="d-flex flex-column">
     <div class="col-8">
@@ -39,10 +37,10 @@ container
             <table>
             {% for field in form %}
                 {% if forloop.counter == 1 %}
-                    <h3>Section 1</h3><br>
+                    <h3>About You</h3><br>
                 {% endif %}
                 {% if forloop.counter == 9 %}
-                    <br><h3>Section 2: Project Details</h3><br>
+                    <br><h3>Project Details</h3><br>
                     <p>Please provide details for the project that we can share on our website and with students.
                         <br><strong>Note: If you are proposing more than one project - you need to resubmit this form for each project you propose!</strong></p><br>
                 {% endif %}
@@ -61,13 +59,7 @@ container
                     Discovery requires you to meet with your student team atleast once a week), breakdown of daily/weekly recurring student
                     responsibilities (if any), how many people on your team will be in touch with the student team etc. </p>
                 {% endif %}
-                {% if forloop.counter == 17 %}
-                    <br><h3>Section 3: Project Requirements</h3><br>
-                {% endif %}
-                {% if forloop.counter == 19 %}
-                    <br><h4>* Please Refer to Section 5 to select skills needed for the project. *</h4><br>
-                {% endif %}
-                {% if forloop.counter == 22 %}
+                {% if forloop.counter == 20 %}
                 <br><p><strong>Would you be open to hosting a Research Intern from the Human Context and Ethics (HCE) team in addition to your Discovery Student Team?</strong></p>
                 <p style="font-size:12px;">HCE collaborates with the Discovery program by placing a Research Intern from the HCE team on Discovery teams as a participant/observer.
                     The Research Intern will be responsible for identifying HCE issues in the Discovery Team's work and communicating them to project members.
@@ -78,20 +70,25 @@ container
                     They will participate in all meetings and offer feedback and input on research design decisions from an HCE perspective. The student will be supervised simultaneously
                     by Professor Ari Edmundson as part of a parallel research seminar.</p>
                 {% endif %}
-                {% if forloop.counter == 23 %}
-                    <br><h3>Section 4: Project Agreement</h3><br>
+                {% if forloop.counter == 21 %}
+                    <br><h3>Project Partner Agreement</h3><br>
                     <p>A formal MOU will be sent to your listed email address for you to review and sign upon the acceptance of your project application.
                         Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.</p>
                 {% endif %}
-                {% if forloop.counter == 26 %}
-                    <br><h3>Section 4: Additional Questions?</h3><br>
-                    <p>This section is <u>optional</u>, and depends on your organization's preferences.</p>
+                {% if forloop.counter == 24 %}
+                    <br><h3>Specifications for Student Applicants</h3><br>
+                    <p>Applicants will be asked to submit a statement of interest to your project in their application. If there are any specific questions you would like applicants to respond to, include them below. [Optional]</p>
+                {% endif %}
+                {% if forloop.counter == 27 %}
+                    <br><h4>Go to the bottom of the page to select from the dropdown menu the level of experience you are looking for from student applicants.
+                    </h4><br>
                 {% endif %}
                 <div class="form-group">
                     <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
                 </div>
                 {% if forloop.counter == 28 %}
-                    <br><h3>Section 5: Skillset Needed for the Project</h3><br>
+                    <br><h4>Please indicate the level of experience you are looking for from student applicants in each of the following skills:
+                    </h4><br>
                 {% endif %}
             {% endfor %}
             </table>
@@ -102,4 +99,10 @@ container
 
     </div>
 </div>
+
+<p>Applications will be accepted and reviewed on a rolling basis through August 1st, 2021. Discovery projects will receive student applications for review on August 23rd. Project partners are responsible 
+        for interviewing and selecting the students they would like to work with. We will be in touch throughout the process to guide and support project partners as you form your Discovery teams!
+        <br><br>For specific inquiries about our program
+        email <a href="mailto:ds-discovery@berkeley.edu", target="_blank">ds-discovery@berkeley.edu</a>.<br><br>To learn more about the program visit
+        <a href="https://data.berkeley.edu/research/discovery", target="_blank">data.berkeley.edu/research/discovery</a>.</p>
 {% endblock %}
