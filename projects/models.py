@@ -21,15 +21,6 @@ def get_default_skills():
         "Web Development (frontend, backend, full stack)": "",
         "Mobile App Development": "",
         "Cloud Computing": "",
-        "communication": "",
-        "self-motivation": "",
-        "leadership": "",
-        "responsibility": "",
-        "teamwork": "",
-        "problem solving": "",
-        "decisiveness": "",
-        "good time management": "",
-        "flexibility": ""
     }
 
 
@@ -95,7 +86,13 @@ class Project(models.Model):
     # year = models.CharField(max_length=100)
     embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
-    project_category = models.CharField(max_length=200, blank=True, null=True)
+    project_category = models.CharField(max_length=1, choices=
+    (
+        ('a', 'Academia'),
+        ('b', 'Social Sector'),
+        ('c', 'Startup'),
+        ('d', 'Other'),
+    ), blank=True)
     project_name = models.CharField(max_length=200)
     student_num = models.IntegerField(default=0)
     project_workflow = models.CharField(max_length=1000, blank=True)
@@ -124,7 +121,7 @@ class Project(models.Model):
             "organization": self.organization,
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
-            "project_category": self.project_category.split(";") if self.project_category else [],
+            "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],
             "student_num": self.student_num,
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
