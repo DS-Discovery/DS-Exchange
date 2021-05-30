@@ -27,10 +27,55 @@ class EditProjectForm(forms.ModelForm):
 
 
 class PartnerProjCreationForm(forms.ModelForm):
+    field_order = [
+            'email',
+            'first_name',
+            'last_name',
+            'organization',
+            'organization_description',
+            'organization_website',
+            'marketing_channel',
+            'other_marketing_channel',
+            'project_name',
+            'project_category',
+            'other_project_category',
+            'description',
+            'timeline',
+            'project_workflow',
+            'dataset_availability',
+            'deliverable',
+            'num_students',
+            'other_num_students',
+            'cloud_creds',
+            'hce_intern',
+            'optional_q1',
+            'optional_q2',
+            'optional_q3',
+            'Python',
+            'R',
+            'SQL',
+            'Tableau/Looker',
+            'Data Visualization',
+            'Data Manipulation',
+            'Text Analysis',
+            'Machine Learning/Deep Learning',
+            'Geospatial Data, Tools and Libraries',
+            'Web Development (frontend, backend, full stack)',
+            'Mobile App Development',
+            'Cloud Computing',
+            'technical_requirements',
+            'additional_skills',
+            'meet_regularly',
+            'survey_response',
+            'environment',
+        ]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skillset.items():
             self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
+        self.order_fields(self.field_order)
+
     class Meta:
         model = Project
         fields = (
@@ -58,17 +103,17 @@ class PartnerProjCreationForm(forms.ModelForm):
             'cloud_creds',
             'hce_intern',
 
-            # Project Partner Agreement
-            'meet_regularly',
-            'survey_response',
-            'environment',
-
             # Specification for Student Applicants
             'optional_q1',
             'optional_q2',
             'optional_q3',
             'technical_requirements',
             'additional_skills',
+
+            # Project Partner Agreement
+            'meet_regularly',
+            'survey_response',
+            'environment',
         )
 
 
@@ -79,7 +124,8 @@ class PartnerProjCreationForm(forms.ModelForm):
             "project_name": "Project title",
             "organization": "Organization name",
             "organization_description": "About your organization",
-            "other_project_category": "If you chose Other, describe your category below.",
+            "project_category": "Project Sector",
+            "other_project_category": "If you chose Other, describe your sector below.",
             "description": "Please provide a brief description for your project, including "
                            "the problem you hope to solve or the question you hope to answer "
                            "with the help of your Discovery team.",
@@ -91,7 +137,7 @@ class PartnerProjCreationForm(forms.ModelForm):
                                  "(Swift, PHP, HTML/CSS, JS), packages/libraries (NLTK, Spacy, Pandas, Seaborn, Sklearn, OpenCV), cloud computing platforms (Azure, GCP, AWS) etc. "
                                  "Filling this out ensures that student applications match your project requirements as closely as possible.",
             "additional_skills": "Any additional qualities or skills that you would value in a student that are not mentioned in the above two questions?",
-            "cloud_creds": "Would your project benefit from availability of cloud computing credits? Please note our current partnership is with Azure.",
+            "cloud_creds": "Would your project benefit from free cloud computing credits? Please note our current partnership is with Azure.",
             "hce_intern": "Select one:",
             "meet_regularly": "Projects are more successful when the project partner can meet regularly with the student team - "
                               "can you commit to meeting with the student team at least once a week?",
