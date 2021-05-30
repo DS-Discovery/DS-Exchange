@@ -4,6 +4,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
+from django.forms import CharField, ChoiceField, ModelForm, Select, Textarea, TextInput
 
 from allauth.account.forms import LoginForm
 from allauth.socialaccount.forms import SignupForm
@@ -26,11 +27,59 @@ class EditProjectForm(forms.ModelForm):
 
 
 class PartnerProjCreationForm(forms.ModelForm):
+    field_order = [
+            'email',
+            'first_name',
+            'last_name',
+            'organization',
+            'organization_description',
+            'organization_website',
+            'marketing_channel',
+            'other_marketing_channel',
+            'project_name',
+            'project_category',
+            'other_project_category',
+            'description',
+            'timeline',
+            'project_workflow',
+            'dataset_availability',
+            'deliverable',
+            'num_students',
+            'other_num_students',
+            'cloud_creds',
+            'hce_intern',
+            'optional_q1',
+            'optional_q2',
+            'optional_q3',
+            'Python',
+            'R',
+            'SQL',
+            'Tableau/Looker',
+            'Data Visualization',
+            'Data Manipulation',
+            'Text Analysis',
+            'Machine Learning/Deep Learning',
+            'Geospatial Data, Tools and Libraries',
+            'Web Development (frontend, backend, full stack)',
+            'Mobile App Development',
+            'Cloud Computing',
+            'technical_requirements',
+            'additional_skills',
+            'meet_regularly',
+            'survey_response',
+            'environment',
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for s, l in self.instance.skillset.items():
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
+        self.order_fields(self.field_order)
 
     class Meta:
         model = Project
         fields = (
-            # section 1
+            # About You
             'email',
             'first_name',
             'last_name',
@@ -40,7 +89,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             'marketing_channel',
             'other_marketing_channel',
 
-            # section 2
+            # Project Details
             'project_name',
             'project_category',
             'other_project_category',
@@ -49,26 +98,24 @@ class PartnerProjCreationForm(forms.ModelForm):
             'project_workflow',
             'dataset_availability',
             'deliverable',
-
-            # section 3
             'num_students',
             'other_num_students',
-            'skillset',
-            'technical_requirements',
-            'additional_skills',
             'cloud_creds',
             'hce_intern',
 
-            # section 4
-            'meet_regularly',
-            'survey_response',
-            'environment',
-
-            # section 5
+            # Specification for Student Applicants
             'optional_q1',
             'optional_q2',
             'optional_q3',
+            'technical_requirements',
+            'additional_skills',
+
+            # Project Partner Agreement
+            'meet_regularly',
+            'survey_response',
+            'environment',
         )
+
 
         labels = {
             "email": "Email address",
@@ -77,7 +124,8 @@ class PartnerProjCreationForm(forms.ModelForm):
             "project_name": "Project title",
             "organization": "Organization name",
             "organization_description": "About your organization",
-            "other_project_category": "If you chose Other, describe your category below.",
+            "project_category": "Project Sector",
+            "other_project_category": "If you chose Other, describe your sector below.",
             "description": "Please provide a brief description for your project, including "
                            "the problem you hope to solve or the question you hope to answer "
                            "with the help of your Discovery team.",
@@ -85,12 +133,11 @@ class PartnerProjCreationForm(forms.ModelForm):
             "dataset_availability": "Do you have a dataset readily available?",
             "num_students": "How many student researchers (8-10 hrs/week) do you anticipate needing?",
             "other_num_students": "If you chose Other, specify the number below. We recommend onboarding 3-5 students.",
-            "skillset": "Are there any specific technical skills student researchers will need to work on this project?",
-            "technical_requirements": "Please further narrow down your technical requirements, if possible. For example, you can use this space to specify languages "
+            "technical_requirements": "Please further narrow down your technical requirements, if possible, in this textbox. For example, you can use this space to specify languages "
                                  "(Swift, PHP, HTML/CSS, JS), packages/libraries (NLTK, Spacy, Pandas, Seaborn, Sklearn, OpenCV), cloud computing platforms (Azure, GCP, AWS) etc. "
                                  "Filling this out ensures that student applications match your project requirements as closely as possible.",
             "additional_skills": "Any additional qualities or skills that you would value in a student that are not mentioned in the above two questions?",
-            "cloud_creds": "Would your project benefit from availability of cloud computing credits? Please note our current partnership is with Azure.",
+            "cloud_creds": "Would your project benefit from free cloud computing credits? Please note our current partnership is with Azure.",
             "hce_intern": "Select one:",
             "meet_regularly": "Projects are more successful when the project partner can meet regularly with the student team - "
                               "can you commit to meeting with the student team at least once a week?",
