@@ -86,13 +86,7 @@ class Project(models.Model):
     # year = models.CharField(max_length=100)
     embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
-    project_category = models.CharField(max_length=1, choices=
-    (
-        ('a', 'Academia'),
-        ('b', 'Social Sector'),
-        ('c', 'Startup'),
-        ('d', 'Other'),
-    ), blank=True)
+    project_category = models.CharField(max_length=200, blank=True, null=True)
     project_name = models.CharField(max_length=200)
     student_num = models.IntegerField(default=0)
     project_workflow = models.CharField(max_length=1000, blank=True)
