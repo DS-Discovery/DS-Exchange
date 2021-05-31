@@ -37,7 +37,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             'marketing_channel',
             'other_marketing_channel',
             'project_name',
-            'project_category',
+            'project_sector',
             'other_project_category',
             'description',
             'timeline',
@@ -80,7 +80,7 @@ class PartnerProjCreationForm(forms.ModelForm):
         "c": "Startup",
         "d": "Other",
         }
-        self.fields['project_category'] = ChoiceField(choices=temp_d.items(), widget=Select(attrs={'class': 'skill-dropdown'}))
+        self.fields['project_sector'] = ChoiceField(choices=temp_d.items(), widget=Select(attrs={'class': 'skill-dropdown'}))
         self.order_fields(self.field_order)
 
     class Meta:
