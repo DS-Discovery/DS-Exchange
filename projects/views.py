@@ -293,15 +293,6 @@ def proj_creation(request):
                 "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
                 "Mobile App Development": form.cleaned_data["Mobile App Development"],
                 "Cloud Computing": form.cleaned_data["Cloud Computing"],
-                "communication": form.cleaned_data["communication"],
-                "self-motivation": form.cleaned_data["self-motivation"],
-                "leadership": form.cleaned_data["leadership"],
-                "responsibility": form.cleaned_data["responsibility"],
-                "teamwork": form.cleaned_data["teamwork"],
-                "problem solving": form.cleaned_data["problem solving"],
-                "decisiveness": form.cleaned_data["decisiveness"],
-                "good time management": form.cleaned_data["good time management"],
-                "flexibility": form.cleaned_data["flexibility"]
             }
             for i in skills_and_levels.keys():
                 if skills_and_levels[i] == 'FA':
@@ -319,7 +310,7 @@ def proj_creation(request):
             proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
                           organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
-                          project_category=form.cleaned_data['project_category'],
+                          project_category=form.cleaned_data['project_sector'],
                           description=form.cleaned_data['description'],
                           semester="FA21",
                           organization_description=form.cleaned_data['organization_description'],
