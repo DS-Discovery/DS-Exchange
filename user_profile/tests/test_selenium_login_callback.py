@@ -32,7 +32,7 @@ import os
 import re
 
 # Create your tests here.
-class StudentSignupTest(StaticLiveServerTestCase):
+class LoginCallbackTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -46,10 +46,7 @@ class StudentSignupTest(StaticLiveServerTestCase):
         chrome_options.add_argument("--ignore-certificate-errors")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        chromedriver = r"C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe"
-        os.environ["webdriver.chrome.driver"] = chromedriver
-        driver = webdriver.Chrome(chromedriver)
-
+        chromedriver = settings.WEBDRIVER
         cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
         cls.logonRedirect = cls.live_server_url + "/accounts/google/login/"
@@ -73,7 +70,7 @@ class StudentSignupTest(StaticLiveServerTestCase):
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
 
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
@@ -165,41 +162,46 @@ class StudentSignupTest(StaticLiveServerTestCase):
         p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
         self.assertEqual(p.text,student.additional_skills)
 
-    def test_access_student_signup_no_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+    def test_access_login_callback_no_login(self):
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
 
-    def test_access_student_signup_user_login(self):
+    def test_access_login_callback_user_login(self):
         self.user_login(self.user)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
-
-    def test_access_student_signup_partner_login(self):
-        self.user_login(self.partner)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
-        self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
-
-    def test_access_student_signup_student_login(self):
-        self.user_login(self.student)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
-        # show profile page directly information page
         msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-        self.assertEqual("You have already signed up.", msg_html.find("div").text)
+        self.assertEqual("Please complete your student profile.", msg_html.find("div").text)
 
+    def test_access_login_callback_partner_login(self):
+        self.user_login(self.partner)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
+        # show personal information page
+        self.personal_information_page_validation(self.partner)
+
+    def test_access_login_callback_student_login(self):
+        self.user_login(self.student)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
+        # show profile page directly information page
         self.basic_information_page_validation(self.student,self.student_obj, None)
 
-    def test_access_student_signup_admin_login(self):
+    def test_access_login_callback_admin_login(self):
         self.user_login(self.admin)
-
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
+        # check for banner message:
+        # Please complete your student profile
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual("Please complete your student profile.", msg_html.find("div").text)
 
-    def test_access_student_signup_edit_profile_as_user(self):
+    def test_access_login_callback_edit_profile_as_user(self):
         self.user_login(self.user)
         # TBC After authenticated, redirected to /admin ??
         # need to reload the page again for now
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual("Please complete your student profile.", msg_html.find("div").text)
 
         student = StudentFactory()
         ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
@@ -220,7 +222,7 @@ class StudentSignupTest(StaticLiveServerTestCase):
         # print(self.selenium.page_source)
         self.basic_information_page_validation(self.user, student, skillset)
 
-    def test_access_student_signup_as_partner(self):
+    def test_access_login_callback_as_partner(self):
 
         partner = UserFactory(password=self.password)
         partner_obj=PartnerFactory(email_address=partner.email,first_name=partner.first_name, last_name = partner.last_name)
@@ -233,31 +235,12 @@ class StudentSignupTest(StaticLiveServerTestCase):
 
         self.user_login(partner)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
-        #TBD
-        self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
-
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-        for j in range(0, len(ifield)) :
-            self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
-
-        bfield = ["college","year"]
-        for j in range(0, len(bfield)) :
-            Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
-
-        skillset = {}
-        for skill in Student.default_skills:
-            skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
-        for j in skillset:
-            Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
-
-        self.selenium.find_element_by_xpath("//input[@type='submit']").click()
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
 
         #show personal information page
         self.personal_information_page_validation(partner,partnerProjList)
 
-    def test_access_student_signup_as_student(self):
+    def test_access_login_callback_as_student(self):
 
         student = UserFactory(password=self.password)
         student_obj = StudentFactory(email_address=student.email,first_name=student.first_name, last_name = student.last_name)
@@ -273,20 +256,19 @@ class StudentSignupTest(StaticLiveServerTestCase):
 
         # TBC After authenticated, redirected to /admin ??
         # need to reload the page again for now
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
-
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-        self.assertEqual("You have already signed up.", msg_html.find("div").text)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
 
         # show Basic Information directly information page
         self.basic_information_page_validation(student,student_obj, student_obj._skills)
 
-    def test_access_student_signup_edit_profile_as_admin(self):
+    def test_access_login_callback_edit_profile_as_admin(self):
         self.user_login(self.admin)
         # TBC After authenticated, redirected to /admin ??
         # need to reload the page again for now
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('login_callback')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual("Please complete your student profile.", msg_html.find("div").text)
 
         student = StudentFactory()
         ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]

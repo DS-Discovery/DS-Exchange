@@ -6,7 +6,7 @@ import random
 
 def generate_skills(arg):
     skillset = {}
-    for _ in range(1,random.randint(1, 9)):
+    for _ in range(1, random.randint(1, 9)):
          skillset[random.choice(list(Student.default_skills))] = random.choice(list(filter(None, Student.skill_levels_options.values())))
     return skillset
 
@@ -23,8 +23,6 @@ class StudentFactory(factory.django.DjangoModelFactory):
     year = random.choice(Semester.choices)[0]
     resume_link = factory.Faker('url')
 
-    college = random.choice(Student.College.choices)[0]
-    year = random.choice(Semester.choices)[0]
     general_question = factory.Faker('paragraph')
     additional_skills = factory.Faker('paragraph')
     _skills = factory.LazyAttribute(generate_skills)
