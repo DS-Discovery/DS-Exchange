@@ -20,11 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+if not DEBUG:
+    assert "DJANGO_SECRET_KEY" in os.environ, "In production but no secret key found!"
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"] if "DJANGO_SECRET_KEY" in os.environ else 'suh*#@*8lr59)da9w=8(sdmdz#7_z(yxz&3*i353bi(+j$i*w-'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     with open(BASE_DIR / 'secrets.yml') as f:
@@ -235,7 +238,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = os.environ.get("SITE_ID") if os.environ.get("SITE_ID") is not None else 4
+SITE_ID = int(os.environ.get("SITE_ID")) if os.environ.get("SITE_ID") is not None else 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
