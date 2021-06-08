@@ -21,15 +21,6 @@ def get_default_skills():
         "Web Development (frontend, backend, full stack)": "",
         "Mobile App Development": "",
         "Cloud Computing": "",
-        "communication": "",
-        "self-motivation": "",
-        "leadership": "",
-        "responsibility": "",
-        "teamwork": "",
-        "problem solving": "",
-        "decisiveness": "",
-        "good time management": "",
-        "flexibility": ""
     }
 
 
