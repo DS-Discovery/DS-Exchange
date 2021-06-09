@@ -29,9 +29,9 @@ logger = logging.getLogger(__name__)
 
 # @login_required
 def list_projects(request):
-    # email = None
-    # if request.user.is_authenticated:
-    #     email = request.user.email
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
 
     # if email is None:
     #     return redirect('/profile/login')
@@ -44,6 +44,9 @@ def list_projects(request):
     context = {
         "projects_json": projects_json,
         "selected": request.GET.get('selected', ''),
+        "selected": request.GET.get('selected', ''),
+        "is_partner": Partner.objects.filter(email_address=email).count() > 0,
+        "is_student": Student.objects.filter(email_address=email).count() > 0,
     }
 
     return render(request, 'projects/listing.html', context)
@@ -340,8 +343,8 @@ def proj_creation(request):
                 p = Partner.objects.get(email_address = email)
             else:
                 p = Partner(
-                    email_address = email, 
-                    first_name = form.cleaned_data['first_name'], 
+                    email_address = email,
+                    first_name = form.cleaned_data['first_name'],
                     last_name = form.cleaned_data['last_name'],
                 )
             p.save()
@@ -356,8 +359,8 @@ def proj_creation(request):
         else:
             partner = Partner.objects.get(email_address = email)
             logger.error(f"Invalid form for partner {partner}:\n{form}")
-            messages.info( 
-                request, 
+            messages.info(
+                request,
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )

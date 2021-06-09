@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load helperfuncs %}
+
+
+{% block container_class %}
+container
+{% endblock %}
+
+
+{% block content %}
+
+<h3>Edit Project</h3>
+
+<!-- proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
+                    organization=form.cleaned_data['organization'],
+                    project_name=form.cleaned_data['project_name'],
+                    project_category=form.cleaned_data['project_sector'],
+                    description=form.cleaned_data['description'],
+                    semester="FA21",
+                    organization_description=form.cleaned_data['organization_description'],
+                    other_marketing_channel=form.cleaned_data['other_marketing_channel'],
+                    marketing_channel=form.cleaned_data['marketing_channel'],
+                    organization_website = form.cleaned_data['organization_website'],
+                    timeline=form.cleaned_data['timeline'],
+                    project_workflow=form.cleaned_data['project_workflow'],
+                    dataset_availability=form.cleaned_data['dataset_availability'],
+                    deliverable=form.cleaned_data['deliverable'],
+                    skillset=skills_and_levels,
+                    additional_skills=form.cleaned_data['additional_skills'],
+                    technical_requirements=form.cleaned_data['technical_requirements'],
+                    num_students=form.cleaned_data['num_students'],
+                    other_num_students=form.cleaned_data['other_num_students'],
+                    cloud_creds=form.cleaned_data['cloud_creds'],
+                    meet_regularly=form.cleaned_data['meet_regularly'],
+                    other_project_category=form.cleaned_data['other_project_category'],
+                    hce_intern=form.cleaned_data['hce_intern'],
+                    optional_q1=form.cleaned_data['optional_q1'],
+                    optional_q2=form.cleaned_data['optional_q2'],
+                    optional_q3=form.cleaned_data['optional_q3']
+                    ) -->
+
+<div class="d-flex flex-column">
+    <div class="col-8">
+
+        <form action="" method="post" class="mb-5">
+            {% csrf_token %}
+            <table>
+            {% for field in form %}
+                <div class="form-group">
+                    <b>{{ field.label_tag }}</b> <br>{{ field|addclass:"form-control" }}
+                </div>
+            {% endfor %}
+            </table>
+
+            <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);">
+            <input class="btn btn-light" type="submit" value="Submit">
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // This inserts a character remaining warning on the textarea
+    // const maxChars = 1000;
+    // const textareaElem = $("textarea[name='general_question']");
+    // const charRemainingString  = " characters remaining";
+    // textareaElem.after("<p class='text-right muted' id='chars-remaining'>" + (maxChars - textareaElem.val().length) + charRemainingString + "</p>");
+    // textareaElem.keyup(() => {
+    //     $("#chars-remaining").text((maxChars - textareaElem.val().length) + charRemainingString);
+    //     if (this.val().length > maxChars) {
+    //         this.val(this.val().substring(0,maxChars));
+    //     }
+    // })
+    addCharacterLimit("textarea[name='general_question']", 1000);
+
+    // This inserts info about selecting skill levels
+    const skillLevelSpiel = "<h6 class='my-2'>Please enter you skill level in each of the technologies or techniques below.</h6>";
+    $("select.skill-dropdown").first().parent().before(skillLevelSpiel);
+
+    // This allows the student's skills to be preselected when editing their profile
+    {% for skill in student.skills %}
+        {% with student.skills|index:skill as skillLevel %}
+            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
+        {% endwith %}
+    {% endfor %}
+</script>
+
+{% endblock %}
