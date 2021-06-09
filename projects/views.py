@@ -368,3 +368,8 @@ def proj_creation(request):
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})
+
+@login_required
+def edit_project(request):
+    form = EditProjectForm()
+    return render(request, 'projects/edit_project.html', {'form': form})
