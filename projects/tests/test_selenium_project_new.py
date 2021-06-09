@@ -88,7 +88,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
+        self.selenium.get(self.live_server_url)
 
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
@@ -125,7 +125,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                 optionList.append(option)
 
         # validate "Project Category"
-        self.assertEqual(optionList,projCatList)
+        self.assertEqual(optionList, projCatList)
 
         # validate "Project List"
         jsonText = self.selenium.find_element_by_id("projects-json").get_attribute("text")
@@ -133,9 +133,9 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         i = 0
 
         for project in projects_json:
-            self.assertEqual(project['project_name'],projNameList[i])
+            self.assertEqual(project['project_name'], projNameList[i])
             #always return current semester
-            self.assertEqual(project['semester'],self.current_semester)
+            self.assertEqual(project['semester'], self.current_semester)
 
             # validate the detail page
             project_button = self.selenium.find_element_by_id('project-'+ str(i))
@@ -146,11 +146,11 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             i = i + 1
             selectedProj = [x for x in selectedProjList if x.project_name == project['project_name']]
 
-            self.assertEqual(len(selectedProj),1)
+            self.assertEqual(len(selectedProj), 1)
             selectedProj = selectedProj[0]
 
             descr_html = BeautifulSoup(self.selenium.find_element_by_id('description').get_attribute('innerHTML'), features="html.parser")
-            self.assertEqual(project['project_name'],descr_html.find("h5").text)
+            self.assertEqual(project['project_name'], descr_html.find("h5").text)
 
             ## Skill Set
             skill_table = descr_html.find_all("table")
@@ -160,7 +160,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                     if bkey:
                         key = cell.text.rstrip()
                     else:
-                        self.assertEqual(project['skillset'][key],cell.text)
+                        self.assertEqual(project['skillset'][key], cell.text)
                     bkey = not bkey
 
             bMatchNext = False
@@ -168,18 +168,18 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             for p in descr_html.find_all("p"):
                 if (bMatchNext):
                     bMatchNext = False
-                    self.assertEqual(matchText,p.text)
+                    self.assertEqual(matchText, p.text)
 
                 if (p.text in self.projMap.keys()):
                     bMatchNext = True
-                    matchText = getattr(selectedProj,self.projMap[p.text])
+                    matchText = getattr(selectedProj, self.projMap[p.text])
 
                 #organization_description
                 if (p.text.startswith(self.projectOrganizationStr)):
-                    self.assertEqual(p.text.replace(self.projectOrganizationStr,''),getattr(selectedProj,"organization"))
+                    self.assertEqual(p.text.replace(self.projectOrganizationStr, ''),getattr(selectedProj, "organization"))
 
                     bMatchNext = True
-                    matchText = getattr(selectedProj,"organization_description")
+                    matchText = getattr(selectedProj, "organization_description")
 
             # check for project-sidebar
             projectSidebar_html = BeautifulSoup(self.selenium.find_element_by_id('project-sidebar').get_attribute('innerHTML'), features="html.parser")
@@ -193,10 +193,10 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                     self.assertEqual(s.text,str(selectedProj.student_num))
                 if (j == len(projectSidebar_html.find_all('span')) - 1):
                     if (appList == None):
-                        self.assertEqual(s.text,str(0))
+                        self.assertEqual(s.text, str(0))
                     else:
                         selectedApps = [x for x in appList if x.project.project_name == project['project_name'] ]
-                        self.assertEqual(s.text,str(len(selectedApps)))
+                        self.assertEqual(s.text, str(len(selectedApps)))
                 j = j + 1
 
         #input("Press Enter to continue...")
@@ -208,7 +208,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
 
         basicInfoMap = {
             "Name"    : student.first_name + " " + student.last_name,
-            "Email"   : getattr(loginUser, "email_address",getattr(loginUser,"email","")), # Login user's email address, UserFacory doesn't have attr email_address, instead it store email to attribute email
+            "Email"   : getattr(loginUser, "email_address", getattr(loginUser, "email", "")), # Login user's email address, UserFacory doesn't have attr email_address, instead it store email to attribute email
             "SID"     : student.student_id,
             "Major"   : student.major,
             "EGT"     : Student.egt_mapping[student.year], # need to convert to long NAME
@@ -222,12 +222,11 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             # check only return value on the field
             if(len(items) > 1):
                 value = items[1].strip()
-                #print(items[0], value,basicInfoMap[items[0]])
-                self.assertEqual(value,basicInfoMap[items[0]])
+                self.assertEqual(value, basicInfoMap[items[0]])
 
         # check on General Interest Statement
         p=self.selenium.find_element_by_xpath("//h5[contains(text(),\'General Interest Statement')]/following-sibling::p")
-        self.assertEqual(p.text,student.general_question)
+        self.assertEqual(p.text, student.general_question)
 
         # check for skill set return
         if (not skillset == None):
@@ -236,17 +235,16 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                 if (bfield):
                     skill = pgElement.text
                 else:
-                    skillLevel = next(k for k,v in Student.skill_levels_options.items() if v == pgElement.text)
-                    #print(skill, skillLevel)
+                    skillLevel = next(k for k, v in Student.skill_levels_options.items() if v == pgElement.text)
                     if (skillLevel.strip() == ""):
-                        self.assertNotIn(skill,skillset.keys())
+                        self.assertNotIn(skill, skillset.keys())
                     else:
-                        self.assertEqual(skillLevel,skillset[skill])
+                        self.assertEqual(skillLevel, skillset[skill])
                 bfield = not bfield
 
         # check on additional skills
         p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
-        self.assertEqual(p.text,student.additional_skills)
+        self.assertEqual(p.text, student.additional_skills)
 
     def fill_in_project_application(self):
         return
@@ -294,7 +292,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
     def test_access_project_new_partner_login(self):
         self.user_login(self.partner)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
-        self.assertEqual(signupRedirect,self.selenium.current_url)
+        self.assertEqual(signupRedirect, self.selenium.current_url)
         self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
 
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'DS Discovery Project Application')
@@ -338,7 +336,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                     'id_environment':random.choice(['True','False']),
                     }
 
-        for k in project_profile_select.keys() :
+        for k in project_profile_select.keys():
             Select(self.selenium.find_element_by_id(k)).select_by_value(project_profile_select[k])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
