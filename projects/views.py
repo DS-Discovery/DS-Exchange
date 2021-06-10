@@ -310,6 +310,7 @@ def proj_creation(request):
                     skills_and_levels[i] = 'No Experience'
                 else:
                     continue
+            # TODO: Project creation hardcoded semester, it seems. Replace with env var.
             proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
                           organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
@@ -371,5 +372,26 @@ def proj_creation(request):
 
 @login_required
 def edit_project(request):
-    form = EditProjectForm()
-    return render(request, 'projects/edit_project.html', {'form': form})
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    proj_id = request.GET.get("project", -1)
+
+    if proj_id != -1:
+        project = Project.objects.get(id=proj_id)
+        # TODO Check project belongs to current user
+        data = project.__dict__
+        form = EditProjectForm(initial = data)
+
+        # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is bceause project creation hardcoded this association.
+        skill_levels_inverse = {
+        'Familiar':'FA',
+        'Beginner':'BE',
+        'Intermediate':'IN',
+        'Advanced':'AD',
+        'No Experience':'NE'
+        }
+        return render(request, 'projects/edit_project.html', {'form': form, 'project':project, "skill_levels_inverse":skill_levels_inverse})
+
+    messages.info(request, 'Invalid project requested.')
+    return redirect('/projects')
