@@ -205,23 +205,12 @@ function loadSidebar(project) {
 
             <h5 class="text-center">Action Items</h5>
 
-            <div class="my-1">`;
+            <div class="my-1">
 
-    if (is_student) {
-      sidebarHTML += `
-              <div class="d-flex flex-row justify-content-center mb-2">
+            <div class="d-flex flex-row justify-content-center mb-2">
                   <a href="${ encodeURIComponent(project.project_name) }/apply"><button type="button" class="btn btn-outline-info">Apply</button></a>
-              </div>`;
-    }
-
-    if (is_partner) {
-      sidebarHTML += `
-                  <div class="d-flex flex-row justify-content-center mb-2">
-                      <a href="edit_project"><button type="button" class="btn btn-outline-info">Edit</button></a>
-                  </div>`
-    }
-
-    sidebarHTML += `
+              </div>
+              
             </div>
 
         </div>
