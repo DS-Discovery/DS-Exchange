@@ -15,13 +15,9 @@ from projects.models import Partner, Project
 class EditProjectForm(forms.ModelForm):
     field_order = [
             'email',
-            'first_name',
-            'last_name',
             'organization',
             'organization_description',
             'organization_website',
-            'marketing_channel',
-            'other_marketing_channel',
             'project_name',
             'project_sector',
             'other_project_category',
