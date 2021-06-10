@@ -11,7 +11,7 @@ container
 <div class="d-flex flex-column">
 
     <div class="d-flex flex-row">
-        
+
         <div class="col-12 p-2 mt-3">
 
             <h5>Personal Information</h5>
@@ -24,18 +24,22 @@ container
             <div class="list-group list-group-flush">
 
                 {% for project in projects %}
-            
-            
+
+
                 <div class="list-group-item">
 
                     <strong>{{ project.project_name }}</strong> ({{ project.organization }})<br>
                     {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
                         <em>Role:</em> {{ partnerProjectInfos.role }}
+                        {% if project.semester == current_semester %}
+                        <br>
+                        <a href="/projects/edit_project?project={{project.id}}"><button type="button" class="btn btn-outline-info">Edit</button></a>
+                        {% endif %}
                     {% endwith %}
 
                 </div>
 
-            {% endfor %} 
+            {% endfor %}
 
             </div>
 
