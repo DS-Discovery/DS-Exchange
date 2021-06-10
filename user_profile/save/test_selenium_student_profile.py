@@ -45,10 +45,7 @@ class StudentProfileTest(StaticLiveServerTestCase):
         chrome_options.add_argument("--ignore-certificate-errors")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        chromedriver = r"C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe"
-        os.environ["webdriver.chrome.driver"] = chromedriver
-        driver = webdriver.Chrome(chromedriver)
-
+        chromedriver = settings.WEBDRIVER
         cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
         cls.logonRedirect = cls.live_server_url + "/accounts/google/login/"
@@ -89,9 +86,6 @@ class StudentProfileTest(StaticLiveServerTestCase):
         self.assertEqual("You must be a partner to create projects.", msg_html.find("div").text)
 
     def page_validation(self, student, skillset):
-        # print(self.selenium.page_source)
-        # print(student)
-        # print(skillset)
 
         basicInfoMap = {
             "Name"    : student.first_name + " " + student.last_name,
@@ -250,11 +244,9 @@ class StudentProfileTest(StaticLiveServerTestCase):
     #     # self.page_validation(student, skillset)
 
     def test_access_student_profile_edit_profile_by_user(self): #(2) Seems to be like edit admin; still problem with additional skills when submitting(is none) has e-mail; i think fine
-        # input("Student Edit User")
         self.user_login(self.user)
-        # TBC After authenticated, redirected to /admin ??
-        # need to reload the page again for now
-        self.assertTrue(self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile'))))
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
+        input ("Wait")
         # self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
         student = StudentFactory()

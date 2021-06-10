@@ -24,6 +24,7 @@ from students.tests.factories.student import StudentFactory
 # from students.tests.factories.studentprofile import StudentProfileaFactory
 from projects.models import Semester, Project
 from students.models import Student
+from applications.models import Application
 
 import random
 import time
@@ -64,6 +65,7 @@ class AppUpdateApplicationStatusTest(StaticLiveServerTestCase):
         cls.student_obj = StudentFactory(email_address=cls.student.email)
 
         cls.admin = AdminFactory(password=cls.password)
+        cls.app_status_map = {k:v for k, v in Application.app_status_mapping.items()}
 
     ### START HELPER FUNCTIONS ###
 
@@ -149,12 +151,58 @@ class AppUpdateApplicationStatusTest(StaticLiveServerTestCase):
         self.assertEqual(expectedMsg, p.text)
 
     def test_access_update_application_status_partner_login(self):
+        settings.CONSTANCE_CONFIG['APPLICATIONS_REVIEWABLE'] = (False, "Whether partners can review applications", bool)
+
         self.user_login(self.partner)
         self.selenium.get('%s%s' % (self.live_server_url, reverse('update_application_status')))
 
         expectedMsg = "Sorry, that action isn't supported."
         p = self.selenium.find_element_by_xpath("//h1[contains(text(),'400')]/following-sibling::p")
         self.assertEqual(expectedMsg, p.text)
+
+    def test_access_update_application_status_as_partner_reviewable(self):
+
+        settings.CONSTANCE_CONFIG['APPLICATIONS_REVIEWABLE'] = (True, "Whether partners can review applications", bool)
+
+        app_status = list(self.app_status_map.keys())
+
+        projCt = random.randint(1, 10)
+        appCt = random.randint(10,20)
+        studentCt = random.randint(1,20)
+        partnerProjList = []
+        studentList = []
+        answerList = []
+        appList = []
+
+        for i in range(0,studentCt):
+            studentList.append(StudentFactory())
+
+        for i in range(0, projCt):
+            partnerProjList.append(PartnerProjectInfoFactory(project=ProjectFactory(), partner=self.partner_obj))
+
+        pair = []
+        for i in range(0, appCt):
+            comb = (random.randint(0,projCt-1),random.randint(0,studentCt-1))
+            if comb in pair:
+                continue
+            pair.append(comb)
+
+            proj = partnerProjList[comb[0]].project
+            student_obj = studentList[comb[1]]
+            status = app_status[random.randint(0,len(app_status)-1)]
+            application = ApplicationFactory(project=proj, student=student_obj,status = status)
+            appList.append(application)
+            answerList.append(AnswerFactory(student=self.student_obj, application=application))
+
+        self.user_login(self.partner)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('update_application_status')))
+        input("wait")
+        expectedMsg = "Sorry, that action isn't supported."
+        p = self.selenium.find_element_by_xpath("//h1[contains(text(),'400')]/following-sibling::p")
+        self.assertEqual(expectedMsg, p.text)
+        # expectedMsg = "Team Roster"
+        # self.assertEqual(expectedMsg,self.selenium.find_element_by_id("team-roster").text)
+        # self.team_roster_page_validation(self.partner_obj,partnerProjList,appList)
 
     def test_access_update_application_status_student_login(self):
         self.user_login(self.student)
