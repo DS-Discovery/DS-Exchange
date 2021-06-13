@@ -65,7 +65,7 @@ class ArchiveTest(StaticLiveServerTestCase):
 
         for project in projects_json:
             self.assertEqual(project['project_name'], projNameList[i])
-            #always return non current semester even the semester is in the future
+            # always return non current semester even the semester is in the future
             self.assertNotEqual(project['semester'], self.current_semester)
 
             # validate the detail page
