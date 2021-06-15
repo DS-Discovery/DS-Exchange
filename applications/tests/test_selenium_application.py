@@ -31,7 +31,7 @@ class AppIndexTest(StaticLiveServerTestCase):
         super().setUpClass()
 
         chrome_options = Options()
-        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument('--disable-gpu')
@@ -131,8 +131,8 @@ class AppIndexTest(StaticLiveServerTestCase):
 
     def team_roster_page_validation(self, loginUser, partnerProjList, appList):
 
-        # go trhu the project list, check for the project and applicants Information
-        # download and verify CSV
+        # go thru the project list, check for the project and applicants Information
+        # Not downloading and verifying CSV
 
         for proj in partnerProjList:
 
@@ -168,7 +168,7 @@ class AppIndexTest(StaticLiveServerTestCase):
             for webElement in list_items[1:]:
                 self.assertIn(webElement.text,accepted_applicants)
 
-            # how to get the download csv ??
+            # Assume CSV correct
             #self.selenium.find_element_by_class_name("appButton").click()
 
             applicants = []
@@ -265,7 +265,7 @@ class AppIndexTest(StaticLiveServerTestCase):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('app_index')))
 
         # Create profile
-        student = StudentFactory()
+        student = StudentFactory(email_address=self.admin.email)
         ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
         for j in range(0, len(ifield)):
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
@@ -322,7 +322,7 @@ class AppIndexTest(StaticLiveServerTestCase):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('app_index')))
 
         # Create profile
-        student = StudentFactory()
+        student = StudentFactory(email_address=self.user.email)
         ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question",  "additional_skills"]
         for j in range(0, len(ifield)):
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
@@ -360,8 +360,8 @@ class AppIndexTest(StaticLiveServerTestCase):
             Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-
         self.basic_information_page_validation(self.user, student, skillset)
+
 
         # add application associate to the student
         appCt = random.randint(1, 10)
@@ -382,7 +382,7 @@ class AppIndexTest(StaticLiveServerTestCase):
         partnerProjList = []
 
         for i in range(0, projCt):
-            partnerProjList.append( PartnerProjectInfoFactory(project=ProjectFactory(), partner=self.partner_obj))
+            partnerProjList.append(PartnerProjectInfoFactory(project=ProjectFactory(), partner=self.partner_obj))
 
         self.user_login(self.partner)
         self.selenium.get('%s%s' % (self.live_server_url,reverse('app_index')))
@@ -411,23 +411,23 @@ class AppIndexTest(StaticLiveServerTestCase):
 
         pair = []
         for i in range(0, appCt):
-            comb = (random.randint(0,projCt-1),random.randint(0,studentCt-1))
+            comb = (random.randint(0, projCt-1),random.randint(0, studentCt-1))
             if comb in pair:
                 continue
             pair.append(comb)
 
             proj = partnerProjList[comb[0]].project
             student_obj = studentList[comb[1]]
-            status = app_status[random.randint(0,len(app_status)-1)]
-            application = ApplicationFactory(project=proj, student=student_obj,status = status)
+            status = app_status[random.randint(0, len(app_status)-1)]
+            application = ApplicationFactory(project=proj, student=student_obj, status = status)
             appList.append(application)
             answerList.append(AnswerFactory(student=self.student_obj, application=application))
 
         self.user_login(self.partner)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('app_index')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('app_index')))
         expectedMsg = "Team Roster"
         self.assertEqual(expectedMsg,self.selenium.find_element_by_id("team-roster").text)
-        self.team_roster_page_validation(self.partner_obj,partnerProjList,appList)
+        self.team_roster_page_validation(self.partner_obj, partnerProjList, appList)
 
 
     def test_access_application_login_as_student(self):
