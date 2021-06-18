@@ -4,10 +4,10 @@ from projects.models import Semester
 from faker import Faker
 import random
 
-def generate_skills(arg):
+def generate_skills():
     skillset = {}
     for _ in range(1, random.randint(1, 9)):
-         skillset[random.choice(list(Student.default_skills))] = random.choice(list(filter(None, Student.skill_levels_options.values())))
+         skillset[random.choice(list(Student.default_skills))] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
     return skillset
 
 
@@ -25,4 +25,4 @@ class StudentFactory(factory.django.DjangoModelFactory):
 
     general_question = factory.Faker('paragraph')
     additional_skills = factory.Faker('paragraph')
-    _skills = factory.LazyAttribute(generate_skills)
+    _skills = factory.LazyFunction(lambda: generate_skills())

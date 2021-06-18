@@ -39,7 +39,7 @@ def list_projects(request):
     for i, project in list(enumerate(projects_json['projects']))[::-1]:
         if Application.objects.filter(project_id=project['id']).count() >= config.HIDE_PROJECT_APPLICATION_THRESHOLD:
             projects_json['projects'].pop(i)
-
+            
     context = {
         "projects_json": projects_json,
         "selected": request.GET.get('selected', ''),
