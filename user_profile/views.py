@@ -28,9 +28,9 @@ def student_signup(request):
 
     student = Student.objects.filter(email_address = email)
 
-    if len(student) > 0:
-        messages.info(request, 'You have already signed up.')
-        return redirect('/profile')
+    # if len(student) > 0:
+    #     messages.info(request, 'You have already signed up.')
+    #     return redirect('/profile')
 
     if request.method == 'POST':
         form = EditStudentSignupForm(request.POST)
@@ -45,7 +45,8 @@ def student_signup(request):
                 major = form.cleaned_data['major'],
                 year = form.cleaned_data['year'],
                 resume_link= form.cleaned_data['resume_link'],
-                general_question = form.cleaned_data['general_question']
+                general_question = form.cleaned_data['general_question'],
+                additional_skills = form.cleaned_data['additional_skills']
             )
 
             skills = s.skills
