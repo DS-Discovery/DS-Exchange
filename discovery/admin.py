@@ -41,7 +41,7 @@ group = student_group + project_group
 for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
-inv_sem_map = {v:k for k, v in Project.sem_mapping.items
+inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
 filters = [(s, f'{col_rename[s]}') for s in status]
 
 class TrackingTable(ExportMixin, tables.Table):
