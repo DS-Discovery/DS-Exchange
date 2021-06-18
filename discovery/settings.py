@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if not DEBUG:
     assert "DJANGO_SECRET_KEY" in os.environ, "In production but no secret key found!"
@@ -141,7 +141,7 @@ DJANGO_TABLES2_TEMPLATE = "admin/table.html"
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     "APPLICATIONS_REVIEWABLE": (False, "Whether partners can review applications", bool),
-    "APPLICATIONS_OPEN": (True, "NWhether applications are open", bool),
+    "APPLICATIONS_OPEN": (True, "Whether applications are open", bool),
     "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
     "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
     "APP_LIMIT": (6, "Number of applications any student can submit", int),
