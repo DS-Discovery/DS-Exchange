@@ -2,6 +2,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 from django.conf import settings
 from django.contrib import auth
+from constance import config
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -225,7 +226,7 @@ class AppIndexTest(StaticLiveServerTestCase):
         self.assertEqual(expectedMsg, msg_html.find("div").text)
 
     def test_access_application_partner_login(self):
-        settings.CONSTANCE_CONFIG['APPLICATIONS_REVIEWABLE'] = (False, "Whether partners can review applications", bool)
+        config.APPLICATIONS_REVIEWABLE = False
         self.user_login(self.partner)
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('app_index')))
@@ -376,7 +377,7 @@ class AppIndexTest(StaticLiveServerTestCase):
         self.application_page_validation(answerList)
 
     def test_access_application_login_as_partner_not_reviewable(self):
-        settings.CONSTANCE_CONFIG['APPLICATIONS_REVIEWABLE'] = (False, "Whether partners can review applications", bool)
+        config.APPLICATIONS_REVIEWABLE = False
 
         projCt = random.randint(1, 10)
         partnerProjList = []
@@ -391,8 +392,8 @@ class AppIndexTest(StaticLiveServerTestCase):
         self.assertEqual(expectedMsg, self.selenium.find_element_by_id("application-questions").text)
 
     def test_access_application_login_as_partner_reviewable(self):
-        settings.CONSTANCE_CONFIG['APPLICATIONS_REVIEWABLE'] = (True, "Whether partners can review applications", bool)
-
+        config.APPLICATIONS_REVIEWABLE = True
+        
         app_status = list(self.app_status_map.keys())
 
         projCt = random.randint(1, 10)

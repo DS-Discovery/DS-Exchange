@@ -7,6 +7,7 @@ from django.conf import settings
 from projects.tests.factories.project import ProjectFactory
 from applications.tests.factories.application import ApplicationFactory
 from projects.models import Semester, Project
+from constance import config
 
 import json
 import random
@@ -33,7 +34,7 @@ class ArchiveTest(StaticLiveServerTestCase):
         sem_map = {k:v for k, v in Project.sem_mapping.items()}
         cls.short_current_semester = 'SP21'
         cls.current_semester = sem_map[cls.short_current_semester]
-        settings.CONSTANCE_CONFIG['CURRENT_SEMESTER'] = (cls.current_semester, "Current semester", str)
+        config.CURRENT_SEMESTER = cls.current_semester
 
         cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
