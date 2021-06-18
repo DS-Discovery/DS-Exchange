@@ -41,8 +41,8 @@ group = student_group + project_group
 for col in total + group:
     col_rename[col] = verbose_name(col)
 col_order = group + status + total
-inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
-filters = [(s, f'Has status: {col_rename[s]}') for s in status]
+inv_sem_map = {v:k for k, v in Project.sem_mapping.items
+filters = [(s, f'{col_rename[s]}') for s in status]
 
 class TrackingTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
@@ -58,20 +58,17 @@ class TrackingTable(ExportMixin, tables.Table):
 @staff_member_required
 def status_summary(request, pages=10):
     sort_query = request.GET.get('sort', 'total')
-    filter_in_query = [f for f, _ in filters if request.GET.get(f, False) == "IN"]
-    filter_out_query = [f for f, _ in filters if request.GET.get(f, False) == "OUT"]
     group_query = request.GET.get('group', 'student')
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
     applicant_query = request.GET.get('applicant','students')
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
+    any_all_query = request.GET.get("any_all", "ANY")
+    filter_query = [f for f, _ in filters if request.GET.get(f, False) == "True"]
 
     sort_query = col_name(sort_query)
     formatted_group_query = col_name(group_query)
     formatted_applicant_query = col_name(applicant_query)
-
-    if not filter_in_query and not filter_out_query:
-        filter_in_query = [f for f, _ in filters]
 
     extra = []
     if formatted_group_query == col_name('Student'):
@@ -111,20 +108,18 @@ def status_summary(request, pages=10):
         table = table[table_col]
 
         # Status Filter
-        in_indices = []
-        out_indices = []
-        for s in status:
-            cond = [i for i, val in zip(table.index, table[s]) if val > 0]
-            if s in filter_in_query:
-                in_indices.extend(cond)
-            elif s in filter_out_query:
-                out_indices.extend(cond)
-        indices = list(set(in_indices).difference(set(out_indices)))
+        if any_all_query == "ALL":
+            filter_threshold = len(filter_query)
+        if any_all_query == "ANY":
+            filter_threshold = 1
+        indices = [i for i, val in table.iterrows() if sum([val[s] > 0 for s in filter_query]) >= filter_threshold]
         table = table.iloc[indices]
 
         table_row_list = []
         for _, row in table.iterrows():
             table_row_list.append(row.to_dict())
+        if len(table_row_list) == 0:
+            table_row_list = [{c:"" for c in col_order}]
 
     table = TrackingTable(table_row_list)
     table.order_by = sort_query
@@ -146,14 +141,15 @@ def status_summary(request, pages=10):
        filter_support=filters,
        group_support=[('student', 'students'), ('project', 'projects')],
        applicant_support=[('students', 'Show all students'), ('scholars', 'Show only Data Scholars')],
+       any_all_support=[('ANY', 'ANY'), ('ALL', 'ALL')],
        semester_support=[(s[0], s[1]) for s in Semester.choices],
        export_support=table.export_querys,
        # Current Filters
-       filter_in_query=filter_in_query,
-       filter_out_query=filter_out_query,
+       filter_query=filter_query,
        group_query=group_query,
        applicant_query=applicant_query,
        semester_query=semester_query,
+       any_all_query=any_all_query,
     )
     return TemplateResponse(request, "admin/status_summary.html", context)
 
