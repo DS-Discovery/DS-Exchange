@@ -20,10 +20,10 @@ from factory_djoy import UserFactory
 from user_profile.tests.factories.admin import AdminFactory
 from projects.tests.factories.partner import PartnerFactory
 from students.tests.factories.student import StudentFactory
-# from students.tests.factories.datascholar import DataScholarFactory
-# from students.tests.factories.studentprofile import StudentProfileaFactory
+
 from projects.models import Semester, Project
 from students.models import Student
+from applications.models import Application
 
 import random
 import time
@@ -32,13 +32,13 @@ from bs4 import BeautifulSoup
 import os
 
 # Create your tests here.
-class AppUpdateApplicationStatusTest(StaticLiveServerTestCase):
+class RosterTest(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
         chrome_options = Options()
-        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument('--disable-gpu')
@@ -50,6 +50,8 @@ class AppUpdateApplicationStatusTest(StaticLiveServerTestCase):
         cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
         cls.logonRedirect = cls.live_server_url + "/accounts/google/login/"
+        cls.sem_map = {k:v for k, v in Project.sem_mapping.items()}
+        cls.app_status_map = {k:v for k, v in Application.app_status_mapping.items()}
 
     @classmethod
     def setUp(cls):
@@ -72,230 +74,193 @@ class AppUpdateApplicationStatusTest(StaticLiveServerTestCase):
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        self.selenium.get(self.live_server_url)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('display_student_team_roster')))
 
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
 
+
     ### END HELPER FUNCTIONS ###
 
-    # # EC TO REVIEW
-    # def basic_information_page_validation(self, loginUser, student, skillset):
-    #     p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Basic Information')]")
-    #     self.assertEqual(p.text,"Basic Information")
-    #
-    #     basicInfoMap = {
-    #         "Name"    : student.first_name + " " + student.last_name,
-    #         "Email"   : getattr(loginUser, "email_address",getattr(loginUser,"email","")), # Login user's email address, UserFacory doesn't have attr email_address, instead it store email to attribute email
-    #         "SID"     : student.student_id,
-    #         "Major"   : student.major,
-    #         "EGT"     : Student.egt_mapping[student.year], # need to convert to long NAME
-    #         "College" : Student.college_mapping[student.college], # need to convert to LONG Name
-    #         "Resume"  : student.resume_link
-    #     }
-    #
-    #     # check on basic information; it may not have value for all the fields
-    #     for pgElement in self.selenium.find_elements_by_xpath("//h5[contains(text(),\'Basic Information')]/following-sibling::p"):
-    #         items = pgElement.text.split(": ")
-    #         # check only return value on the field
-    #         if(len(items) > 1):
-    #             value = items[1].strip()
-    #             #print(items[0], value,basicInfoMap[items[0]])
-    #             self.assertEqual(value,basicInfoMap[items[0]])
-    #
-    #     # check on General Interest Statement
-    #     p=self.selenium.find_element_by_xpath("//h5[contains(text(),\'General Interest Statement')]/following-sibling::p")
-    #     self.assertEqual(p.text,student.general_question)
-    #
-    #     # check for skill set return
-    #     if (not skillset == None):
-    #         bfield = True
-    #         for pgElement in self.selenium.find_elements_by_xpath("//div[@class='p-2 my-1']//td"):
-    #             if (bfield):
-    #                 skill = pgElement.text
-    #             else:
-    #                 skillLevel = next(k for k,v in Student.skill_levels_options.items() if v == pgElement.text)
-    #                 #print(skill, skillLevel)
-    #                 if (skillLevel.strip() == ""):
-    #                     self.assertNotIn(skill,skillset.keys())
-    #                 else:
-    #                     self.assertEqual(skillLevel,skillset[skill])
-    #             bfield = not bfield
-    #
-    #     # check on additional skills
-    #     p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
-    #     self.assertEqual(p.text,student.additional_skills)
-    # # EC TO REVIEW
-    # def application_page_validation(self, answerList):
-    #     for ans in answerList:
-    #         searchStr = "//button[contains(text(),'" + ans.application.project.project_name  +"')]"
-    #         button = self.selenium.find_element_by_xpath(searchStr)
-    #         button.click()
-    #
-    #         app_questions = BeautifulSoup(self.selenium.find_element_by_class_name("application-question").get_attribute('innerHTML'), features="html.parser")
-    #         self.assertEqual(ans.question.question_text, app_questions.find("h6").text)
-    #         self.assertEqual(ans.answer_text, app_questions.find("textarea").text)
+    def team_roster_page_validation(self, loginUser, partnerProjList, appList):
 
-    def test_access_update_application_status_no_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
+        # go thru the project list, check for the project and applicants Information
+        # Not downloading and verifying CSV
+
+        for proj in partnerProjList:
+
+            Select(self.selenium.find_element_by_name("project_wanted")).select_by_visible_text(proj.project.project_name)
+            self.selenium.find_element_by_id("team-roster").click()
+
+            # verify "application-questions -- Project related page"
+            messages_html = BeautifulSoup(self.selenium.find_element_by_id("application-questions").get_attribute('innerHTML'), features="html.parser")
+
+            #proj title format "Team Roster for <proj name>"
+            expectedMsg = "Team Roster for " + proj.project.project_name
+            self.assertEqual(messages_html.find("h3").text,expectedMsg)
+
+            expectedSections = ["Partners","Students"]
+            for i, webElement in enumerate(messages_html.find_all("h4")):
+                self.assertEqual(expectedSections[i],webElement.text)
+
+            partnerInfo = loginUser.first_name + " " + loginUser.last_name + ": " + loginUser.email_address
+
+            accepted_applicants = []
+
+            # search application by project name
+            app = [x for x in appList if x.project.project_name == proj.project.project_name and x.status == "OFA"]
+            for x in app:
+                accepted_applicants.append(x.student.first_name + " " + x.student.last_name + ": " + x.student.email_address)
+
+            if (len(accepted_applicants) == 0):
+                accepted_applicants.append("None yet!")
+
+            list_items = messages_html.find_all("li")
+            expectedMsg = [partnerInfo]
+            self.assertEqual(partnerInfo,list_items[0].text)
+            for webElement in list_items[1:]:
+                self.assertIn(webElement.text,accepted_applicants)
+
+            # Assume CSV correct
+            #self.selenium.find_element_by_class_name("appButton").click()
+
+            applicants = []
+
+            # search application by project name
+            app = [x for x in appList if x.project.project_name == proj.project.project_name]
+            for x in app:
+                applicants.append(x.student.first_name + " " + x.student.last_name)
+
+            # check for all applicants
+            for webElement in self.selenium.find_elements_by_name("selected_applicant"):
+                self.assertIn(webElement.text,applicants)
+
+                studentapp = next(x for x in app if x.student.first_name + " " + x.student.last_name == webElement.text )
+                student = studentapp.student
+
+                webElement.click()
+
+                # verify "application-questions -- Student info"
+                messages_html = BeautifulSoup(self.selenium.find_element_by_id("application-questions").get_attribute('innerHTML'), features="html.parser")
+
+                # first p == description 2nd p == additional information
+                expected = [student.general_question, student.additional_skills]
+                for i, w in enumerate(messages_html.find_all("p")[1:]):
+                    self.assertEqual(expected[i],w.text)
+
+                # verify student basic info
+                messages_html = BeautifulSoup(self.selenium.find_element_by_id("app-sidebar").get_attribute('innerHTML'), features="html.parser")
+                # order Name, Email. Major, Graduation Term
+                expected = [webElement.text, student.email_address, student.major, self.sem_map[student.year]]
+                for i, w in enumerate(messages_html.find_all("p")):
+                    self.assertEqual(w.text.split(': ')[1],expected[i])
+
+                # verify application status button state
+                btn_id = "btn-" + studentapp.status
+                if not (studentapp.status == "SUB"):
+                    self.assertIn("disabled=",self.selenium.find_element_by_id(btn_id).get_attribute('outerHTML'))
+
+    def test_access_roster_no_login(self):
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('display_student_team_roster')))
         self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
-    def test_access_update_application_status_user_login(self):
+    def test_access_roster_user_login(self):
         self.user_login(self.user)
-        self.selenium.get('%s%s' % (self.live_server_url, reverse('update_application_status')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
-        expectedMsg = "Sorry, that action isn't supported."
-        p=self.selenium.find_element_by_xpath("//h1[contains(text(),'400')]/following-sibling::p")
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('display_student_team_roster')))
+
+        expectedMsg = "You must be a member of a project team to view the roster."
+        p=self.selenium.find_element_by_class_name("alert-info")
         self.assertEqual(expectedMsg, p.text)
 
-    def test_access_update_application_status_partner_login(self):
+    def test_access_roster_partner_login(self):
         self.user_login(self.partner)
-        self.selenium.get('%s%s' % (self.live_server_url, reverse('update_application_status')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
-        expectedMsg = "Sorry, that action isn't supported."
-        p = self.selenium.find_element_by_xpath("//h1[contains(text(),'400')]/following-sibling::p")
-        self.assertEqual(expectedMsg, p.text)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('display_student_team_roster')))
 
-    def test_access_update_application_status_student_login(self):
+        expectedMsgs = ["Partners view the roster in applications.",
+        "You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu."]
+        for i,x in enumerate(self.selenium.find_elements_by_class_name("alert-info")):
+            self.assertEqual(x.text,expectedMsgs[i])
+
+    def test_access_roster_student_login(self):
         self.user_login(self.student)
-        self.selenium.get('%s%s' % (self.live_server_url, reverse('update_application_status')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
-        expectedMsg = "Sorry, that action isn't supported."
-        p = self.selenium.find_element_by_xpath("//h1[contains(text(),'400')]/following-sibling::p")
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('display_student_team_roster')))
+
+        expectedMsg = "You must be a member of a project team to view the roster."
+        p=self.selenium.find_element_by_class_name("alert-info")
         self.assertEqual(expectedMsg, p.text)
 
-    def test_access_update_application_status_admin_login(self):
+    def test_access_roster_admin_login(self):
         self.user_login(self.admin)
-        self.selenium.get('%s%s' % (self.live_server_url, reverse('update_application_status')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
-        expectedMsg = "Sorry, that action isn't supported."
-        p = self.selenium.find_element_by_xpath("//h1[contains(text(),'400')]/following-sibling::p")
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('display_student_team_roster')))
+
+        expectedMsg = "You must be a member of a project team to view the roster."
+        p=self.selenium.find_element_by_class_name("alert-info")
         self.assertEqual(expectedMsg, p.text)
 
-    # def test_access_update_application_status_as_admin_with_profile(self):
-    #     admin = AdminFactory(password=self.password)
-    #     self.user_login(admin)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #     # Create profile
-    #     student = StudentFactory(email_address = admin.email)
-    #     ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-    #     for j in range(0, len(ifield)) :
-    #         self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
-    #
-    #     bfield = ["college","year"]
-    #     for j in range(0, len(bfield)) :
-    #         Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
-    #
-    #     skillset = {}
-    #     for skill in Student.default_skills:
-    #         skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
-    #     for j in skillset:
-    #         Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
-    #
-    #     self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-    #
-    #     # add application associate to the student
-    #     appCt = random.randint(1, 10)
-    #     answerList =[]
-    #
-    #     for i in range(0, appCt):
-    #         proj = ProjectFactory()
-    #         application = ApplicationFactory(project=proj,student=student)
-    #         answerList.append(AnswerFactory(student=student, application=application))
-    #
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #     self.application_page_validation(answerList)
-    #
-    # def test_access_update_application_status_as_user(self):
-    #     self.user_login(self.user)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #     # Create profile
-    #     student = StudentFactory()
-    #     ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-    #     for j in range(0, len(ifield)) :
-    #         self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
-    #
-    #     bfield = ["college","year"]
-    #     for j in range(0, len(bfield)) :
-    #         Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
-    #
-    #     skillset = {}
-    #     for skill in Student.default_skills:
-    #         skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
-    #     for j in skillset:
-    #         Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
-    #
-    #     self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-    #     self.basic_information_page_validation(self.user, student, skillset)
-    #
-    # def test_access_update_application_status_as_user_with_profile(self):
-    #     user = UserFactory(password=self.password)
-    #     self.user_login(user)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #     # Create profile
-    #     student = StudentFactory(email_address = user.email)
-    #     ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-    #     for j in range(0, len(ifield)) :
-    #         self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
-    #
-    #     bfield = ["college","year"]
-    #     for j in range(0, len(bfield)) :
-    #         Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
-    #
-    #     skillset = {}
-    #     for skill in Student.default_skills:
-    #         skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
-    #     for j in skillset:
-    #         Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
-    #
-    #     self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-    #     #self.basic_information_page_validation(self.user, student, skillset)
-    #
-    #     # add application associate to the student
-    #     appCt = random.randint(1, 10)
-    #     answerList =[]
-    #
-    #     for i in range(0, appCt):
-    #         proj = ProjectFactory()
-    #         application = ApplicationFactory(project=proj,student=student)
-    #         answerList.append(AnswerFactory(student=student, application=application))
-    #
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #     self.application_page_validation(answerList)
-    #
-    # def test_access_update_application_status_login_as_partner(self):
-    #     partner = UserFactory(password=self.password)
-    #     partner_obj=PartnerFactory(email_address=partner.email,first_name=partner.first_name, last_name = partner.last_name)
-    #
-    #     projCt = random.randint(1, 10)
-    #     partnerProjList = []
-    #
-    #     for i in range(0, projCt):
-    #         partnerProjList.append( PartnerProjectInfoFactory(project=ProjectFactory(),partner=partner_obj))
-    #
-    #     self.user_login(partner)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #
-    #     # NOT IMPLEMENTED YET?
-    #     expectedMsg = "Applications are not yet open for review. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
-    #     print(self.selenium.find_element_by_id("application-questions").text)
-    #
-    #     self.assertEqual(expectedMsg, self.selenium.find_element_by_id("application-questions").text)
+    def test_access_roster_partner_with_projects_login_not_reviewable(self):
+        projCt = random.randint(1, 10)
+        partnerProjList = []
+        partner =  UserFactory(password=self.password)
+        partner_obj =  PartnerFactory(email_address=partner.email)
 
-    # def test_access_update_application_status_login_as_student(self):
-    #     student = UserFactory(password=self.password)
-    #     student_obj = StudentFactory(email_address=student.email,first_name=student.first_name, last_name = student.last_name)
-    #
-    #     # add application associate to the student
-    #     appCt = random.randint(1, 10)
-    #     answerList =[]
-    #
-    #     for i in range(0, appCt):
-    #         proj = ProjectFactory()
-    #         application = ApplicationFactory(project=proj,student=student_obj)
-    #         answerList.append(AnswerFactory(student=student_obj, application=application))
-    #
-    #     self.user_login(student)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('update_application_status')))
-    #
-    #     self.application_page_validation(answerList)
+        for i in range(0, projCt):
+            partnerProjList.append(PartnerProjectInfoFactory(project=ProjectFactory(), partner=partner_obj))
+
+        config.APPLICATIONS_REVIEWABLE = False
+        self.user_login(partner)
+
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
+
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('display_student_team_roster')))
+
+        expectedMsgs = ["Partners view the roster in applications."]
+        for i,x in enumerate(self.selenium.find_elements_by_class_name("alert-info")):
+            self.assertEqual(x.text,expectedMsgs[i])
+        expectedMsg = "Applications are not yet open for review. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
+        self.assertEqual(expectedMsg, self.selenium.find_element_by_id("application-questions").text)
+
+    def test_access_roster_partner_with_projects_login_reviewable(self):
+        config.APPLICATIONS_REVIEWABLE = True
+        app_status = list(self.app_status_map.keys())
+
+        projCt = random.randint(1, 10)
+        appCt = random.randint(10,20)
+        studentCt = random.randint(1,20)
+        partnerProjList = []
+        studentList = []
+        answerList = []
+        appList = []
+
+        for i in range(0,studentCt):
+            studentList.append(StudentFactory())
+
+        for i in range(0, projCt):
+            partnerProjList.append(PartnerProjectInfoFactory(project=ProjectFactory(), partner=self.partner_obj))
+
+        pair = []
+        for i in range(0, appCt):
+            comb = (random.randint(0, projCt-1),random.randint(0, studentCt-1))
+            if comb in pair:
+                continue
+            pair.append(comb)
+
+            proj = partnerProjList[comb[0]].project
+            student_obj = studentList[comb[1]]
+            status = app_status[random.randint(0, len(app_status)-1)]
+            application = ApplicationFactory(project=proj, student=student_obj, status = status)
+            appList.append(application)
+            answerList.append(AnswerFactory(student=self.student_obj, application=application))
+
+        self.user_login(self.partner)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('app_index')))
+        expectedMsg = "Team Roster"
+        self.assertEqual(expectedMsg,self.selenium.find_element_by_id("team-roster").text)
+        self.team_roster_page_validation(self.partner_obj, partnerProjList, appList)
