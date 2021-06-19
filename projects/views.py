@@ -39,7 +39,7 @@ def list_projects(request):
     for i, project in list(enumerate(projects_json['projects']))[::-1]:
         if Application.objects.filter(project_id=project['id']).count() >= config.HIDE_PROJECT_APPLICATION_THRESHOLD:
             projects_json['projects'].pop(i)
-            
+
     context = {
         "projects_json": projects_json,
         "selected": request.GET.get('selected', ''),
@@ -363,7 +363,7 @@ def proj_creation(request):
                 role = "Sponsor"
             )
             link.save()
-            return redirect('/profile')
+            return redirect('/profile/')
         else:
             partner = Partner.objects.get(email_address = email)
             logger.error(f"Invalid form for partner {partner}:\n{form}")
@@ -372,7 +372,7 @@ def proj_creation(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})

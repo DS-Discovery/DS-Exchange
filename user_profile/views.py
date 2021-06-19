@@ -30,7 +30,7 @@ def student_signup(request):
 
     # if len(student) > 0:
     #     messages.info(request, 'You have already signed up.')
-    #     return redirect('/profile')
+    #     return redirect('/profile/')
 
     if request.method == 'POST':
         form = EditStudentSignupForm(request.POST)
@@ -57,7 +57,7 @@ def student_signup(request):
 
             s.save()
 
-            return redirect('/profile')
+            return redirect('/profile/')
 
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
@@ -66,11 +66,11 @@ def student_signup(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
 
     else:
         form = EditStudentSignupForm()
-        return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
+        return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create profile/",'form' : form})
 
 
 @login_required
@@ -85,7 +85,7 @@ def edit_student_profile(request):
             "Applications are currently closed and applicants are not longer allowed to edit their profiles. "
             "If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
         )
-        return redirect("/profile")
+        return redirect("/profile/")
 
     if request.method == 'POST':
         print("Post request: ", request.POST)
@@ -108,7 +108,7 @@ def edit_student_profile(request):
 
             student.update(_skills = skills)
 
-            return redirect('/profile')
+            return redirect('/profile/')
 
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
@@ -117,7 +117,7 @@ def edit_student_profile(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
 
     else:
         student = Student.objects.get(email_address = email)
@@ -125,7 +125,7 @@ def edit_student_profile(request):
         form = EditStudentSignupForm(initial = data)
 
         return render(request, 'profile/edit_student_profile.html', {
-            'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items(),
+            'title' : "Student Edit profile/", 'form' : form, 'student': student, 'skills_tups': student.skills.items(),
             'skills_json': json.dumps(student.skills)
         })
 
@@ -189,7 +189,7 @@ def login_callback(request):
         email = request.user.email
 
     if Partner.objects.filter(email_address = email).exists() or Student.objects.filter(email_address = email).exists():
-        return redirect("/profile")
+        return redirect("/profile/")
     else:
         messages.info(request, "Please complete your student profile.")
         return redirect("/profile/signup")
