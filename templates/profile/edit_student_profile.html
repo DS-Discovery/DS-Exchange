@@ -24,7 +24,7 @@ container
             {% endfor %}
             </table>
 
-            <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);"> 
+            <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);">
             <input class="btn btn-light" type="submit" value="Submit">
         </form>
 
@@ -52,7 +52,7 @@ container
     // This allows the student's skills to be preselected when editing their profile
     {% for skill in student.skills %}
         {% with student.skills|index:skill as skillLevel %}
-            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
+            $("select[name='{{ skill }}'] option[value='{{ skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
         {% endwith %}
     {% endfor %}
 </script>

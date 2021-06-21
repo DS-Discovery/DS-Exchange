@@ -2,6 +2,10 @@
 {% load static %}
 
 {% block extra_head %}
+<script>
+ const is_partner = {{ is_partner|yesno:"true,false" }};
+ const is_student = {{ is_student|yesno:"true,false" }};
+</script>
 <script src="{% static 'js/project_listing.js' %}"></script>
 
 {% endblock %}
