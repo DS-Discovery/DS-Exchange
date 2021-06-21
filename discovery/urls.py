@@ -35,7 +35,7 @@ urlpatterns = [
     path('roster/', include('roster.urls')),
     path('archive/', include('archive.urls')),
     path('resources/', TemplateView.as_view(template_name="resources.html")),
-    path('dashboard/', include('dashboard.urls')),
+    # path('dashboard/', include('dashboard.urls')),
 ]
 
 handler400 = status_400 #'discovery.views.status_403'
