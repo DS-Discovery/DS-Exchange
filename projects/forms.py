@@ -67,13 +67,9 @@ class EditProjectForm(forms.ModelForm):
         fields = (
             # About You
             'email',
-            'first_name',
-            'last_name',
             'organization',
             'organization_description',
             'organization_website',
-            'marketing_channel',
-            'other_marketing_channel',
 
             # Project Details
             'project_name',
