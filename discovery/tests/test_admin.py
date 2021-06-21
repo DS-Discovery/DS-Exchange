@@ -41,7 +41,7 @@ class AdminTestCase(TestCase):
 
         #default student
         cls.groupTypes = ['student', 'project']
-        #default current Semester (config.CURRENT_SEMESTER??)
+        #default current Semester (config.CURRENT_SEMESTER)
         cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
         #default ALL IN
