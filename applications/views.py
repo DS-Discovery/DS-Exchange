@@ -20,10 +20,10 @@ def get_applications(request):
     else:
         raise PermissionDenied("User is not authenticated")
 
-    if Student.objects.filter(email_address = email).exists():
-        return list_student_applications(request)
-    elif Partner.objects.filter(email_address = email).exists():
+    if Partner.objects.filter(email_address = email).exists():
         return list_project_applicants(request)
+    elif Student.objects.filter(email_address = email).exists():
+        return list_student_applications(request)
     else:
         messages.info(request, "Please create your student profile to view applications.")
         return redirect("/profile")
@@ -64,7 +64,7 @@ def list_student_applications(request):
         "projects": [a.project for a in all_apps],
     }
 
-   
+
     if not no_apps:
 
         context["active_application"] = None
@@ -83,10 +83,6 @@ def list_student_applications(request):
 
         answers = Answer.objects.filter(student=student, application=app)
         context["questions_and_answers"] = zip([a.question for a in answers], answers)
-
-
-
-
 
     return render(request, "applications/student_applications.html", context=context)
 
@@ -111,8 +107,9 @@ def list_project_applicants(request):
     #         messages.info("You do not have permission to view this project.")
     #         return redirect("/applications")
     # else:
+
     if len(projects) == 0:
-        messages.info("You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
+        messages.info(request, "You do not have any projects assigned to you. If this is an error, please contact ds-discovery@berkeley.edu.")
         return redirect("/")
         # project_wanted = projects[0]
 
