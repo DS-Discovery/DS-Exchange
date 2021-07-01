@@ -164,7 +164,7 @@ def view_partner_profile(request):
     for p in projects:
         roles = PartnerProjectInfo.objects.get(project = p, partner = context)
         projectPartnerRoles[p.project_name] = roles
-        
+
     return render(request, 'profile/partner_profile.html', {
         'context' : context.__dict__, 'projects': projects, 'projectPartnerRoles' : projectPartnerRoles,
         'partner': context, 'current_semester':sem_mapping[config.CURRENT_SEMESTER]
