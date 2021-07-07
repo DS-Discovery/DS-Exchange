@@ -12,10 +12,6 @@ from projects.models import Semester, Partner, PartnerProjectInfo
 from .forms import EditStudentSignupForm
 
 from constance import config
-<<<<<<< HEAD
-=======
-
->>>>>>> staging
 
 logger = logging.getLogger(__name__)
 sem_mapping = {v: k for k, v in Semester.choices}
@@ -50,12 +46,7 @@ def student_signup(request):
                 major = form.cleaned_data['major'],
                 year = form.cleaned_data['year'],
                 resume_link= form.cleaned_data['resume_link'],
-<<<<<<< HEAD
-                general_question = form.cleaned_data['general_question'],
-                additional_skills = form.cleaned_data['additional_skills']
-=======
                 general_question = form.cleaned_data['general_question']
->>>>>>> staging
             )
 
             skills = s.skills
@@ -66,11 +57,7 @@ def student_signup(request):
 
             s.save()
 
-<<<<<<< HEAD
             return redirect('/profile/')
-=======
-            return redirect('/profile')
->>>>>>> staging
 
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
@@ -92,11 +79,7 @@ def edit_student_profile(request):
     if request.user.is_authenticated:
         email = request.user.email
 
-<<<<<<< HEAD
     if not config.APPLICATIONS_OPEN:
-=======
-    if not flag_enabled('APPLICATIONS_OPEN'):
->>>>>>> staging
         messages.info(
             request,
             "Applications are currently closed and applicants are not longer allowed to edit their profiles. "
@@ -125,11 +108,7 @@ def edit_student_profile(request):
 
             student.update(_skills = skills)
 
-<<<<<<< HEAD
             return redirect('/profile/')
-=======
-            return redirect('/profile')
->>>>>>> staging
 
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
@@ -182,7 +161,7 @@ def view_partner_profile(request):
     for p in projects:
         roles = PartnerProjectInfo.objects.get(project = p, partner = context)
         projectPartnerRoles[p.project_name] = roles
-        
+
     return render(request, 'profile/partner_profile.html', {
         'context' : context.__dict__, 'projects': projects, 'projectPartnerRoles' : projectPartnerRoles,
         'partner': context, 'current_semester':sem_mapping[config.CURRENT_SEMESTER]
