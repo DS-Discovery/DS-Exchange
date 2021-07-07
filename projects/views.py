@@ -28,9 +28,9 @@ logger = logging.getLogger(__name__)
 
 # @login_required
 def list_projects(request):
-    # email = None
-    # if request.user.is_authenticated:
-    #     email = request.user.email
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
 
     # if email is None:
     #     return redirect('/profile/login')
@@ -43,6 +43,9 @@ def list_projects(request):
     context = {
         "projects_json": projects_json,
         "selected": request.GET.get('selected', ''),
+        "selected": request.GET.get('selected', ''),
+        "is_partner": Partner.objects.filter(email_address=email).count() > 0,
+        "is_student": Student.objects.filter(email_address=email).count() > 0,
     }
 
     return render(request, 'projects/listing.html', context)
@@ -295,15 +298,6 @@ def proj_creation(request):
                 "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
                 "Mobile App Development": form.cleaned_data["Mobile App Development"],
                 "Cloud Computing": form.cleaned_data["Cloud Computing"],
-                "communication": form.cleaned_data["communication"],
-                "self-motivation": form.cleaned_data["self-motivation"],
-                "leadership": form.cleaned_data["leadership"],
-                "responsibility": form.cleaned_data["responsibility"],
-                "teamwork": form.cleaned_data["teamwork"],
-                "problem solving": form.cleaned_data["problem solving"],
-                "decisiveness": form.cleaned_data["decisiveness"],
-                "good time management": form.cleaned_data["good time management"],
-                "flexibility": form.cleaned_data["flexibility"]
             }
             for i in skills_and_levels.keys():
                 if skills_and_levels[i] == 'FA':
@@ -318,10 +312,11 @@ def proj_creation(request):
                     skills_and_levels[i] = 'No Experience'
                 else:
                     continue
+            # TODO: Project creation hardcoded semester, it seems. Replace with env var (discovery/settings).
             proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
                           organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
-                          project_category=form.cleaned_data['project_category'],
+                          project_category=form.cleaned_data['project_sector'],
                           description=form.cleaned_data['description'],
                           semester="FA21",
                           organization_description=form.cleaned_data['organization_description'],
@@ -376,3 +371,99 @@ def proj_creation(request):
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})
+
+@login_required
+def edit_project(request):
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+    proj_id = request.GET.get("project", -1)
+
+    if proj_id != -1:
+        project = Project.objects.get(id=proj_id)
+
+        # Check project belongs to current user
+        partner = Partner.objects.get(email_address=email)
+        try:
+            associated_partner = PartnerProjectInfo.objects.get(project=project, partner=partner)
+        except PartnerProjectInfo.DoesNotExist:
+                messages.info(request, 'Project not associated with the current user.')
+                return redirect('/profile')
+
+
+        if request.method == 'GET':
+            project = Project.objects.get(id=proj_id)
+
+            data = project.__dict__
+            form = EditProjectForm(initial = data)
+
+            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is bceause project creation hardcoded this association.
+            skill_levels_inverse = {
+            'Familiar':'FA',
+            'Beginner':'BE',
+            'Intermediate':'IN',
+            'Advanced':'AD',
+            'No Experience':'NE'
+            }
+            return render(request, 'projects/edit_project.html', {'form': form, 'project': project, 'skill_levels_inverse': skill_levels_inverse})
+
+        elif request.method == 'POST':
+            project = Project.objects.filter(id=proj_id)
+            form = EditProjectForm(request.POST)
+            if form.is_valid():
+                skills_and_levels = {
+                    "Python": form.cleaned_data["Python"],
+                    "R": form.cleaned_data["R"],
+                    "SQL": form.cleaned_data["SQL"],
+                    "Tableau/Looker": form.cleaned_data["Tableau/Looker"],
+                    "Data Visualization": form.cleaned_data["Data Visualization"],
+                    "Data Manipulation": form.cleaned_data["Data Manipulation"],
+                    "Text Analysis": form.cleaned_data["Text Analysis"],
+                    "Machine Learning/Deep Learning": form.cleaned_data["Machine Learning/Deep Learning"],
+                    "Geospatial Data, Tools and Libraries": form.cleaned_data["Geospatial Data, Tools and Libraries"],
+                    "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
+                    "Mobile App Development": form.cleaned_data["Mobile App Development"],
+                    "Cloud Computing": form.cleaned_data["Cloud Computing"],
+                }
+                for i in skills_and_levels.keys():
+                    if skills_and_levels[i] == 'FA':
+                        skills_and_levels[i] = 'Familiar'
+                    elif skills_and_levels[i] == 'BE':
+                        skills_and_levels[i] = 'Beginner'
+                    elif skills_and_levels[i] == 'IN':
+                        skills_and_levels[i] = 'Intermediate'
+                    elif skills_and_levels[i] == 'AD':
+                        skills_and_levels[i] = 'Advanced'
+                    elif skills_and_levels[i] == 'NE':
+                        skills_and_levels[i] = 'No Experience'
+                    else:
+                        continue
+                project.update(email = form.cleaned_data['email'])
+                project.update(organization=form.cleaned_data['organization'])
+                project.update(project_name=form.cleaned_data['project_name'])
+                project.update(project_category=form.cleaned_data['project_sector'])
+                project.update(description=form.cleaned_data['description'])
+                project.update(organization_description=form.cleaned_data['organization_description'])
+                # project.update(other_marketing_channel=form.cleaned_data['other_marketing_channel'])
+                # project.update(marketing_channel=form.cleaned_data['marketing_channel'])
+                project.update(organization_website = form.cleaned_data['organization_website'])
+                project.update(timeline=form.cleaned_data['timeline'])
+                project.update(project_workflow=form.cleaned_data['project_workflow'])
+                project.update(dataset_availability=form.cleaned_data['dataset_availability'])
+                project.update(deliverable=form.cleaned_data['deliverable'])
+                project.update(skillset=skills_and_levels)
+                project.update(additional_skills=form.cleaned_data['additional_skills'])
+                project.update(technical_requirements=form.cleaned_data['technical_requirements'])
+                project.update(num_students=form.cleaned_data['num_students'])
+                project.update(other_num_students=form.cleaned_data['other_num_students'])
+                project.update(cloud_creds=form.cleaned_data['cloud_creds'])
+                # project.update(meet_regularly=form.cleaned_data['meet_regularly'])
+                project.update(other_project_category=form.cleaned_data['other_project_category'])
+                project.update(hce_intern=form.cleaned_data['hce_intern'])
+                project.update(optional_q1=form.cleaned_data['optional_q1'])
+                project.update(optional_q2=form.cleaned_data['optional_q2'])
+                project.update(optional_q3=form.cleaned_data['optional_q3'])
+
+                return redirect('/profile')
+    messages.info(request, 'Invalid project requested.')
+    return redirect('/profile')

@@ -21,15 +21,6 @@ def get_default_skills():
         "Web Development (frontend, backend, full stack)": "",
         "Mobile App Development": "",
         "Cloud Computing": "",
-        "communication": "",
-        "self-motivation": "",
-        "leadership": "",
-        "responsibility": "",
-        "teamwork": "",
-        "problem solving": "",
-        "decisiveness": "",
-        "good time management": "",
-        "flexibility": ""
     }
 
 
@@ -125,7 +116,7 @@ class Project(models.Model):
             "organization_description": self.organization_description,
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
-            "project_category": self.project_category.split(";") if self.project_category else [],
+            "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],
             "student_num": self.student_num,
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
