@@ -25,6 +25,7 @@ import random
 import time
 import re
 from bs4 import BeautifulSoup
+from constance import config
 
 import os
 
@@ -45,9 +46,8 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         chrome_options.add_argument("--ignore-certificate-errors")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        chromedriver = r"C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe"
-        os.environ["webdriver.chrome.driver"] = chromedriver
-        driver = webdriver.Chrome(chromedriver)
+        chromedriver = settings.WEBDRIVER
+        cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
         cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
@@ -56,9 +56,6 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         sem_map = {k:v for k, v in Project.sem_mapping.items()}
         cls.short_current_semester = 'SP21'
         cls.current_semester = sem_map[cls.short_current_semester]
-        settings.CONSTANCE_CONFIG['CURRENT_SEMESTER'] = (cls.current_semester, "Current semester", str)
-
-        #cls.selenium.implicitly_wait(5)
 
         cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
@@ -82,14 +79,14 @@ class ProjectApplyTest(StaticLiveServerTestCase):
 
         cls.admin = AdminFactory()
 
+    ### START HELPER FUNCTIONS ###
+
     def user_login(self, userObject,selectedProjName):
         self.client.force_login(userObject)
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
-
-        #self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply', kwargs={'project_name':selectedProjName})))
 
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
@@ -100,33 +97,40 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
         self.assertEqual("You must be a partner to create projects.", msg_html.find("div").text)
 
-    def page_validation(self, projList, appList = None):
+    def page_validation(self, projList, appList=None, threshold = config.HIDE_PROJECT_APPLICATION_THRESHOLD):
 
         self.assertTrue(self.selenium.title == 'Data Science Discovery Program')
 
         projCatList = []
         projNameList = []
         optionList = []
+        appNum = {}
 
         selectedProjList = [ x for x in projList if x.semester == self.short_current_semester]
+
         for proj in selectedProjList:
-            projNameList.append(proj.project_name)
-            for item in proj.project_category.split(";"):
-                projCatList.append(item)
+            # check for thresould
+            if (appList == None):
+                selectedApps = []
+            else:
+                selectedApps = [x for x in appList if x.project.project_name == proj.project_name]
+            if (len(selectedApps) < threshold):
+                projNameList.append(proj.project_name)
+                appNum[proj.project_name] = len(selectedApps)
+                for item in proj.project_category.split(";"):
+                    projCatList.append(item)
 
         projCatList = sorted(set(projCatList))
         projNameList = sorted(set(projNameList))
-
         categoryFilter = self.selenium.find_element_by_id("category-filter-select")
-        options = [x for x in categoryFilter.find_elements_by_tag_name("option")]
 
-        for element in options:
+        for element in categoryFilter.find_elements_by_tag_name("option"):
             option = element.get_attribute("value")
             if (option != ''):
                 optionList.append(option)
 
         # validate "Project Category"
-        self.assertEqual(optionList,projCatList)
+        self.assertEqual(optionList, projCatList)
 
         # validate "Project List"
         jsonText = self.selenium.find_element_by_id("projects-json").get_attribute("text")
@@ -141,17 +145,15 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             # validate the detail page
             project_button = self.selenium.find_element_by_id('project-'+ str(i))
             project_button.click()
-            # if (i == 0):
-            #     print(self.selenium.page_source)
 
             i = i + 1
             selectedProj = [x for x in selectedProjList if x.project_name == project['project_name']]
 
-            self.assertEqual(len(selectedProj),1)
+            self.assertEqual(len(selectedProj), 1)
             selectedProj = selectedProj[0]
 
             descr_html = BeautifulSoup(self.selenium.find_element_by_id('description').get_attribute('innerHTML'), features="html.parser")
-            self.assertEqual(project['project_name'],descr_html.find("h5").text)
+            self.assertEqual(project['project_name'], descr_html.find("h5").text)
 
             ## Skill Set
             skill_table = descr_html.find_all("table")
@@ -175,7 +177,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                     bMatchNext = True
                     matchText = getattr(selectedProj,self.projMap[p.text])
 
-                #organization_description
+                # organization_description
                 if (p.text.startswith(self.projectOrganizationStr)):
                     self.assertEqual(p.text.replace(self.projectOrganizationStr,''),getattr(selectedProj,"organization"))
 
@@ -194,14 +196,27 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                     self.assertEqual(s.text,str(selectedProj.student_num))
                 if (j == len(projectSidebar_html.find_all('span')) - 1):
                     if (appList == None):
-                        self.assertEqual(s.text,str(0))
+                        self.assertEqual(s.text, str(0))
                     else:
-                        selectedApps = [x for x in appList if x.project.project_name == project['project_name'] ]
-                        self.assertEqual(s.text,str(len(selectedApps)))
+                        self.assertEqual(s.text, str(appNum[project['project_name']]))
                 j = j + 1
 
-        #input("Press Enter to continue...")
-        time.sleep(5)
+        # validate the project category filter
+        category = Select (self.selenium.find_element_by_name("category_wanted"))
+        for o in optionList:
+            catProj = []
+            category.select_by_value(o)
+            # check on project list
+            projects = self.selenium.find_element_by_id("project-list")
+
+            catProj = [x.project_name for x in selectedProjList if o in x.project_category.split(";") and x.project_name in appNum.keys()]
+            catProj = sorted(set(catProj))
+            if (len(catProj) > 0):
+                webprojs = self.selenium.find_elements_by_class_name("list-group-item-action")
+                i = 0
+                for p in webprojs:
+                    self.assertEqual(catProj[i],p.text)
+                    i = i + 1
 
     def basic_information_page_validation(self, loginUser, student, skillset):
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Basic Information')]")
@@ -223,7 +238,6 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             # check only return value on the field
             if(len(items) > 1):
                 value = items[1].strip()
-                #print(items[0], value,basicInfoMap[items[0]])
                 self.assertEqual(value,basicInfoMap[items[0]])
 
         # check on General Interest Statement
@@ -238,23 +252,20 @@ class ProjectApplyTest(StaticLiveServerTestCase):
                     skill = pgElement.text
                 else:
                     skillLevel = next(k for k,v in Student.skill_levels_options.items() if v == pgElement.text)
-                    #print(skill, skillLevel)
                     if (skillLevel.strip() == ""):
-                        self.assertNotIn(skill,skillset.keys())
+                        self.assertNotIn(skill, skillset.keys())
                     else:
-                        self.assertEqual(skillLevel,skillset[skill])
+                        self.assertEqual(skillLevel, skillset[skill])
                 bfield = not bfield
 
         # check on additional skills
-        p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
-        self.assertEqual(p.text,student.additional_skills)
+        p = self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
+        self.assertEqual(p.text, student.additional_skills)
 
-    # def test_access_list_projects_current_semester(self):
-    #     self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-    #     self.page_validation (projList)
+    ### END HELPER FUNCTIONS ###
 
     def test_access_project_apply_no_login(self):
-
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -262,12 +273,13 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        self.page_validation (projList)
+        self.page_validation(projList, None)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
-        self.assertEqual(self.logonRedirect,self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply', kwargs={'project_name':selectedProjName})))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
     def test_access_project_apply_user_login(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -275,17 +287,17 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList, None)
 
-        self.user_login(self.user,selectedProjName)
+        self.user_login(self.user, selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
-        self.assertEqual(signupRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
+        self.assertEqual(signupRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply', kwargs={'project_name':selectedProjName})))
         # Edit profile
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
     def test_access_project_apply_edit_profile_as_user(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -293,23 +305,22 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
-        self.user_login(self.user,selectedProjName)
+        self.user_login(self.user, selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
-        self.assertEqual(signupRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
+        self.assertEqual(signupRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply', kwargs={'project_name':selectedProjName})))
         # Edit profile
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-        for j in range(0, len(ifield)) :
+        student = StudentFactory(email_address=self.user.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
+        for j in range(0, len(ifield)):
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
         bfield = ["college","year"]
-        for j in range(0, len(bfield)) :
+        for j in range(0, len(bfield)):
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 
         skillset = {}
@@ -323,6 +334,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         self.basic_information_page_validation(self.user, student, skillset)
 
     def test_access_project_apply_edit_profile_apply_as_user(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -330,23 +342,22 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
-        self.user_login(self.user,selectedProjName)
+        self.user_login(self.user, selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
-        self.assertEqual(signupRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
+        self.assertEqual(signupRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply', kwargs={'project_name':selectedProjName})))
         # Edit profile
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-        for j in range(0, len(ifield)) :
+        student = StudentFactory(email_address=self.user.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question",  "additional_skills"]
+        for j in range(0, len(ifield)):
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
-        bfield = ["college","year"]
-        for j in range(0, len(bfield)) :
+        bfield = ["college", "year"]
+        for j in range(0, len(bfield)):
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 
         skillset = {}
@@ -359,12 +370,18 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         # may fail due to additonal skills issue
         #self.basic_information_page_validation(self.user, student, skillset)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id("messages").get_attribute('innerHTML'), features="html.parser")
-        expectedMsg = "Applications are currently closed. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
-        self.assertEqual(expectedMsg,msg_html.find("div").text)
+        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply', kwargs={'project_name':selectedProjName})))
+        # msg_html = BeautifulSoup(self.selenium.find_element_by_id("messages").get_attribute('innerHTML'), features="html.parser")
+        #expectedMsg = "Applications are currently closed. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
+        # expectedMsg = "Please make sure your responses are finalized as you will not be able to edit your responses once you submit."
+        # self.assertEqual(expectedMsg,msg_html.find("div").text)
+
+        msg_html = BeautifulSoup(self.selenium.find_element_by_class_name("mb-5").get_attribute('innerHTML'), features="html.parser")
+        expectedMsg = "Please make sure your responses are finalized as you will not be able to edit your responses once you submit."
+        self.assertEqual(expectedMsg,msg_html.find("p").text)
 
     def test_access_project_apply_admin_login(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -372,8 +389,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
         self.user_login(self.admin,selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
@@ -383,6 +399,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
     def test_access_project_apply_edit_profile_as_admin(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -390,8 +407,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
         self.user_login(self.admin,selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
@@ -400,13 +416,13 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         # Edit profile
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-        for j in range(0, len(ifield)) :
+        student = StudentFactory(email_address=self.admin.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question",  "additional_skills"]
+        for j in range(0, len(ifield)):
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
-        bfield = ["college","year"]
-        for j in range(0, len(bfield)) :
+        bfield = ["college", "year"]
+        for j in range(0, len(bfield)):
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 
         skillset = {}
@@ -416,18 +432,17 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-        # may fail due to additonal skills issue
         self.basic_information_page_validation(self.admin, student, skillset)
 
     def test_access_project_apply_edit_profile_apply_as_admin(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
             projList.append(ProjectFactory())
         selectedProjName = projList[0].project_name
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
         self.user_login(self.admin,selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
@@ -436,13 +451,13 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         # Edit profile
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
-        for j in range(0, len(ifield)) :
+        student = StudentFactory(email_address=self.admin.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question",  "additional_skills"]
+        for j in range(0, len(ifield)):
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
-        bfield = ["college","year"]
-        for j in range(0, len(bfield)) :
+        bfield = ["college", "year"]
+        for j in range(0, len(bfield)):
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 
         skillset = {}
@@ -452,15 +467,20 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-        # may fail due to additonal skills issue
-        #self.basic_information_page_validation(self.admin, student, skillset)
+        self.basic_information_page_validation(self.admin, student, skillset)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id("messages").get_attribute('innerHTML'), features="html.parser")
-        expectedMsg = "Applications are currently closed. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
-        self.assertEqual(expectedMsg,msg_html.find("div").text)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply', kwargs={'project_name':selectedProjName})))
+        # msg_html = BeautifulSoup(self.selenium.find_element_by_id("messages").get_attribute('innerHTML'), features="html.parser")
+        #expectedMsg = "Applications are currently closed. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
+        # expectedMsg = "Please make sure your responses are finalized as you will not be able to edit your responses once you submit."
+        # self.assertEqual(expectedMsg,msg_html.find("div").text)
+
+        msg_html = BeautifulSoup(self.selenium.find_element_by_class_name("mb-5").get_attribute('innerHTML'), features="html.parser")
+        expectedMsg = "Please make sure your responses are finalized as you will not be able to edit your responses once you submit."
+        self.assertEqual(expectedMsg,msg_html.find("p").text)
 
     def test_access_project_apply_partner_login(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -468,8 +488,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
         self.user_login(self.partner,selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
@@ -481,6 +500,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         self.assertEqual(expectedMsg,msg_html.find("div").text)
 
     def test_access_project_apply_student_login(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         projList = []
         for i in range(0, projCt):
@@ -488,14 +508,17 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         selectedProjName = projList[0].project_name
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        # skip page validation
-        #self.page_validation (projList)
+        self.page_validation(projList)
 
-        self.user_login(self.student,selectedProjName)
+        self.user_login(self.student, selectedProjName)
         signupRedirect = self.live_server_url + "/accounts/google/login/"
-        self.assertEqual(signupRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('apply',kwargs={'project_name':selectedProjName})))
+        self.assertEqual(signupRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('apply',kwargs={'project_name':selectedProjName})))
 
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id("messages").get_attribute('innerHTML'), features="html.parser")
-        expectedMsg = "Applications are currently closed. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
-        self.assertEqual(expectedMsg,msg_html.find("div").text)
+        # msg_html = BeautifulSoup(self.selenium.find_element_by_id("messages").get_attribute('innerHTML'), features="html.parser")
+        # expectedMsg = "Applications are currently closed. If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
+        # self.assertEqual(expectedMsg,msg_html.find("div").text)
+
+        msg_html = BeautifulSoup(self.selenium.find_element_by_class_name("mb-5").get_attribute('innerHTML'), features="html.parser")
+        expectedMsg = "Please make sure your responses are finalized as you will not be able to edit your responses once you submit."
+        self.assertEqual(expectedMsg, msg_html.find("p").text)

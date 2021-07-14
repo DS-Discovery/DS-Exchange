@@ -16,6 +16,7 @@ from user_profile.tests.factories.admin import AdminFactory
 from projects.tests.factories.partner import PartnerFactory
 from students.tests.factories.student import StudentFactory
 from students.tests.factories.datascholar import DataScholarFactory
+from constance import config
 
 from projects.models import Semester, Project
 from students.models import Student
@@ -38,7 +39,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         super().setUpClass()
 
         chrome_options = Options()
-        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument('--disable-gpu')
@@ -46,9 +47,8 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         chrome_options.add_argument("--ignore-certificate-errors")
         chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        chromedriver = r"C:\Users\eunic\Downloads\chromedriver_win32\chromedriver.exe"
-        os.environ["webdriver.chrome.driver"] = chromedriver
-        driver = webdriver.Chrome(chromedriver)
+        chromedriver = settings.WEBDRIVER
+        cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
         cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
@@ -57,9 +57,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         sem_map = {k:v for k, v in Project.sem_mapping.items()}
         cls.short_current_semester = 'SP21'
         cls.current_semester = sem_map[cls.short_current_semester]
-        settings.CONSTANCE_CONFIG['CURRENT_SEMESTER'] = (cls.current_semester, "Current semester", str)
-
-        #cls.selenium.implicitly_wait(5)
+        config.CURRENT_SEMESTER = cls.current_semester
 
         cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
@@ -76,12 +74,14 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         cls.user = UserFactory(password=cls.password)
 
         cls.partner = UserFactory(password=cls.password)
-        cls.partner_obj = PartnerFactory(email_address=cls.partner.email)
+        cls.partner_obj = PartnerFactory(email_address=cls.partner.email, first_name = cls.partner.first_name, last_name = cls.partner.last_name)
 
         cls.student = UserFactory(password=cls.password)
         cls.student_obj = StudentFactory(email_address=cls.student.email)
 
         cls.admin = AdminFactory()
+
+    ### START HELPER FUNCTIONS ###
 
     def user_login(self, userObject):
         self.client.force_login(userObject)
@@ -93,118 +93,38 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
 
-    def new_project_invalid_login_validation(self):
-        self.selenium.find_element_by_xpath('//a[@href="newproject"]').click()
+    def personal_information_page_validation(self, loginUser, newProjectName, newProjectOrganization):
+        personalInfoMap = {
+            "Name"    : loginUser.first_name + " " + loginUser.last_name,
+            "Email"   : getattr(loginUser, "email_address", getattr(loginUser,"email","")),
+        }
+        p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Personal Information')]")
 
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-        self.assertEqual("You must be a partner to create projects.", msg_html.find("div").text)
+        self.assertEqual(p.text, "Personal Information")
 
-    def page_validation(self, projList, appList = None):
+        for pgElement in self.selenium.find_elements_by_xpath("//h5[contains(text(),'Personal Information')]/following-sibling::p"):
+            items = pgElement.text.split(": ")
+            # check only return value on the field
+            if(len(items) > 1):
+                value = items[1].strip()
+                self.assertEqual(value,personalInfoMap[items[0]])
 
-        self.assertTrue(self.selenium.title == 'Data Science Discovery Program')
+        # verify applied project
+        for pgElement in self.selenium.find_elements_by_xpath("//div[contains(@class, 'list-group-item')]"):
+            text = pgElement.text
+            role = text.split("Role: ", 1)[1]
+            # skip Edit Button
+            role = role.split()[0]
+            project_name = text.split(" (")[0]
+            organization = organization = re.search('\((.*)\)', text).group(1)
 
-        projCatList = []
-        projNameList = []
-        optionList = []
-
-        selectedProjList = [ x for x in projList if x.semester == self.short_current_semester]
-        for proj in selectedProjList:
-            projNameList.append(proj.project_name)
-            for item in proj.project_category.split(";"):
-                projCatList.append(item)
-
-        projCatList = sorted(set(projCatList))
-        projNameList = sorted(set(projNameList))
-
-        categoryFilter = self.selenium.find_element_by_id("category-filter-select")
-        options = [x for x in categoryFilter.find_elements_by_tag_name("option")]
-
-        for element in options:
-            option = element.get_attribute("value")
-            if (option != ''):
-                optionList.append(option)
-
-        # validate "Project Category"
-        self.assertEqual(optionList, projCatList)
-
-        # validate "Project List"
-        jsonText = self.selenium.find_element_by_id("projects-json").get_attribute("text")
-        projects_json = json.loads(jsonText)['projects']
-        i = 0
-
-        for project in projects_json:
-            self.assertEqual(project['project_name'], projNameList[i])
-            #always return current semester
-            self.assertEqual(project['semester'], self.current_semester)
-
-            # validate the detail page
-            project_button = self.selenium.find_element_by_id('project-'+ str(i))
-            project_button.click()
-            # if (i == 0):
-            #     print(self.selenium.page_source)
-
-            i = i + 1
-            selectedProj = [x for x in selectedProjList if x.project_name == project['project_name']]
-
-            self.assertEqual(len(selectedProj), 1)
-            selectedProj = selectedProj[0]
-
-            descr_html = BeautifulSoup(self.selenium.find_element_by_id('description').get_attribute('innerHTML'), features="html.parser")
-            self.assertEqual(project['project_name'], descr_html.find("h5").text)
-
-            ## Skill Set
-            skill_table = descr_html.find_all("table")
-            for t in skill_table:
-                bkey = True
-                for cell in t.find_all("td"):
-                    if bkey:
-                        key = cell.text.rstrip()
-                    else:
-                        self.assertEqual(project['skillset'][key], cell.text)
-                    bkey = not bkey
-
-            bMatchNext = False
-            matchText = ""
-            for p in descr_html.find_all("p"):
-                if (bMatchNext):
-                    bMatchNext = False
-                    self.assertEqual(matchText, p.text)
-
-                if (p.text in self.projMap.keys()):
-                    bMatchNext = True
-                    matchText = getattr(selectedProj, self.projMap[p.text])
-
-                #organization_description
-                if (p.text.startswith(self.projectOrganizationStr)):
-                    self.assertEqual(p.text.replace(self.projectOrganizationStr, ''),getattr(selectedProj, "organization"))
-
-                    bMatchNext = True
-                    matchText = getattr(selectedProj, "organization_description")
-
-            # check for project-sidebar
-            projectSidebar_html = BeautifulSoup(self.selenium.find_element_by_id('project-sidebar').get_attribute('innerHTML'), features="html.parser")
-
-            j = 0
-            for s in projectSidebar_html.find_all('span'):
-                #skip the last 2
-                if (j < len(projectSidebar_html.find_all('span')) - 2):
-                    self.assertIn(s.text,selectedProj.project_category.split(";"))
-                if (j == len(projectSidebar_html.find_all('span')) - 2):
-                    self.assertEqual(s.text,str(selectedProj.student_num))
-                if (j == len(projectSidebar_html.find_all('span')) - 1):
-                    if (appList == None):
-                        self.assertEqual(s.text, str(0))
-                    else:
-                        selectedApps = [x for x in appList if x.project.project_name == project['project_name'] ]
-                        self.assertEqual(s.text, str(len(selectedApps)))
-                j = j + 1
-
-        #input("Press Enter to continue...")
-        time.sleep(5)
+            self.assertEqual(project_name, newProjectName)
+            self.assertEqual(role, "Sponsor")
+            self.assertEqual(organization, newProjectOrganization)
 
     def basic_information_page_validation(self, loginUser, student, skillset):
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Basic Information')]")
-        self.assertEqual(p.text,"Basic Information")
+        self.assertEqual(p.text, "Basic Information")
 
         basicInfoMap = {
             "Name"    : student.first_name + " " + student.last_name,
@@ -246,77 +166,25 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
         self.assertEqual(p.text, student.additional_skills)
 
-    def fill_in_project_application(self):
-        return
-
-    # def test_access_list_projects_current_semester(self):
-    #     self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-    #     self.page_validation (projList)
-
-    # def test_access_project_new_no_login(self):
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
-    #     self.assertEqual(self.logonRedirect,self.selenium.current_url)
-
-    # def test_access_project_new_user_login(self):
-    #     self.user_login(self.user)
-    #     signupRedirect = self.live_server_url + "/accounts/google/login/"
-    #     self.assertEqual(signupRedirect,self.selenium.current_url)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
-    #
-    #     # You must be a partner to create projects.
-    #     expectedMsg = "You must be a partner to create projects."
-    #     msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-    #     self.assertEqual(expectedMsg, msg_html.find("div").text)
-
-    # def test_access_project_new_admin_login(self):
-    #     self.user_login(self.admin)
-    #     signupRedirect = self.live_server_url + "/accounts/google/login/"
-    #     self.assertEqual(signupRedirect,self.selenium.current_url)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
-    #
-    #     # You must be a partner to create projects.
-    #     expectedMsg = "You must be a partner to create projects."
-    #     msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-    #     self.assertEqual(expectedMsg, msg_html.find("div").text)
-
-    # def test_access_project_new_student_login(self):
-    #     self.user_login(self.student)
-    #     signupRedirect = self.live_server_url + "/accounts/google/login/"
-    #     self.assertEqual(signupRedirect,self.selenium.current_url)
-    #     self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
-    #     # You must be a partner to create projects.
-    #     expectedMsg = "You must be a partner to create projects."
-    #     msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-    #     self.assertEqual(expectedMsg, msg_html.find("div").text)
-
-    def test_access_project_new_partner_login(self):
-        self.user_login(self.partner)
-        signupRedirect = self.live_server_url + "/accounts/google/login/"
-        self.assertEqual(signupRedirect, self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('new_project')))
-
-        self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'DS Discovery Project Application')
-
+    def fill_in_project_application(self, loginUser):
         #fill in the app
-        # need to review the input ....
         faker = Faker()
-        project_profile_enter = {'id_email':self.partner_obj.email_address,
-            'id_first_name':self.partner_obj.first_name,
-            'id_last_name':self.partner_obj.last_name,
+        project_profile_enter = {'id_email':loginUser.email,
+            'id_first_name':loginUser.first_name,
+            'id_last_name':loginUser.last_name,
             'id_organization':faker.sentence(),
             'id_organization_description':faker.paragraph(),
             'id_organization_website':faker.url(),
             'id_other_marketing_channel':faker.sentence(),
             'id_project_name':faker.sentence(),
-            'id_project_category':faker.sentence(),
             'id_other_project_category':"",
             'id_description':faker.paragraph(),
             'id_timeline':'Spring 2022',
             'id_project_workflow':faker.sentence(),
             'id_deliverable':faker.sentence(nb_words = 2),
             'id_other_num_students':str(random.randint(0, 10)),
-            'id_skillset':faker.sentence(nb_words = random.randint(2,10)),
             'id_technical_requirements':faker.sentence(),
+            'id_additional_skills':faker.sentence(),
             'id_optional_q1':faker.sentence(),
             'id_optional_q2':faker.sentence(),
             'id_optional_q3':faker.sentence()
@@ -327,24 +195,76 @@ class ProjectApplyTest(StaticLiveServerTestCase):
 
         # select by Value fields
         project_profile_select = {"id_marketing_channel": random.choice(['a','b','c','d','e','f']),
-                    'id_dataset_availability':random.choice(['True','False']),
-                    'id_num_students':random.choice(['a','b','c','d']),
-                    'id_cloud_creds':random.choice(['True','False']),
-                    'id_hce_intern':random.choice(['a','b','c']),
-                    'id_meet_regularly':random.choice(['True','False']),
-                    'id_survey_response':random.choice(['True','False']),
-                    'id_environment':random.choice(['True','False']),
-                    }
+            'id_dataset_availability':random.choice(['True','False']),
+            'id_num_students':random.choice(['a','b','c','d']),
+            'id_cloud_creds':random.choice(['True','False']),
+            'id_hce_intern':random.choice(['a','b','c']),
+            'id_meet_regularly':random.choice(['True','False']),
+            'id_survey_response':random.choice(['True','False']),
+            'id_environment':random.choice(['True','False']),
+            'id_Python':random.choice(['NE','BE','FA','IN','AD']),
+            'id_R':random.choice(['NE','BE','FA','IN','AD']),
+            'id_SQL':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Tableau/Looker':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Data Visualization':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Data Manipulation':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Text Analysis':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Machine Learning/Deep Learning':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Geospatial Data, Tools and Libraries':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Web Development (frontend, backend, full stack)':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Mobile App Development':random.choice(['NE','BE','FA','IN','AD']),
+            'id_Cloud Computing':random.choice(['NE','BE','FA','IN','AD'])
+            }
 
         for k in project_profile_select.keys():
             Select(self.selenium.find_element_by_id(k)).select_by_value(project_profile_select[k])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
+        return project_profile_enter['id_project_name'], project_profile_enter['id_organization']
 
-        #seg fault -- ERROR??
-        self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
+    ### END HELPER FUNCTIONS ###
 
-        # make sure the newly created project is listed.
-        # NOT LIST???
+    def test_access_list_projects_current_semester(self):
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('new_project')))
+        signupRedirect = self.live_server_url + "/accounts/google/login/"
+        self.assertEqual(signupRedirect,self.selenium.current_url)
 
-        #input("Partner")
+    def test_access_project_new_no_login(self):
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('new_project')))
+        signupRedirect = self.live_server_url + "/accounts/google/login/"
+        self.assertEqual(signupRedirect,self.selenium.current_url)
+
+    def test_access_project_new_user_login(self):
+        self.user_login(self.user)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('new_project')))
+
+        # You must be a partner to create projects.
+        expectedMsg = "You must be a partner to create projects."
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual(expectedMsg, msg_html.find("div").text)
+
+    def test_access_project_new_admin_login(self):
+        self.user_login(self.admin)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('new_project')))
+        # You must be a partner to create projects.
+        expectedMsg = "You must be a partner to create projects."
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual(expectedMsg, msg_html.find("div").text)
+
+    def test_access_project_new_student_login(self):
+        self.user_login(self.student)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('new_project')))
+        # You must be a partner to create projects.
+        expectedMsg = "You must be a partner to create projects."
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual(expectedMsg, msg_html.find("div").text)
+
+    def test_access_project_new_partner_login(self):
+        self.user_login(self.partner)
+        urlRedirect = self.live_server_url + "/"
+        self.assertEqual(urlRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('new_project')))
+
+        self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'DS Discovery Project Application')
+        newProjName, newProjOrganization = self.fill_in_project_application(self.partner)
+        self.personal_information_page_validation(self.partner, newProjName, newProjOrganization)
