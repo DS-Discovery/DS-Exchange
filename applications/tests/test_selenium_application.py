@@ -147,7 +147,7 @@ class AppIndexTest(StaticLiveServerTestCase):
             expectedMsg = "Team Roster for " + proj.project.project_name
             self.assertEqual(messages_html.find("h3").text,expectedMsg)
 
-            expectedSections = ["Partners","Students"]
+            expectedSections = ["Partners", "Students"]
             for i, webElement in enumerate(messages_html.find_all("h4")):
                 self.assertEqual(expectedSections[i],webElement.text)
 
@@ -280,7 +280,6 @@ class AppIndexTest(StaticLiveServerTestCase):
             skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
         for j in skillset:
             Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
-
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
         self.basic_information_page_validation(self.admin, student, skillset)
 
@@ -339,7 +338,7 @@ class AppIndexTest(StaticLiveServerTestCase):
             Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-        self.basic_information_page_validation(self.user, student, skillset) ##?????
+        self.basic_information_page_validation(self.user, student, skillset)
 
     def test_access_application_as_user_with_profile(self):
         self.user_login(self.user)
@@ -373,7 +372,7 @@ class AppIndexTest(StaticLiveServerTestCase):
             application = ApplicationFactory(project=proj, student=student)
             answerList.append(AnswerFactory(student=student, application=application))
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('app_index')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('app_index')))
         self.application_page_validation(answerList)
 
     def test_access_application_login_as_partner_not_reviewable(self):
@@ -393,7 +392,7 @@ class AppIndexTest(StaticLiveServerTestCase):
 
     def test_access_application_login_as_partner_reviewable(self):
         config.APPLICATIONS_REVIEWABLE = True
-        
+
         app_status = list(self.app_status_map.keys())
 
         projCt = random.randint(1, 10)
