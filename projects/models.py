@@ -46,7 +46,7 @@ class Project(models.Model):
     organization = models.CharField(max_length=100, blank=True)
     organization_description = models.TextField(max_length=2000, blank=True)
     organization_website = models.URLField(blank=True)
-    description = models.TextField(max_length=5000)
+    description = models.TextField(max_length=5000, blank=True)
     timeline = models.CharField(max_length=1500, blank=True)
     other_project_category = models.CharField(max_length=100,  blank=True, null=True)
     project_workflow = models.CharField(max_length=1000, blank=True)
@@ -92,7 +92,7 @@ class Project(models.Model):
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset = models.CharField(max_length=50, blank=True)
     deliverable = models.CharField(max_length=1000, blank=True)
-    skillset = models.JSONField(default=get_default_skills, null=False)
+    skillset = models.JSONField(default=get_default_skills, blank=True, null=True)
     additional_skills = models.CharField(max_length=500, blank=True, null=True)
     technical_requirements = models.CharField(max_length=500, blank=True, null=True)
     # models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student

@@ -82,7 +82,7 @@ def apply(request, project_name):
     if request.user.is_authenticated:
         email = request.user.email
     else:
-        messages.info("You must be logged in to apply to a project.")
+        messages.info(request, "You must be logged in to apply to a project.")
         return redirect('/')
 
     try:
