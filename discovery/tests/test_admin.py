@@ -51,6 +51,8 @@ class AdminTestCase(TestCase):
         cls.applicantTypes = ['students', 'scholars']
         cls.default_link_values = '&any_all=ANY&Sub=True&Rni=True&Int=True&Rwi=True&Ofs=True&Ofr=True&Ofa=True'
 
+    ### START HELPER FUNCTIONS ###
+
     def response_validation(self, response, groupType, semester, applicant, appList, filterArrayDict=None):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context.get("title"), "Status summary")
@@ -126,6 +128,8 @@ class AdminTestCase(TestCase):
                             self.assertEqual(i[k], statusList.count(k.upper()))
 
             self.assertEqual(len(table.paginated_rows.data), len(qualifiedSet))
+
+    ### END HELPER FUNCTIONS ###
 
     def test_access_status_summary_not_logged_in(self):
         response = self.client.get(reverse('admin:status_summary'))

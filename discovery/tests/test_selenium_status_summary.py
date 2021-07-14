@@ -84,6 +84,8 @@ class StatusSummaryTest(StaticLiveServerTestCase):
 
         cls.admin = AdminFactory(password=cls.password)
 
+    ### START HELPER FUNCTIONS ###
+
     def user_login(self, userObject):
         self.client.force_login(userObject)
         user = auth.get_user(self.client)
@@ -100,7 +102,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
         msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
         self.assertEqual("You must be a partner to create projects.", msg_html.find("div").text)
 
-    def page_validation(self, groupType, semester, applicant, appList, partnerProjectList, filterType = "ANY",filters=None, ):
+    def page_validation(self, groupType, semester, applicant, appList, partnerProjectList, filterType="ANY", filters=None):
         self.assertTrue(self.selenium.title == 'Status summary | Django site admin')
 
         selectedFilterSet = []
@@ -200,7 +202,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
                         qualifiedSet.add(proj)
                 if qualifiedSet:
                     for i in table:
-                        contactList=[]
+                        contactList = []
                         self.assertIn(i['Project'], qualifiedSet)
                         # check with partnerprojectList
                         if  not partnerProjectList == None:
@@ -209,12 +211,12 @@ class StatusSummaryTest(StaticLiveServerTestCase):
                                     contactList.append(j.partner.email_address)
 
                             if (len(contactList) == 0):
-                                self.assertEqual("—",i['Contact'])
+                                self.assertEqual("—", i['Contact'])
                             else:
                                 contactList.sort()
                                 tableContactList = i['Contact'].strip().split(", ")
                                 tableContactList.sort()
-                                self.assertEqual(contactList,tableContactList)
+                                self.assertEqual(contactList, tableContactList)
 
                         statusList = []
                         expectedRowCt = 0
@@ -238,6 +240,8 @@ class StatusSummaryTest(StaticLiveServerTestCase):
                     self.assertEqual(len(table), 1)
                     self.assertEqual(table[0]['Project'], '—')
 
+    ### END HELPER FUNCTIONS ###
+
     def test_access_status_summary_no_login(self):
         self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
@@ -252,18 +256,18 @@ class StatusSummaryTest(StaticLiveServerTestCase):
         self.user_login(self.partner)
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
         expectedMsg = "You are authenticated as " + self.partner.username +", but are not authorized to access this page. Would you like to login to a different account?"
-        self.assertEqual(expectedMsg,self.selenium.find_element_by_class_name('errornote').text)
+        self.assertEqual(expectedMsg, self.selenium.find_element_by_class_name('errornote').text)
 
     def test_access_status_summary_student_login(self):
         self.user_login(self.student)
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
         expectedMsg = "You are authenticated as " + self.student.username +", but are not authorized to access this page. Would you like to login to a different account?"
-        self.assertEqual(expectedMsg,self.selenium.find_element_by_class_name('errornote').text)
+        self.assertEqual(expectedMsg, self.selenium.find_element_by_class_name('errornote').text)
 
     def test_access_status_summary_admin_login(self):
         self.user_login(self.admin)
         self.assertTrue(self.selenium.title == 'Site administration | Django site admin')
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('admin:status_summary')))
         self.assertTrue(self.selenium.title == 'Status summary | Django site admin')
 
     def test_access_status_summary_admin_login_from_admin_page(self):
@@ -322,7 +326,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
                 appList.append(ApplicationFactory(project=projList[projNum], student=studentList[i]))
 
         self.user_login(self.admin)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('admin:status_summary')))
 
         # default
         applicant = 'students'
@@ -346,7 +350,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
             appList.append(ApplicationFactory(project=projList[random.randint(1, projCt) - 1]))
 
         self.user_login(self.admin)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('admin:status_summary')))
 
         # default
         groupType = 'student'
@@ -354,7 +358,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
         # click select all as default is none
         self.selenium.find_element_by_id("showSelect").click()
         for semester in self.semesters:
-            self.selenium.get('%s%s' % (self.live_server_url,reverse('admin:status_summary')))
+            self.selenium.get('%s%s' % (self.live_server_url, reverse('admin:status_summary')))
             self.page_validation(groupType, semester, applicant, appList, None)
 
     def test_status_summary_group_semester(self):
@@ -493,7 +497,7 @@ class StatusSummaryTest(StaticLiveServerTestCase):
         for i in range(0, projCt):
             projList.append(ProjectFactory(semester=self.semesters[random.randint(1, self.semesterCt)-1]))
 
-        for i in range(0,partnerProjCt):
+        for i in range(0, partnerProjCt):
             partnerProjectList.append(PartnerProjectInfoFactory(project=projList[random.randint(1, projCt)-1]))
 
         for i in range(0, studentCt):
@@ -514,4 +518,4 @@ class StatusSummaryTest(StaticLiveServerTestCase):
                 for applicant in self.applicantTypes:
                     for filterType in self.filterTypes:
                         self.selenium.get('%s%s' % (self.live_server_url, reverse('admin:status_summary')))
-                        self.page_validation(groupType, semester, applicant, appList, partnerProjectList,filterType, random.sample(self.filters, random.randint(1,len(self.filters)-1)))
+                        self.page_validation(groupType, semester, applicant, appList, partnerProjectList,filterType, random.sample(self.filters, random.randint(1, len(self.filters)-1)))
