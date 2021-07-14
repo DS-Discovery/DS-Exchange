@@ -95,6 +95,7 @@ def edit_student_profile(request):
         if form.is_valid():
             student.update(first_name = form.cleaned_data['first_name'])
             student.update(last_name = form.cleaned_data['last_name'])
+            student.update(student_id = form.cleaned_data['student_id'])
             student.update(college = form.cleaned_data['college'])
             student.update(major = form.cleaned_data['major'])
             student.update(year = form.cleaned_data['year'])
@@ -125,8 +126,7 @@ def edit_student_profile(request):
         form = EditStudentSignupForm(initial = data)
 
         return render(request, 'profile/edit_student_profile.html', {
-            'title' : "Student Edit profile/", 'form' : form, 'student': student, 'skills_tups': student.skills.items(),
-            'skills_json': json.dumps(student.skills)
+            'title' : "Student Edit profile/", 'form' : form, 'student': student, 'skills_tups': student.skills.items(), 'skills_json': json.dumps(student.skills)
         })
 
 
