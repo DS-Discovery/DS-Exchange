@@ -34,7 +34,6 @@ class ArchiveTest(StaticLiveServerTestCase):
         sem_map = {k:v for k, v in Project.sem_mapping.items()}
         cls.short_current_semester = 'SP21'
         cls.current_semester = sem_map[cls.short_current_semester]
-        config.CURRENT_SEMESTER = cls.current_semester
 
         cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
@@ -47,7 +46,6 @@ class ArchiveTest(StaticLiveServerTestCase):
     ### START HELPER FUNCTIONS ###
 
     def page_validation(self, projList, appList = None):
-
         self.assertTrue(self.selenium.title == 'Data Science Discovery Program')
 
         projNameList = []
@@ -63,7 +61,6 @@ class ArchiveTest(StaticLiveServerTestCase):
         jsonText = self.selenium.find_element_by_id("projects-json").get_attribute("text")
         projects_json = json.loads(jsonText)['projects']
         i = 0
-
         for project in projects_json:
             self.assertEqual(project['project_name'], projNameList[i])
             # always return non current semester even the semester is in the future
@@ -87,6 +84,7 @@ class ArchiveTest(StaticLiveServerTestCase):
     ### END HELPER FUNCTIONS ###
 
     def test_access_archive_projects(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         appCt = random.randint(1, 10)
         partnerCt = random.randint(1, 10)
@@ -98,9 +96,10 @@ class ArchiveTest(StaticLiveServerTestCase):
             projList.append(ProjectFactory(semester=self.semesters[random.randint(1, self.semesterCt)-1]))
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('index')))
-        self.page_validation (projList)
+        self.page_validation(projList)
 
     def test_access_archive_projects_random_semester_app(self):
+        config.CURRENT_SEMESTER = self.current_semester
         projCt = random.randint(1, 10)
         appCt = random.randint(1, 10)
         partnerCt = random.randint(1, 10)
@@ -115,4 +114,4 @@ class ArchiveTest(StaticLiveServerTestCase):
             appList.append(ApplicationFactory(project=projList[random.randint(1, projCt) - 1]))
 
         self.selenium.get('%s%s' % (self.live_server_url, reverse('index')))
-        self.page_validation (projList, appList)
+        self.page_validation(projList, appList)
