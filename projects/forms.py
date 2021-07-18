@@ -52,7 +52,7 @@ class EditProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skillset.items():
-            self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, required=False, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
         temp_d = {
         "a": "Academia",
         "b": "Social Sector",
