@@ -65,6 +65,8 @@ class StudentSignupTest(StaticLiveServerTestCase):
 
         cls.admin = AdminFactory(password=cls.password)
 
+    ### START HELPER FUNCTIONS ###
+
     def user_login(self, userObject):
         self.client.force_login(userObject)
         user = auth.get_user(self.client)
@@ -75,29 +77,21 @@ class StudentSignupTest(StaticLiveServerTestCase):
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
 
-    # def new_project_invalid_login_validation(self):
-    #     self.selenium.find_element_by_xpath('//a[@href="newproject"]').click()
-    #
-    #     msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-    #     self.assertEqual("You must be a partner to create projects.", msg_html.find("div").text)
-
-    def personal_information_page_validation(self,loginUser,pprojList= None):
-        #print(self.selenium.page_source)
+    def personal_information_page_validation(self, loginUser, pprojList= None):
         personalInfoMap = {
             "Name"    : loginUser.first_name + " " + loginUser.last_name,
             "Email"   : getattr(loginUser, "email_address",getattr(loginUser,"email","")),
         }
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Personal Information')]")
 
-        self.assertEqual(p.text,"Personal Information")
+        self.assertEqual(p.text, "Personal Information")
 
         for pgElement in self.selenium.find_elements_by_xpath("//h5[contains(text(),'Personal Information')]/following-sibling::p"):
             items = pgElement.text.split(": ")
             # check only return value on the field
             if(len(items) > 1):
                 value = items[1].strip()
-                #print(items[0], value,personalInfoMap[items[0]])
-                self.assertEqual(value,personalInfoMap[items[0]])
+                self.assertEqual(value, personalInfoMap[items[0]])
 
         # verify Projects
         if (pprojList != None) :
@@ -105,16 +99,16 @@ class StudentSignupTest(StaticLiveServerTestCase):
                 text = pgElement.text
                 role = text.split("Role: ",1)[1]
                 project_name = text.split(" (")[0]
-                organization = organization = re.search('\((.*)\)',text).group(1)
+                organization = re.search('\((.*)\)',text).group(1)
 
                 for x in pprojList:
                     if (x.project.project_name == project_name):
                         selectedPproj = x
                         break
 
-                self.assertNotEqual(selectedPproj,None)
-                self.assertEqual(role,selectedPproj.role)
-                self.assertEqual(organization,selectedPproj.project.organization)
+                self.assertNotEqual(selectedPproj, None)
+                self.assertEqual(role, selectedPproj.role)
+                self.assertEqual(organization, selectedPproj.project.organization)
 
     def basic_information_page_validation(self, loginUser, student, skillset):
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Basic Information')]")
@@ -136,12 +130,11 @@ class StudentSignupTest(StaticLiveServerTestCase):
             # check only return value on the field
             if(len(items) > 1):
                 value = items[1].strip()
-                #print(items[0], value,basicInfoMap[items[0]])
-                self.assertEqual(value,basicInfoMap[items[0]])
+                self.assertEqual(value, basicInfoMap[items[0]])
 
         # check on General Interest Statement
         p=self.selenium.find_element_by_xpath("//h5[contains(text(),\'General Interest Statement')]/following-sibling::p")
-        self.assertEqual(p.text,student.general_question)
+        self.assertEqual(p.text, student.general_question)
 
         # check for skill set return
         if (not skillset == None):
@@ -150,60 +143,60 @@ class StudentSignupTest(StaticLiveServerTestCase):
                 if (bfield):
                     skill = pgElement.text
                 else:
-                    skillLevel = next(k for k,v in Student.skill_levels_options.items() if v == pgElement.text)
-                    #print(skill, skillLevel)
+                    skillLevel = next(k for k, v in Student.skill_levels_options.items() if v == pgElement.text)
                     if (skillLevel.strip() == ""):
-                        self.assertNotIn(skill,skillset.keys())
+                        self.assertNotIn(skill, skillset.keys())
                     else:
-                        self.assertEqual(skillLevel,skillset[skill])
+                        self.assertEqual(skillLevel, skillset[skill])
                 bfield = not bfield
 
         # check on additional skills
         p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
-        self.assertEqual(p.text,student.additional_skills)
+        self.assertEqual(p.text, student.additional_skills)
+
+    ### END HELPER FUNCTIONS ###
 
     def test_access_student_signup_no_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
         self.assertEqual(self.logonRedirect,self.selenium.current_url)
 
     def test_access_student_signup_user_login(self):
         self.user_login(self.user)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
     def test_access_student_signup_partner_login(self):
         self.user_login(self.partner)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-    def test_access_student_signup_student_login(self):
-        self.user_login(self.student)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
-        # show profile page directly information page
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-        self.assertEqual("You have already signed up.", msg_html.find("div").text)
-
-        self.basic_information_page_validation(self.student,self.student_obj, None)
+    # No longer relevant because removed the message "You have already signed up."
+    # def test_access_student_signup_student_login(self):
+    #     self.user_login(self.student)
+    #     self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
+    #     # show profile page directly information page
+    #     msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+    #     self.assertEqual("You have already signed up.", msg_html.find("div").text)
+    #
+    #     self.basic_information_page_validation(self.student,self.student_obj, None)
 
     def test_access_student_signup_admin_login(self):
         self.user_login(self.admin)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
     def test_access_student_signup_edit_profile_as_user(self):
         self.user_login(self.user)
-        # TBC After authenticated, redirected to /admin ??
-        # need to reload the page again for now
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
+        student = StudentFactory(email_address=self.user.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
         for j in range(0, len(ifield)) :
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
-        bfield = ["college","year"]
+        bfield = ["college", "year"]
         for j in range(0, len(bfield)) :
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 
@@ -214,28 +207,26 @@ class StudentSignupTest(StaticLiveServerTestCase):
             Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
 
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-        # print(self.selenium.page_source)
         self.basic_information_page_validation(self.user, student, skillset)
 
     def test_access_student_signup_as_partner(self):
 
         partner = UserFactory(password=self.password)
-        partner_obj=PartnerFactory(email_address=partner.email,first_name=partner.first_name, last_name = partner.last_name)
+        partner_obj=PartnerFactory(email_address=partner.email, first_name=partner.first_name, last_name = partner.last_name)
 
         projCt = random.randint(1, 10)
         partnerProjList = []
 
         for i in range(0, projCt):
-            partnerProjList.append( PartnerProjectInfoFactory(project=ProjectFactory(),partner=partner_obj))
+            partnerProjList.append(PartnerProjectInfoFactory(project=ProjectFactory(), partner=partner_obj))
 
         self.user_login(partner)
 
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
-        #TBD
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
+        student = StudentFactory(email_address=partner.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
         for j in range(0, len(ifield)) :
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
@@ -257,7 +248,7 @@ class StudentSignupTest(StaticLiveServerTestCase):
     def test_access_student_signup_as_student(self):
 
         student = UserFactory(password=self.password)
-        student_obj = StudentFactory(email_address=student.email,first_name=student.first_name, last_name = student.last_name)
+        student_obj = StudentFactory(email_address=student.email, first_name=student.first_name, last_name = student.last_name)
 
         # add application associate to the student
         appCt = random.randint(1, 10)
@@ -268,29 +259,23 @@ class StudentSignupTest(StaticLiveServerTestCase):
 
         self.user_login(student)
 
-        # TBC After authenticated, redirected to /admin ??
-        # need to reload the page again for now
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
 
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-        self.assertEqual("You have already signed up.", msg_html.find("div").text)
-
-        # show Basic Information directly information page
-        self.basic_information_page_validation(student,student_obj, student_obj._skills)
+        # No longer relevant because removed the message "You have already signed up."
+        # msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
+        # self.assertEqual("You have already signed up.", msg_html.find("div").text)
 
     def test_access_student_signup_edit_profile_as_admin(self):
         self.user_login(self.admin)
-        # TBC After authenticated, redirected to /admin ??
-        # need to reload the page again for now
         self.selenium.get('%s%s' % (self.live_server_url,reverse('student_signup')))
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
-        student = StudentFactory()
-        ifield = ["first_name","last_name","student_id","major","resume_link","general_question", "additional_skills"]
+        student = StudentFactory(email_address=self.admin.email)
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
         for j in range(0, len(ifield)) :
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
-        bfield = ["college","year"]
+        bfield = ["college", "year"]
         for j in range(0, len(bfield)) :
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 

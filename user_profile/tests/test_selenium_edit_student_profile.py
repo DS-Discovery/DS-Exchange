@@ -36,7 +36,7 @@ class EditStudentProfileTest(StaticLiveServerTestCase):
         super().setUpClass()
 
         chrome_options = Options()
-        #chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-extensions")
         chrome_options.add_argument("--disable-infobars")
         chrome_options.add_argument('--disable-gpu')
@@ -75,8 +75,6 @@ class EditStudentProfileTest(StaticLiveServerTestCase):
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
 
-    ### END HELPER FUNCTIONS ###
-
     def personal_information_page_validation(self, loginUser, pprojList= None):
         personalInfoMap = {
             "Name"    : loginUser.first_name + " " + loginUser.last_name,
@@ -109,17 +107,17 @@ class EditStudentProfileTest(StaticLiveServerTestCase):
                         selectedPproj = x
                         break
 
-                self.assertNotEqual(selectedPproj,None)
-                self.assertEqual(role,selectedPproj.role)
-                self.assertEqual(organization,selectedPproj.project.organization)
+                self.assertNotEqual(selectedPproj, None)
+                self.assertEqual(role, selectedPproj.role)
+                self.assertEqual(organization, selectedPproj.project.organization)
 
     def basic_information_page_validation(self, loginUser, student, skillset):
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Basic Information')]")
-        self.assertEqual(p.text,"Basic Information")
+        self.assertEqual(p.text, "Basic Information")
 
         basicInfoMap = {
             "Name"    : student.first_name + " " + student.last_name,
-            "Email"   : getattr(loginUser, "email_address",getattr(loginUser,"email","")), # Login user's email address, UserFacory doesn't have attr email_address, instead it store email to attribute email
+            "Email"   : getattr(loginUser, "email_address", getattr(loginUser, "email", "")), # Login user's email address, UserFacory doesn't have attr email_address, instead it store email to attribute email
             "SID"     : student.student_id,
             "Major"   : student.major,
             "EGT"     : Student.egt_mapping[student.year], # need to convert to long NAME
@@ -133,12 +131,11 @@ class EditStudentProfileTest(StaticLiveServerTestCase):
             # check only return value on the field
             if(len(items) > 1):
                 value = items[1].strip()
-                #print(items[0], value,basicInfoMap[items[0]])
-                self.assertEqual(value,basicInfoMap[items[0]])
+                self.assertEqual(value, basicInfoMap[items[0]])
 
         # check on General Interest Statement
         p=self.selenium.find_element_by_xpath("//h5[contains(text(),\'General Interest Statement')]/following-sibling::p")
-        self.assertEqual(p.text,student.general_question)
+        self.assertEqual(p.text, student.general_question)
 
         # check for skill set return
         if (not skillset == None):
@@ -148,47 +145,48 @@ class EditStudentProfileTest(StaticLiveServerTestCase):
                     skill = pgElement.text
                 else:
                     skillLevel = next(k for k,v in Student.skill_levels_options.items() if v == pgElement.text)
-                    #print(skill, skillLevel)
                     if (skillLevel.strip() == ""):
-                        self.assertNotIn(skill,skillset.keys())
+                        self.assertNotIn(skill, skillset.keys())
                     else:
-                        self.assertEqual(skillLevel,skillset[skill])
+                        self.assertEqual(skillLevel, skillset[skill])
                 bfield = not bfield
 
         # check on additional skills
         p=self.selenium.find_element_by_xpath("//h6[contains(text(),\'Additional Skills')]/following-sibling::p")
-        self.assertEqual(p.text,student.additional_skills)
+        self.assertEqual(p.text, student.additional_skills)
+
+    ### END HELPER FUNCTIONS ###
 
     def test_access_edit_student_profile_no_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
-        self.assertEqual(self.logonRedirect,self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('edit_student_profile')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
 
     def test_access_edit_student_profile_user_login(self):
         self.user_login(self.user)
-        self.assertEqual(self.logonRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('edit_student_profile')))
 
     def test_access_edit_student_profile_partner_login(self):
         self.user_login(self.partner)
-        self.assertEqual(self.logonRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('edit_student_profile')))
 
     def test_access_edit_student_profile_student_login(self):
         self.user_login(self.student)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('edit_student_profile')))
 
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
         # show profile page directly information page
         #edit profile page -- submit -- then check
         student = StudentFactory()
-        ifield = ["first_name","last_name", "student_id", "major","resume_link","general_question", "additional_skills"]
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
 
-        for j in range(0, len(ifield)) :
+        for j in range(0, len(ifield)):
             #clear the existing field
             self.selenium.find_element_by_name(ifield[j]).clear()
             self.selenium.find_element_by_name(ifield[j]).send_keys(getattr(student, ifield[j]))
 
-        bfield = ["college","year"]
+        bfield = ["college", "year"]
         for j in range(0, len(bfield)) :
             Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
 
@@ -203,29 +201,92 @@ class EditStudentProfileTest(StaticLiveServerTestCase):
 
     def test_access_edit_student_profile_admin_login(self):
         self.user_login(self.admin)
-        self.assertEqual(self.logonRedirect,self.selenium.current_url)
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
+        self.assertEqual(self.logonRedirect, self.selenium.current_url)
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('edit_student_profile')))
 
     def test_access_edit_student_profile_as_student_no_update(self):
 
         student = UserFactory(password=self.password)
-        student_obj = StudentFactory(email_address=student.email,first_name=student.first_name, last_name = student.last_name)
+        student_obj = StudentFactory(email_address=student.email, first_name=student.first_name, last_name = student.last_name)
+        print(student_obj._skills)
+        print(student_obj.to_dict()['skills'])
 
         # add application associate to the student
         appCt = random.randint(1, 10)
         appList = []
 
         for i in range(1, appCt):
-            appList.append(ApplicationFactory(project=ProjectFactory(),student=student_obj))
+            appList.append(ApplicationFactory(project=ProjectFactory(), student=student_obj))
 
         self.user_login(student)
 
-        # TBC After authenticated, redirected to /admin ??
         # need to reload the page again for now
-        self.selenium.get('%s%s' % (self.live_server_url,reverse('edit_student_profile')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('edit_student_profile')))
 
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
 
+        # student may not fill up all the skills. UI doesn't allow non-selected skill Level;
+        # update all for now
+        skillset = {}
+        for skill in Student.default_skills:
+            skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
+        for j in skillset:
+            Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
+
         # no update
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
-        self.basic_information_page_validation(student,student_obj, student_obj._skills)
+
+        self.basic_information_page_validation(student, student_obj, skillset)
+
+    def test_access_edit_student_profile_as_user_singup(self):
+        self.user_login(self.user)
+        # no profile, sign up first
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('student_signup')))
+
+        self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
+
+        student = StudentFactory()
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
+        for field in ifield:
+            self.selenium.find_element_by_name(field).send_keys(getattr(student, field))
+
+        bfield = ["college", "year"]
+        for j in range(0, len(bfield)) :
+            Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(student, bfield[j]))
+
+        skillset = {}
+        for skill in Student.default_skills:
+            skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
+        for j in skillset:
+            Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
+
+        self.selenium.find_element_by_xpath("//input[@type='submit']").click()
+
+        self.basic_information_page_validation(self.user,student, skillset)
+        # check via the edit profile button
+        self.selenium.find_element_by_xpath("//a[@href='/profile/edit']").click()
+        url = self.live_server_url+reverse('edit_student_profile')
+        self.assertEqual(self.selenium.current_url, url)
+
+        # update the new info except email email_address
+
+        self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'Edit Profile')
+
+        new_student = StudentFactory()
+        ifield = ["first_name", "last_name", "student_id", "major", "resume_link", "general_question", "additional_skills"]
+        for field in ifield:
+            self.selenium.find_element_by_name(field).clear()
+            self.selenium.find_element_by_name(field).send_keys(getattr(new_student, field))
+
+        bfield = ["college", "year"]
+        for j in range(0, len(bfield)) :
+            Select(self.selenium.find_element_by_name(bfield[j])).select_by_value(getattr(new_student, bfield[j]))
+
+        skillset = {}
+        for skill in Student.default_skills:
+            skillset[skill] = random.choice(list(filter(None, Student.skill_levels_options.keys())))
+        for j in skillset:
+            Select(self.selenium.find_element_by_name(j)).select_by_value(skillset[j])
+
+        self.selenium.find_element_by_xpath("//input[@type='submit']").click()
+        self.basic_information_page_validation(self.user, new_student, skillset)
