@@ -397,13 +397,14 @@ def edit_project(request):
             data = project.__dict__
             form = EditProjectForm(initial = data)
 
-            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is bceause project creation hardcoded this association.
+            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is because project creation hardcoded this association. + add blank skill level option
             skill_levels_inverse = {
             'Familiar':'FA',
             'Beginner':'BE',
             'Intermediate':'IN',
             'Advanced':'AD',
-            'No Experience':'NE'
+            'No Experience':'NE',
+            '':''
             }
             return render(request, 'projects/edit_project.html', {'form': form, 'project': project, 'skill_levels_inverse': skill_levels_inverse})
 
