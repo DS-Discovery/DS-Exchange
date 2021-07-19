@@ -127,7 +127,7 @@ def edit_student_profile(request):
         form = EditStudentSignupForm(initial = data)
 
         return render(request, 'profile/edit_student_profile.html', {
-            'title' : "Student Edit profile/", 'form' : form, 'student': student, 'skills_tups': student.skills.items(), 'skills_json': json.dumps(student.skills)
+            'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items(), 'skills_json': json.dumps(student.skills)
         })
 
 
