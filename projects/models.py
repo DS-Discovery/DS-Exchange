@@ -12,14 +12,12 @@ def get_default_skills():
         "Python": "",
         "R": "",
         "SQL": "",
-        "Tableau/Looker": "",
+        "Exploratory Data Analysis": "",
         "Data Visualization": "",
-        "Data Manipulation": "",
-        "Text Analysis": "",
-        "Machine Learning/Deep Learning": "",
-        "Geospatial Data, Tools and Libraries": "",
-        "Web Development (frontend, backend, full stack)": "",
-        "Mobile App Development": "",
+        "Geospatial Data Analysis": "",
+        "Natural Language Processing": "",
+        "Deep Learning": "",
+        "Computer Vision": "",
         "Cloud Computing": "",
     }
 
@@ -87,7 +85,7 @@ class Project(models.Model):
     embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
     project_category = models.CharField(max_length=200, blank=True, null=True)
-    project_name = models.CharField(max_length=200)
+    project_name = models.CharField(max_length=200, null=False, blank=False)
     student_num = models.IntegerField(default=0)
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset = models.CharField(max_length=50, blank=True)
