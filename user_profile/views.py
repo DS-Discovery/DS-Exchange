@@ -6,15 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from flags.state import flag_enabled
-
 from students.models import Student
 from projects.models import Semester, Partner, PartnerProjectInfo
 
 from .forms import EditStudentSignupForm
 
 from constance import config
-
 
 logger = logging.getLogger(__name__)
 sem_mapping = {v: k for k, v in Semester.choices}
@@ -32,9 +29,9 @@ def student_signup(request):
 
     student = Student.objects.filter(email_address = email)
 
-    if len(student) > 0:
-        messages.info(request, 'You have already signed up.')
-        return redirect('/profile')
+    # if len(student) > 0:
+    #     messages.info(request, 'You have already signed up.')
+    #     return redirect('/profile/')
 
     if request.method == 'POST':
         form = EditStudentSignupForm(request.POST)
@@ -49,7 +46,8 @@ def student_signup(request):
                 major = form.cleaned_data['major'],
                 year = form.cleaned_data['year'],
                 resume_link= form.cleaned_data['resume_link'],
-                general_question = form.cleaned_data['general_question']
+                general_question = form.cleaned_data['general_question'],
+                additional_skills = form.cleaned_data['additional_skills']
             )
 
             skills = s.skills
@@ -60,7 +58,7 @@ def student_signup(request):
 
             s.save()
 
-            return redirect('/profile')
+            return redirect('/profile/')
 
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
@@ -69,11 +67,11 @@ def student_signup(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
 
     else:
         form = EditStudentSignupForm()
-        return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create Profile",'form' : form})
+        return render(request, 'profile/edit_student_profile.html', {'title' : "Student Create profile/",'form' : form})
 
 
 @login_required
@@ -82,13 +80,13 @@ def edit_student_profile(request):
     if request.user.is_authenticated:
         email = request.user.email
 
-    if not flag_enabled('APPLICATIONS_OPEN'):
+    if not config.APPLICATIONS_OPEN:
         messages.info(
             request,
             "Applications are currently closed and applicants are not longer allowed to edit their profiles. "
             "If you believe you have received this message in error, please email ds-discovery@berkeley.edu."
         )
-        return redirect("/profile")
+        return redirect("/profile/")
 
     if request.method == 'POST':
         print("Post request: ", request.POST)
@@ -98,6 +96,7 @@ def edit_student_profile(request):
         if form.is_valid():
             student.update(first_name = form.cleaned_data['first_name'])
             student.update(last_name = form.cleaned_data['last_name'])
+            student.update(student_id = form.cleaned_data['student_id'])
             student.update(college = form.cleaned_data['college'])
             student.update(major = form.cleaned_data['major'])
             student.update(year = form.cleaned_data['year'])
@@ -111,7 +110,7 @@ def edit_student_profile(request):
 
             student.update(_skills = skills)
 
-            return redirect('/profile')
+            return redirect('/profile/')
 
         else:
             logger.error(f"Invalid profile form for student {student}:\n{form}")
@@ -120,7 +119,7 @@ def edit_student_profile(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
 
     else:
         student = Student.objects.get(email_address = email)
@@ -128,8 +127,7 @@ def edit_student_profile(request):
         form = EditStudentSignupForm(initial = data)
 
         return render(request, 'profile/edit_student_profile.html', {
-            'title' : "Student Edit Profile", 'form' : form, 'student': student, 'skills_tups': student.skills.items(),
-            'skills_json': json.dumps(student.skills)
+            'title' : "Student Edit profile/", 'form' : form, 'student': student, 'skills_tups': student.skills.items(), 'skills_json': json.dumps(student.skills)
         })
 
 
@@ -192,7 +190,7 @@ def login_callback(request):
         email = request.user.email
 
     if Partner.objects.filter(email_address = email).exists() or Student.objects.filter(email_address = email).exists():
-        return redirect("/profile")
+        return redirect("/profile/")
     else:
         messages.info(request, "Please complete your student profile.")
         return redirect("/profile/signup")

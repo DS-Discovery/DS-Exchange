@@ -1,7 +1,6 @@
 {% extends 'three_column_view.html' %}
 {% load helperfuncs %}
 {% load static %}
-{% load feature_flags %}
 
 <!-- TODO -->
 
@@ -32,8 +31,6 @@
 
 {% block second_column %}
 
-{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
-
 <div class="p-2 my-1" id="application-questions">
 
     {% if apps_reviewable %}
@@ -56,8 +53,6 @@
 
 
 {% block third_column %}
-
-{% flag_enabled 'APPLICATIONS_REVIEWABLE' as apps_reviewable %}
 
 {% if apps_reviewable %}
 

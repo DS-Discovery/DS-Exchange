@@ -52,7 +52,8 @@ container
     // This allows the student's skills to be preselected when editing their profile
     {% for skill in student.skills %}
         {% with student.skills|index:skill as skillLevel %}
-            $("select[name='{{ skill }}'] option[value='{{ skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
+          console.log('{{skillLevel}}');
+            $("select[name='{{ skill }}'] option[value='{{ student.skill_levels_inverse|index:skillLevel }}']").prop("selected", true);
         {% endwith %}
     {% endfor %}
 </script>

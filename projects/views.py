@@ -13,7 +13,6 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from constance import config
-from flags.state import flag_enabled
 
 from applications.forms import AnswerForm
 from applications.models import Answer, Application
@@ -96,7 +95,7 @@ def apply(request, project_name):
             messages.info(request, "You have not yet signed up. Please complete the signup form to continue.")
             return redirect("/profile/signup")
 
-    if not flag_enabled('APPLICATIONS_OPEN'):
+    if not config.APPLICATIONS_OPEN:
         messages.info(
             request,
             "Applications are currently closed. If you believe you have received "
@@ -280,6 +279,9 @@ def proj_creation(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
+    if Partner.objects.filter(email_address=email).count() == 0:
+        messages.info(request, "You must be a partner to create projects.")
+        return redirect("/projects")
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
@@ -356,7 +358,7 @@ def proj_creation(request):
                 role = "Sponsor"
             )
             link.save()
-            return redirect('/profile')
+            return redirect('/profile/')
         else:
             partner = Partner.objects.get(email_address = email)
             logger.error(f"Invalid form for partner {partner}:\n{form}")
@@ -365,7 +367,7 @@ def proj_creation(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})
@@ -395,13 +397,14 @@ def edit_project(request):
             data = project.__dict__
             form = EditProjectForm(initial = data)
 
-            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is bceause project creation hardcoded this association.
+            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is because project creation hardcoded this association. + add blank skill level option
             skill_levels_inverse = {
             'Familiar':'FA',
             'Beginner':'BE',
             'Intermediate':'IN',
             'Advanced':'AD',
-            'No Experience':'NE'
+            'No Experience':'NE',
+            '':''
             }
             return render(request, 'projects/edit_project.html', {'form': form, 'project': project, 'skill_levels_inverse': skill_levels_inverse})
 
