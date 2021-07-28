@@ -20,7 +20,7 @@ from students.models import Student
 
 from .forms import EditProjectForm
 from .forms import PartnerProjCreationForm
-from .models import Partner, PartnerProjectInfo, Project, Question
+from .models import Partner, PartnerProjectInfo, Project, Question, get_default_skills
 from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
@@ -124,8 +124,6 @@ def apply(request, project_name):
 
         post = request.POST.copy()
 
-        # print(post)
-
         def querydict_to_dict(query_dict):
             data = {}
             for key in query_dict.keys():
@@ -171,6 +169,13 @@ def apply(request, project_name):
             ans_list.append(new_ans)
 
         # print(ans_list)
+        for skill in get_default_skills():
+            if (skill not in student.skills.keys()) or (not student.skills[skill]):
+                messages.info(
+                    request,
+                    'Please ensure you have filled out your skill levels in your profile.'
+                )
+                return redirect(request.path_info)
 
         if is_valid:
 
