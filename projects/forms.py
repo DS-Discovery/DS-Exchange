@@ -92,7 +92,11 @@ class EditProjectForm(forms.ModelForm):
             'additional_skills',
         )
 
-
+        widgets = {
+            'timeline': forms.Textarea(attrs={'rows': 10, 'cols': 100}),
+            'project_workflow': forms.Textarea(attrs={'rows': 10, 'cols': 100})
+        }
+        
         labels = {
             "email": "Email address",
             "marketing_channel": "How did you hear about us?",
@@ -218,6 +222,10 @@ class PartnerProjCreationForm(forms.ModelForm):
             'environment',
         )
 
+        widgets = {
+            'timeline': forms.Textarea(attrs={'rows': 10, 'cols': 100}),
+            'project_workflow': forms.Textarea(attrs={'rows': 10, 'cols': 100})
+        }
 
         labels = {
             "email": "Email address",
