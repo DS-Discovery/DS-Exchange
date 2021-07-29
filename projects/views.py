@@ -175,7 +175,7 @@ def apply(request, project_name):
                     request,
                     'Please ensure you have filled out your skill levels in your profile.'
                 )
-                return redirect(request.path_info)
+                return redirect("/profile/")
 
         if is_valid:
 
