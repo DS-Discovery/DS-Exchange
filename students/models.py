@@ -24,7 +24,6 @@ class Student(models.Model):
         "": "",
         "NE": "No experience",
         "BE": "Beginner",
-        "FA": "Familiar",
         "IN": "Intermediate",
         "AD": "Advanced",
     }
