@@ -30,7 +30,7 @@ class Student(models.Model):
     }
 
     skill_levels_inverse = {v: k for k, v in skill_levels_options.items()}
-    
+
     skill_levels = skill_levels_options.items()
 
     default_skills = get_default_skills()
@@ -59,6 +59,7 @@ class Student(models.Model):
     def skills(self):
         d = self.default_skills.copy()
         d.update(self._skills)
+
         for s in d:
             try:
                 d[s] = self.skill_levels_options[d[s]]

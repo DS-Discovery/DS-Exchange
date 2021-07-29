@@ -113,6 +113,7 @@ class Project(models.Model):
             "id": self.id,
             "project_name": self.project_name,
             "organization": self.organization,
+            "organization_description": self.organization_description,
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
             "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],

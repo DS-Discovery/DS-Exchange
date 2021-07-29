@@ -142,8 +142,8 @@ function replaceDescription(project) {
 
     var htmlDescription = mdConverter.makeHtml(project.description);
     var htmlTimeline = mdConverter.makeHtml(project.timeline);
-    var htmlWorkflow = mdConverter.makeHtml(project.project_workflow)
-    var htmlOrgDescription = mdConverter.makeHtml(project.organization_description)
+    var htmlWorkflow = mdConverter.makeHtml(project.project_workflow);
+    var htmlOrgDescription = mdConverter.makeHtml(project.organization_description);
 
     $(descriptionQuery).append(`
         <h5 style="display: inline;">${ project.project_name }</h5>

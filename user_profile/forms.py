@@ -27,7 +27,7 @@ class EditStudentSignupForm(forms.ModelForm):
             'major',
             'year',
             'resume_link',
-            'general_question', 
+            'general_question',
             # *model.default_skills.keys(),
         )
 
@@ -54,11 +54,11 @@ class EditStudentSignupForm(forms.ModelForm):
             self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
             self.fields[s].initial = self.instance.skills[s]
         self.fields["additional_skills"] = CharField(
-            max_length=1000, widget=Textarea(attrs={'class': 'form-control'}), 
+            max_length=1000, widget=Textarea(attrs={'class': 'form-control'}),
             label=_("Please list any additional technical competencies that you think could be relevant.")
         )
         self.fields["additional_skills"].initial = self.instance.additional_skills
-        # self.labels["additional_skills"] = 
+        # self.labels["additional_skills"] =
 
 
 # class EditPartnerSignupForm(forms.ModelForm):
@@ -69,4 +69,3 @@ class EditStudentSignupForm(forms.ModelForm):
 #             'first_name',
 #             'last_name',
 #         )
-
