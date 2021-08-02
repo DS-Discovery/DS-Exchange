@@ -39,13 +39,21 @@ class AdminTestCase(TestCase):
 
         cls.project = ProjectFactory()
 
+        #default student
         cls.groupTypes = ['student', 'project']
+        #default current Semester (config.CURRENT_SEMESTER)
         cls.semesters = [s[0] for s in Semester.choices]
         cls.semesterCt = len(cls.semesters)
-        cls.filters = ['data_scholar','Sub','Rni','Int','Rwi','Ofs','Ofr','Ofa']
-        cls.filterStates = ['IN','OUT']
+        #default ALL IN
+        cls.filters = ['Sub','Rni','Int','Rwi','Ofs','Ofr','Ofa']
+        cls.filterTypes = ['ANY', 'ALL']
+        #default 'students'
+        cls.applicantTypes = ['students', 'scholars']
+        cls.default_link_values = '&any_all=ANY&Sub=True&Rni=True&Int=True&Rwi=True&Ofs=True&Ofr=True&Ofa=True'
 
-    def response_validation(self, response, groupType, semester, appList, filterArrayDict=None):
+    ### START HELPER FUNCTIONS ###
+
+    def response_validation(self, response, groupType, semester, applicant, appList, filterArrayDict=None):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context.get("title"), "Status summary")
         self.assertEqual(response.context.get("semester_query"), semester)
@@ -68,44 +76,60 @@ class AdminTestCase(TestCase):
         else:
             selectedFilterSet = self.filters.copy()
 
+        selectedFilterSet = [x.upper() for x in selectedFilterSet]
+
         table = response.context.get("table")
-        expectedTableRows = 0
-        if groupType == 'student':
-            # Return only applied student
-            for i in table.paginated_rows.data:
-                statusList= []
-                expectedRowCt = 0
-                for j in appList:
-                    if j.project.semester == semester and j.student.email_address == i['Student'] and j.status in selectedFilterSet:
-                        if ('data_scholar' in selectedFilterSet) or not j.student.is_scholar():
-                            expectedRowCt = expectedRowCt + 1
-                            statusList.append(j.status)
 
-                if expectedRowCt > 0:
-                    self.assertEqual(i['Total'], expectedRowCt)
-                    expectedTableRows = expectedTableRows + 1
-                    for k in self.filters:
-                        if not k == 'data_scholar':
+        qualifiedAppList = []
+        qualifiedSet = set()
+        # compute the expected Total rows
+        for j in appList:
+            if j.project.semester == semester and j.status in selectedFilterSet:
+                if (not ((applicant == 'scholars') and (not j.student.is_scholar))):
+                    qualifiedAppList.append(j)
+
+        if len(qualifiedAppList) > 0:
+            if groupType == 'student':
+                for j in qualifiedAppList:
+                    qualifiedSet.add(j.student.email_address)
+
+                # Return only applied student
+                for i in table.paginated_rows.data:
+                    self.assertIn(i['Student'], qualifiedSet)
+                    statusList= []
+                    expectedRowCt = 0
+                    for j in appList:
+                        if j.student.email_address == i['Student'] and j.project.semester == semester:
+                            if (not ((applicant == 'scholars') and (not j.student.is_scholar))):
+                                expectedRowCt = expectedRowCt + 1
+                                statusList.append(j.status)
+
+                    if expectedRowCt > 0:
+                        self.assertEqual(i['Total'], expectedRowCt)
+                        for k in self.filters:
                             self.assertEqual(i[k], statusList.count(k.upper()))
-        else:
-            for i in table.paginated_rows.data:
-                statusList = []
-                expectedRowCt = 0
-                for j in appList:
-                    if j.project.semester == semester and j.project.project_name == i['Project'] and j.status in selectedFilterSet:
-                        if ('data_scholar' in selectedFilterSet) or not j.student.is_scholar():
-                            expectedRowCt = expectedRowCt + 1
-                            statusList.append(j.status)
+            else:
+                for j in qualifiedAppList:
+                    qualifiedSet.add(j.project.project_name)
 
-                if expectedRowCt > 0:
-                    self.assertEqual(i['Total'], expectedRowCt)
-                    expectedTableRows = expectedTableRows + 1
-                    for k in self.filters:
-                        if not k == 'data_scholar':
+                for i in table.paginated_rows.data:
+                    self.assertIn(i['Project'], qualifiedSet)
+                    statusList = []
+                    expectedRowCt = 0
+                    for j in appList:
+                        if j.project.project_name == i['Project'] and j.project.semester == semester:
+                            if (not ((applicant == 'scholars') and (not j.student.is_scholar))):
+                                expectedRowCt = expectedRowCt + 1
+                                statusList.append(j.status)
+
+                    if expectedRowCt > 0:
+                        self.assertEqual(i['Total'], expectedRowCt)
+                        for k in self.filters:
                             self.assertEqual(i[k], statusList.count(k.upper()))
 
-        if expectedTableRows > 0:
-            self.assertEqual(len(response.context.get("table").paginated_rows.data), expectedTableRows)
+            self.assertEqual(len(table.paginated_rows.data), len(qualifiedSet))
+
+    ### END HELPER FUNCTIONS ###
 
     def test_access_status_summary_not_logged_in(self):
         response = self.client.get(reverse('admin:status_summary'))
@@ -156,25 +180,19 @@ class AdminTestCase(TestCase):
                              fetch_redirect_response=True)
 
     def test_access_status_summary_admin_logged_in(self):
+
+        appCt = random.randint(1, 10)
+        appList = []
+
+        for i in range(0, appCt):
+            appList.append(ApplicationFactory(project=self.project))
+
         self.client.login(username=self.admin.username, password=self.password)
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        AppCt = random.randint(1, 10)
-        for i in range(0, AppCt):
-            ApplicationFactory(project=self.project)
-
         response = self.client.get(reverse('admin:status_summary'))
         self.assertEqual(response.status_code, 200)
-
-        # default settings
-        current_sem = [item for item in response.context.get("semester_support") if item[1] == config.CURRENT_SEMESTER]
-        self.assertEqual(response.context.get("title"), "Status summary")
-        self.assertEqual(response.context.get("semester_query"), current_sem[0][0])
-        self.assertEqual(response.context.get("group_query"), "student")
-        self.assertEqual(len(response.context.get("filter_in_query")), 0)
-
-        self.assertEqual(len(response.context.get("table").paginated_rows.data), AppCt)
 
     def test_status_summary_group_random_app(self):
         appCt = random.randint(1, 10)
@@ -195,11 +213,13 @@ class AdminTestCase(TestCase):
         response = self.client.get(reverse('admin:status_summary'))
         self.assertEqual(response.status_code, 200)
 
+        #default applicant
+        applicant = 'students'
         for groupType in self.groupTypes:
             response = self.client.get(f'/admin/status_summary/?group='+groupType)
             current_sem = [item for item in response.context.get("semester_support") if item[1] == config.CURRENT_SEMESTER]
             semester = current_sem[0][0]
-            self.response_validation(response, groupType, semester, appList)
+            self.response_validation(response, groupType, semester, applicant, appList)
 
     def test_status_summary_group_random_proj(self):
         studentCt = random.randint(1, 10)
@@ -225,15 +245,16 @@ class AdminTestCase(TestCase):
         response = self.client.get(reverse('admin:status_summary'))
         self.assertEqual(response.status_code, 200)
 
+        # default
+        applicant = 'students'
         for groupType in self.groupTypes:
             response = self.client.get(f'/admin/status_summary/?group='+groupType)
             self.assertEqual(response.status_code, 200)
 
             current_sem = [item for item in response.context.get("semester_support") if item[1] == config.CURRENT_SEMESTER]
-
             semester = current_sem[0][0]
 
-            self.response_validation(response, groupType, semester, appList)
+            self.response_validation(response, groupType, semester, applicant, appList)
 
     def test_status_summary_semester(self):
         projCt = random.randint(1, 10)
@@ -255,11 +276,12 @@ class AdminTestCase(TestCase):
         response = self.client.get(reverse('admin:status_summary'))
         self.assertEqual(response.status_code, 200)
 
-        # default groupType
+        # default value
         groupType = 'student'
+        applicant = 'students'
         for semester in self.semesters:
-            response = self.client.get(f'/admin/status_summary/?semester='+semester)
-            self.response_validation(response, groupType, semester, appList)
+            response = self.client.get(f'/admin/status_summary/?semester='+semester+self.default_link_values)
+            self.response_validation(response, groupType, semester, applicant, appList)
 
     def test_status_summary_group_semester(self):
         studentCt = random.randint(1, 10)
@@ -284,143 +306,15 @@ class AdminTestCase(TestCase):
         response = self.client.get(reverse('admin:status_summary'))
         self.assertEqual(response.status_code, 200)
 
+        #default applicant
+        applicant = 'students'
         for groupType in self.groupTypes:
             for semester in self.semesters:
-                response = self.client.get(f'/admin/status_summary/?group=' + groupType + '&semester=' + semester)
+                response = self.client.get(f'/admin/status_summary/?group=' + groupType + '&semester=' + semester + self.default_link_values)
+                self.response_validation(response, groupType, semester, applicant, appList)
 
-                self.response_validation(response, groupType, semester, appList)
-
-    def test_status_summary_group_filter(self):
+    def test_status_summary_group_semester_applicant(self):
         studentCt = random.randint(1, 10)
-        projCt = random.randint(1, 10)
-        projList = []
-        studentList = []
-        appList = []
-
-        for i in range(0, projCt):
-            projList.append(ProjectFactory())
-
-        for i in range(0, studentCt):
-            studentList.append(StudentFactory())
-            selectedProjCt = random.randint(1, projCt) - 1
-            for projNum in random.sample(range(0, projCt), selectedProjCt):
-                appList.append(ApplicationFactory(project=projList[projNum], student=studentList[i], status = self.filters[random.randint(1, len(self.filters)-1)].upper()))
-
-        self.client.login(username=self.admin.username, password=self.password)
-        user = auth.get_user(self.client)
-        self.assertTrue(user.is_authenticated)
-
-        for groupType in self.groupTypes:
-            for filterState in self.filterStates:
-                for filter in self.filters:
-                    response = self.client.get(f'/admin/status_summary/?group=' + groupType + '&' + filter + '=' + filterState)
-                    self.assertEqual(response.status_code, 200)
-                    current_sem = [item for item in response.context.get("semester_support") if item[1] == config.CURRENT_SEMESTER]
-
-                    #default
-                    semester = current_sem[0][0]
-                    filterArrayDict={"IN":[], "OUT":[]}
-                    filterArrayDict[filterState].append(filter)
-                    self.response_validation(response, groupType, semester, appList, filterArrayDict)
-
-    def test_status_summary_semester_filter(self):
-        studentCt = random.randint(1, 10)
-        projCt = random.randint(1, 10)
-        projList = []
-        studentList = []
-        appList = []
-
-        for i in range(0, projCt):
-            projList.append(ProjectFactory(semester=self.semesters[random.randint(1, self.semesterCt)-1]))
-
-        for i in range(0, studentCt):
-            studentList.append(StudentFactory())
-            selectedProjCt = random.randint(1, projCt) - 1
-            for projNum in random.sample(range(0, projCt), selectedProjCt):
-                appList.append(ApplicationFactory(project=projList[projNum], student=studentList[i], status = self.filters[random.randint(1, len(self.filters)-1)].upper()))
-
-        self.client.login(username=self.admin.username, password=self.password)
-        user = auth.get_user(self.client)
-        self.assertTrue(user.is_authenticated)
-
-        #default
-        groupType = 'student'
-        for semester in self.semesters:
-            for filterState in self.filterStates:
-                for filter in self.filters:
-                    response = self.client.get(f'/admin/status_summary/?semester=' + semester + '&' + filter + '=' + filterState)
-                    filterArrayDict={"IN":[], "OUT":[]}
-                    filterArrayDict[filterState].append(filter)
-                    self.response_validation(response, groupType, semester, appList, filterArrayDict)
-
-    def test_status_summary_group_semester_filter(self):
-        studentCt = random.randint(1, 10)
-        projCt = random.randint(1, 10)
-        projList = []
-        studentList = []
-        appList = []
-
-        for i in range(0, projCt):
-            projList.append(ProjectFactory(semester=self.semesters[random.randint(1, self.semesterCt)-1]))
-
-        for i in range(0, studentCt):
-            studentList.append(StudentFactory())
-            selectedProjCt = random.randint(1, projCt) - 1
-            for projNum in random.sample(range(0, projCt), selectedProjCt):
-                appList.append(ApplicationFactory(project=projList[projNum], student=studentList[i], status = self.filters[random.randint(1, len(self.filters)-1)].upper()))
-
-        self.client.login(username=self.admin.username, password=self.password)
-        user = auth.get_user(self.client)
-        self.assertTrue(user.is_authenticated)
-
-        for groupType in self.groupTypes:
-            for semester in self.semesters:
-                for filterState in self.filterStates:
-                    for filter in self.filters:
-                        response = self.client.get(f'/admin/status_summary/?group='+ groupType + '&semester=' + semester +'&' + filter +'=' + filterState)
-                        filterArrayDict={"IN":[], "OUT":[]}
-                        filterArrayDict[filterState].append(filter)
-                        self.response_validation(response, groupType, semester, appList, filterArrayDict)
-
-    def test_status_summary_group_semester_filter_random(self):
-        filterStates = [['IN'],['OUT'], ['IN','OUT']]
-
-        studentCt = random.randint(1, 10)
-        projCt = random.randint(1, 10)
-        projList = []
-        studentList = []
-        appList = []
-
-        for i in range(0, projCt):
-            projList.append(ProjectFactory(semester=self.semesters[random.randint(1, self.semesterCt)-1]))
-
-        for i in range(0, studentCt):
-            studentList.append(StudentFactory())
-            selectedProjCt = random.randint(1, projCt) - 1
-            for projNum in random.sample(range(0, projCt), selectedProjCt):
-                appList.append(ApplicationFactory(project=projList[projNum], student=studentList[i], status = self.filters[random.randint(1, len(self.filters)-1)].upper()))
-
-        self.client.login(username=self.admin.username, password=self.password)
-        user = auth.get_user(self.client)
-        self.assertTrue(user.is_authenticated)
-
-        for groupType in self.groupTypes:
-            for semester in self.semesters:
-                for filterState in filterStates:
-                    filterArrayDict={"IN":[], "OUT":[]}
-                    filterStr =""
-                    for filterType in filterState:
-                        for i in random.sample(range(0, len(self.filters)-1), random.randint(1, len(self.filters)-1)) :
-                            filterStr = filterStr + '&' + self.filters[i] + '=' + filterType
-                            filterArrayDict[filterType].append(self.filters[i])
-
-                    response = self.client.get(f'/admin/status_summary/?group=' + groupType + '&semester=' + semester + filterStr)
-
-                    self.response_validation(response, groupType, semester, appList, filterArrayDict)
-
-    def test_data_scholar_status_summary_group_semester_filter_random(self):
-        filterStates = [['IN'],['OUT'], ['IN','OUT']]
-        studentCt = random.randint(2, 10)
         projCt = random.randint(1, 10)
         projList = []
         studentList = []
@@ -434,7 +328,41 @@ class AdminTestCase(TestCase):
                 studentList.append(StudentFactory())
             else:
                 ds = DataScholarFactory()
-                studentList.append(StudentFactory(email_address=ds))
+                studentList.append(StudentFactory(email_address=ds.email_address))
+
+            selectedProjCt = random.randint(1, projCt) - 1
+            for projNum in random.sample(range(0, projCt), selectedProjCt):
+                appList.append(ApplicationFactory(project=projList[projNum], student=studentList[i]))
+
+        self.client.login(username=self.admin.username, password=self.password)
+        user = auth.get_user(self.client)
+        self.assertTrue(user.is_authenticated)
+
+        response = self.client.get(reverse('admin:status_summary'))
+        self.assertEqual(response.status_code, 200)
+
+        for groupType in self.groupTypes:
+            for semester in self.semesters:
+                for applicant in self.applicantTypes:
+                    response = self.client.get(f'/admin/status_summary/?group=' + groupType + '&semester=' + semester+ '&applicant=' + applicant + self.default_link_values)
+                    self.response_validation(response, groupType, semester, applicant, appList)
+
+    def test_status_summary_group_semester_applicant_random_status(self):
+        studentCt = random.randint(1, 10)
+        projCt = random.randint(1, 10)
+        projList = []
+        studentList = []
+        appList = []
+
+        for i in range(0, projCt):
+            projList.append(ProjectFactory(semester=self.semesters[random.randint(1, self.semesterCt)-1]))
+
+        for i in range(0, studentCt):
+            if i < studentCt//2:
+                studentList.append(StudentFactory())
+            else:
+                ds = DataScholarFactory()
+                studentList.append(StudentFactory(email_address=ds.email_address))
 
             selectedProjCt = random.randint(1, projCt) - 1
             for projNum in random.sample(range(0, projCt), selectedProjCt):
@@ -444,16 +372,11 @@ class AdminTestCase(TestCase):
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
+        response = self.client.get(reverse('admin:status_summary'))
+        self.assertEqual(response.status_code, 200)
+
         for groupType in self.groupTypes:
             for semester in self.semesters:
-                for filterState in filterStates:
-                    filterArrayDict={"IN":[], "OUT":[]}
-                    filterStr =""
-                    for filterType in filterState:
-                        for i in random.sample(range(0, len(self.filters)-1), random.randint(1, len(self.filters)-1)):
-                            filterStr = filterStr + '&' + self.filters[i] + '=' + filterType
-                            filterArrayDict[filterType].append(self.filters[i])
-
-                    response = self.client.get(f'/admin/status_summary/?group='+ groupType + '&semester=' + semester + filterStr)
-
-                    self.response_validation(response, groupType, semester, appList, filterArrayDict)
+                for applicant in self.applicantTypes:
+                    response = self.client.get(f'/admin/status_summary/?group=' + groupType + '&semester=' + semester+ '&applicant=' + applicant + self.default_link_values)
+                    self.response_validation(response, groupType, semester, applicant, appList)

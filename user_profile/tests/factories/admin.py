@@ -12,3 +12,4 @@ class AdminFactory(factory.django.DjangoModelFactory):
     password = factory.LazyFunction(lambda: make_password('abc123'))
     is_staff = True
     is_superuser = True
+    email = factory.Faker('email')

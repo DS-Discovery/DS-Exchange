@@ -30,24 +30,38 @@
             {% endfor %}
           </select>
         </div>
-        <h2 id='filter'>{% translate 'Filter' %}</h2>
+        <h2 id='display'>{% translate 'Applicant Filter' %}</h2>
+        <div id='display-drop'>
+          <select name="applicant" required="">
+            {% for value, option in applicant_support %}
+            <option value={{ value }} {% if applicant_query == value %}selected{% endif %}> {% translate option %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <h2 id='filter'>{% translate 'Status Filter' %}</h2>
         <div id='filter-drop'>
-        <h3 id='show'>{% translate 'Show' %}</h3>
-        <div id='show-drop'>
-        <label>{% translate 'Show students that meet the selected conditions.' %}</label>
+        <label>{% translate 'Show students that meet' %}
+
+
+        <select name="any_all" required="">
+          {% for value, option in any_all_support %}
+          <option value={{ value }} {% if any_all_query == value %}selected{% endif %}> {% translate option %}</option>
+          {% endfor %}
+        </select>
+
+         {% translate 'of the selected conditions.' %}</label>
+         <br/>
         {% for value, option in filter_support %}
         <br/>
-        <label><input type="checkbox" name={{ value }} value="IN" {% if value in filter_in_query %}checked{% endif %}/> {% translate option %}</label>
+        <label><input type="checkbox" name={{ value }} value="True" {% if value in filter_query %}checked{% endif %}/> {% translate option %}</label>
         {% endfor %}
+        <br/>
+        <br/>
+        <div>
+          <button id="showSelect" class="show select button">{% translate 'Select all' %}</button>
+          <button id="showDeselect" class="show deselect button">{% translate 'Deselect all' %}</button>
         </div>
-        <h3 id='hide'>{% translate 'Hide' %}</h3>
-        <div id='hide-drop'>
-        <label>{% translate 'Hide students that meet the selected conditions.' %}</label>
-          {% for value, option in filter_support %}
-          <br/>
-          <label><input type="checkbox" name={{ value }} value="OUT" {% if value in filter_out_query %}checked{% endif %}/> {% translate option %}</label>
-          {% endfor %}
-        </div>
+        <br/>
         </div>
         <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
     </form>
@@ -60,12 +74,6 @@
           <option value={{ format }}>{{ format }}</option>
           {% endfor %}
         </select>
-        {% for filter in filter_in_query %}
-        <input type="hidden" name={{ filter }} value="IN">
-        {% endfor %}
-        {% for filter in filter_out_query %}
-        <input type="hidden" name={{ filter }} value="OUT">
-        {% endfor %}
         <input type="hidden" name="group" value={{ group_query }}>
         <input type="hidden" name="semester" value={{ semester_query }}>
         </div>

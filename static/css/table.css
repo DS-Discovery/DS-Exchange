@@ -27,6 +27,20 @@
   cursor: pointer;
 }
 
+
+.open::after {
+  content: '[hide]';
+  font-size: small;
+  margin-left: 5px;
+}
+
+
+.closed::after {
+  content: '[show]';
+  font-size: small;
+  margin-left: 5px;
+}
+
 form {
   padding: 10px 0 20px 0;
 input[type="checkbox"] {

@@ -52,7 +52,7 @@ class EditProjectForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skillset.items():
-            self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, required=False, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
         temp_d = {
         "a": "Academia",
         "b": "Social Sector",
@@ -92,7 +92,11 @@ class EditProjectForm(forms.ModelForm):
             'additional_skills',
         )
 
-
+        widgets = {
+            'timeline': forms.Textarea(attrs={'rows': 10, 'cols': 100}),
+            'project_workflow': forms.Textarea(attrs={'rows': 10, 'cols': 100})
+        }
+        
         labels = {
             "email": "Email address",
             "marketing_channel": "How did you hear about us?",
@@ -218,6 +222,10 @@ class PartnerProjCreationForm(forms.ModelForm):
             'environment',
         )
 
+        widgets = {
+            'timeline': forms.Textarea(attrs={'rows': 10, 'cols': 100}),
+            'project_workflow': forms.Textarea(attrs={'rows': 10, 'cols': 100})
+        }
 
         labels = {
             "email": "Email address",

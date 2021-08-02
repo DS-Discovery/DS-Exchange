@@ -1,19 +1,13 @@
 from django.test import TestCase
-from django.db import models
-from django.db.models import Field, functions
 
-
-# Create your tests here.
-
-from applications.models import Application, Answer
-from projects.models import Semester, Question
-from applications.tests.factories.application import ApplicationFactory, AnswerFactory
+from applications.models import Answer
+from applications.tests.factories.application import ApplicationFactory
+from applications.tests.factories.answer import AnswerFactory
 from students.tests.factories.student import StudentFactory
 from projects.tests.factories.project import ProjectFactory
-from projects.tests.factories.partner import PartnerFactory
-from projects.tests.factories.partnerprojectinfo import PartnerProjectInfoFactory
 from projects.tests.factories.question import QuestionFactory
 
+from datetime import datetime
 
 class ApplicationModelTest(TestCase):
     @classmethod
@@ -31,22 +25,22 @@ class ApplicationModelTest(TestCase):
         cls.application_1 = ApplicationFactory(project=cls.project_0, student_id=cls.student_A.id)
         cls.application_2 = ApplicationFactory(project=cls.project_1, student_id=cls.student_B.id)
 
-    def test_it_has_timestamp(self):                   
-        self.assertIsInstance(self.application_1.created_at, functions.datetime)
+    def test_has_timestamp(self):
+        self.assertIsInstance(self.application_1.created_at, datetime)
 
-    def test_it_has_rank(self):                           
+    def test_has_rank(self):
         self.assertIsInstance(self.application_1.rank, int)
 
-    def test_it_has_status(self):
-        self.assertIsInstance(self.application_1.status, models.CharField)
-    
+    def test_has_status(self):
+        self.assertIsInstance(self.application_1.status, str)
+
     def test_student_field(self):
         self.assertEqual(self.application_1.student, self.student_A)
         self.assertEqual(self.application_2.student, self.student_B)
-    
+
     def test_project_field(self):
         self.assertEqual(self.application_1.project, self.project_0)
-        self.assertEqual(self.application_2.proejct, self.project_1)
+        self.assertEqual(self.application_2.project, self.project_1)
 
     def test_status_field(self):
         self.assertEqual(self.application_1.status, "SUB")
@@ -65,7 +59,7 @@ class ApplicationModelTest(TestCase):
         application_repr = self.application_1.to_dict()
         for key in application_repr:
                 self.assertEqual(application_repr[key], dict_repr[key])
-    
+
     def test_string_repr_is(self):
         self.assertEqual(str(self.application_1), f"{self.application_1.student.email_address} application for {self.application_1.project.project_name}")
 
@@ -90,5 +84,3 @@ class AnswerModelTest(TestCase):
         answer_repr = self.answer.to_dict()
         for key in answer_repr:
                 self.assertEqual(answer_repr[key], dict_repr[key])
-
-    

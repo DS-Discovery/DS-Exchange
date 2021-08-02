@@ -36,6 +36,9 @@ if DEBUG and os.path.exists(BASE_DIR / 'secrets.yml'):
     assert isinstance(addl_config, dict), f"Additional environment variables invalid: {addl_config}"
     os.environ.update(addl_config)
 
+# For Selenium testing
+WEBDRIVER = os.environ["WEBDRIVER"] if "WEBDRIVER" in os.environ else os.path.join(BASE_DIR, 'chromedriver.exe')
+
 if not DEBUG:
     LOGGING = {
         'version': 1,
@@ -92,7 +95,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'gmailapi_backend', # for email
     'import_export', # for exporting data
-    'flags', # feature flags
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -133,21 +135,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'discovery.wsgi.application'
 DJANGO_TABLES2_TEMPLATE = "admin/table.html"
 
-# Django Flags
-# https://cfpb.github.io/django-flags/
-
-FLAGS = {
-    'APPLICATIONS_REVIEWABLE': [],
-    'APPLICATIONS_OPEN': [],
-    # 'HIDE_PROJECT_APPLICATION_THRESHOLD': [],
-}
-
-
 # Constance (singleton settings in the databse)
 # https://django-constance.readthedocs.io/en/latest/index.html
 
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
+    "APPLICATIONS_REVIEWABLE": (False, "Whether partners can review applications", bool),
+    "APPLICATIONS_OPEN": (True, "Whether applications are open", bool),
     "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
     "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
     "APP_LIMIT": (6, "Number of applications any student can submit", int),
