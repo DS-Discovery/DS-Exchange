@@ -44,6 +44,17 @@ class Application(models.Model):
             return ["OFR", "OFA"]
         return []
 
+    @property
+    def status_email_body(self):
+        return {
+            "RNI": "Status 1",
+            "INT": "Status 2",
+            "RWI": "Status 3",
+            "OFS": "Status 4",
+            "OFR": "Status 5",
+            "OFA": "Status 6"
+        }
+
     def to_dict(self):
         return {
             "student": self.student.id,
