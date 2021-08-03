@@ -51,7 +51,8 @@ jobs:
 
     - name: Run pytest
       run: |
-        sudo $CONDA/bin/coverage run manage.py test
+        ls
+        $CONDA/bin/coverage run manage.py test
 
     - name: Upload coverage
       run: |
