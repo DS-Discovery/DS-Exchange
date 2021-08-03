@@ -98,6 +98,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             "Name"    : loginUser.first_name + " " + loginUser.last_name,
             "Email"   : getattr(loginUser, "email_address", getattr(loginUser,"email","")),
         }
+
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Personal Information')]")
 
         self.assertEqual(p.text, "Personal Information")
@@ -211,6 +212,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
         for k in project_profile_select.keys():
             Select(self.selenium.find_element_by_id(k)).select_by_value(project_profile_select[k])
 
+        print(project_profile_enter['id_project_name'], project_profile_enter['id_organization'])
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
         return project_profile_enter['id_project_name'], project_profile_enter['id_organization']
 
@@ -259,4 +261,5 @@ class ProjectApplyTest(StaticLiveServerTestCase):
 
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'DS Discovery Project Application')
         newProjName, newProjOrganization = self.fill_in_project_application(self.partner)
+
         self.personal_information_page_validation(self.partner, newProjName, newProjOrganization)

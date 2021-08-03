@@ -47,8 +47,6 @@ class ProjectListingTest(StaticLiveServerTestCase):
         chromedriver = settings.WEBDRIVER
         cls.selenium = webdriver.Chrome(chromedriver, options=chrome_options)
 
-        cls.logonRedirect = cls.live_server_url + "/accounts/google/login/"
-
         sem_map = {v:k for k, v in Project.sem_mapping.items()}
         cls.current_semester = config.CURRENT_SEMESTER
         cls.short_current_semester = sem_map[cls.current_semester]
@@ -87,11 +85,9 @@ class ProjectListingTest(StaticLiveServerTestCase):
         self.selenium.add_cookie({'name': 'sessionid', 'value': self.client.cookies['sessionid'].value})
         self.selenium.refresh()
 
-    def new_project_invalid_login_validation(self):
-        self.selenium.find_element_by_xpath('//a[@href="newproject"]').click()
-
-        msg_html = BeautifulSoup(self.selenium.find_element_by_id('messages').get_attribute('innerHTML'), features="html.parser")
-        self.assertEqual("You must be a partner to create projects.", msg_html.find("div").text)
+    def no_project_login_validation(self):
+        msg_html = BeautifulSoup(self.selenium.find_element_by_id('description').get_attribute('innerHTML'), features="html.parser")
+        self.assertEqual("No project selected.", msg_html.find("p").text)
 
     def page_validation(self, projList, appList = None, threshold = config.HIDE_PROJECT_APPLICATION_THRESHOLD):
 
@@ -294,34 +290,24 @@ class ProjectListingTest(StaticLiveServerTestCase):
 
     def test_access_list_projects_no_logon(self):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-
-        newproj_button = self.selenium.find_element_by_xpath('//a[@href="newproject"]')
-        newproj_button.click()
-
-        self.assertEqual(self.logonRedirect,self.selenium.current_url)
+        self.no_project_login_validation()
 
     def test_access_list_projects_user_logon(self):
         self.user_login(self.user)
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        self.new_project_invalid_login_validation()
+        self.no_project_login_validation()
 
     def test_access_list_projects_admin_logon(self):
         self.user_login(self.admin)
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        self.new_project_invalid_login_validation()
+        self.no_project_login_validation()
 
     def test_access_list_projects_student_logon(self):
         self.user_login(self.student)
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-        self.new_project_invalid_login_validation()
+        self.no_project_login_validation()
 
     def test_access_list_projects_partner_logon(self):
         self.user_login(self.partner)
         self.selenium.get('%s%s' % (self.live_server_url, reverse('list_projects')))
-
-        newproj_button = self.selenium.find_element_by_xpath('//a[@href="newproject"]')
-        newproj_button.click()
-
-        # only check the first line of the page.
-        messages_html = BeautifulSoup(self.selenium.page_source, features="html.parser")
-        self.assertEqual("DS Discovery Project Application", messages_html.find("h3").text)
+        self.no_project_login_validation()
