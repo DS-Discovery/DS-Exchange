@@ -13,31 +13,27 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     env:
       WEBDRIVER: ./google-chrome-stable_current_amd64.deb
-      
+
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-        
+
     - name: Install Google Chrome
       run: |
-        pwd
-        ls
-        chmod +x ./InstallChrome.sh
-        ./InstallChrome.sh
-        pwd
-        ls
-        
+        chmod +x ./scripts/InstallChrome.sh
+        ./scripts/InstallChrome.sh
+
     - name: Install dependencies
       run: |
         $CONDA/bin/pip install -r requirements.txt
-        
+
     - name: Run pytest
       run: |
         $CONDA/bin/coverage run manage.py test
