@@ -24,9 +24,6 @@ jobs:
         ports:
           - 5432:5432
 
-    env:
-      WEBDRIVER: ./chromedriver.exe
-
     steps:
     - uses: actions/checkout@v2
 
