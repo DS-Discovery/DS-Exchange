@@ -18,7 +18,7 @@ from students.tests.factories.student import StudentFactory
 from students.tests.factories.datascholar import DataScholarFactory
 from constance import config
 
-from projects.models import Semester, Project
+from projects.models import Semester, Project, get_default_skills
 from students.models import Student
 
 import json
@@ -98,6 +98,7 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             "Name"    : loginUser.first_name + " " + loginUser.last_name,
             "Email"   : getattr(loginUser, "email_address", getattr(loginUser,"email","")),
         }
+
         p = self.selenium.find_element_by_xpath("//h5[contains(text(),'Personal Information')]")
 
         self.assertEqual(p.text, "Personal Information")
@@ -202,23 +203,16 @@ class ProjectApplyTest(StaticLiveServerTestCase):
             'id_meet_regularly':random.choice(['True','False']),
             'id_survey_response':random.choice(['True','False']),
             'id_environment':random.choice(['True','False']),
-            'id_Python':random.choice(['NE','BE','FA','IN','AD']),
-            'id_R':random.choice(['NE','BE','FA','IN','AD']),
-            'id_SQL':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Tableau/Looker':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Data Visualization':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Data Manipulation':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Text Analysis':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Machine Learning/Deep Learning':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Geospatial Data, Tools and Libraries':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Web Development (frontend, backend, full stack)':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Mobile App Development':random.choice(['NE','BE','FA','IN','AD']),
-            'id_Cloud Computing':random.choice(['NE','BE','FA','IN','AD'])
             }
+
+        skill_level = list(Student.skill_levels_options.keys())[1:]
+        for skill in get_default_skills():
+            project_profile_select[f"id_{skill}"] = random.choice(skill_level),
 
         for k in project_profile_select.keys():
             Select(self.selenium.find_element_by_id(k)).select_by_value(project_profile_select[k])
 
+        print(project_profile_enter['id_project_name'], project_profile_enter['id_organization'])
         self.selenium.find_element_by_xpath("//input[@type='submit']").click()
         return project_profile_enter['id_project_name'], project_profile_enter['id_organization']
 
@@ -267,4 +261,5 @@ class ProjectApplyTest(StaticLiveServerTestCase):
 
         self.assertTrue(self.selenium.find_elements_by_xpath('//h3')[0].text == 'DS Discovery Project Application')
         newProjName, newProjOrganization = self.fill_in_project_application(self.partner)
+
         self.personal_information_page_validation(self.partner, newProjName, newProjOrganization)

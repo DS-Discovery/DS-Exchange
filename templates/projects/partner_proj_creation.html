@@ -18,6 +18,7 @@ container
         backgrounds and interests - the perfect students for your project are out there! The trick to successfully recruiting the best students for your team is to be as specific as possible in the Project Details section.
         Please contact <a href="mailto:ds-discovery@berkeley.edu", target="_blank">ds-discovery@berkeley.edu</a> with any questions about the application.</p><br>
 
+
 <div class="d-flex flex-column">
     <div class="col-8">
 
@@ -59,11 +60,6 @@ container
                     They will participate in all meetings and offer feedback and input on research design decisions from an HCE perspective. The student will be supervised simultaneously
                     by Professor Ari Edmundson as part of a parallel research seminar.</p>
                 {% endif %}
-                {% if forloop.counter == 38 %}
-                    <br><h3>Project Partner Agreement</h3><br>
-                    <p>A formal MOU will be sent to your listed email address for you to review and sign upon the acceptance of your project application.
-                        Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.</p>
-                {% endif %}
                 {% if forloop.counter == 21 %}
                     <br><h3>Specifications for Student Applicants</h3><br>
                     <p>Applicants will be asked to submit a statement of interest to your project in their application. If there are any specific questions you would like applicants to respond to, include them below. [Optional]</p>
@@ -76,16 +72,20 @@ container
                     </h5><br>
                 {% endif %}
             {% endfor %}
+            <br><h3>Project Partner Agreement</h3><br>
+            <p>A formal MOU will be sent to your listed email address for you to review and sign upon the acceptance of your project application.
+                Look at a template MOU <a href = "https://tinyurl.com/DSDPmou", target="_blank">here</a>.</p>
             </table>
-
             <p>Applications will be accepted and reviewed on a rolling basis through August 1st, 2021. Discovery projects will receive student applications for review on August 23rd. Project partners are responsible
                     for interviewing and selecting the students they would like to work with. We will be in touch throughout the process to guide and support project partners as you form your Discovery teams!
                     <br><br>For specific inquiries about our program
                     email <a href="mailto:ds-discovery@berkeley.edu", target="_blank">ds-discovery@berkeley.edu</a>.<br><br>To learn more about the program visit
                     <a href="https://data.berkeley.edu/research/discovery", target="_blank">data.berkeley.edu/research/discovery</a>.</p>
-
             <input class="btn btn-light" type=button value="Back" onClick="javascript:history.go(-1);">
             <input class="btn btn-light" type="submit" value="Submit">
+
+
+
         </form>
 
     </div>
