@@ -14,6 +14,16 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: discovery_db
+        ports:
+          - 5432:5432
+
     env:
       WEBDRIVER: ./google-chrome-stable_current_amd64.deb
 
@@ -33,6 +43,11 @@ jobs:
     - name: Install dependencies
       run: |
         $CONDA/bin/pip install -r requirements.txt
+
+    - name: Run migrations
+      run: |
+        $CONDA/bin/coverage run manage.py makemigrations
+        $CONDA/bin/coverage run manage.py migrate
 
     - name: Run pytest
       run: |
