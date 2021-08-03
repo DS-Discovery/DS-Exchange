@@ -27,8 +27,12 @@ jobs:
         
     - name: Install Google Chrome
       run: |
-       chmod +x ./InstallChrome.sh
+        pwd
+        ls
+        chmod +x ./InstallChrome.sh
         ./InstallChrome.sh
+        pwd
+        ls
         
     - name: Install dependencies
       run: |
