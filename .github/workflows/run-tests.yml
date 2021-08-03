@@ -48,7 +48,7 @@ jobs:
 
     - name: Run pytest
       run: |
-        echo $PATH
+        which chromedriver
         $CONDA/bin/coverage run manage.py test
 
     - name: Upload coverage
