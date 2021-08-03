@@ -35,10 +35,10 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Install Google Chrome
-      run: |
-        chmod +x ./scripts/InstallChrome.sh
-        ./scripts/InstallChrome.sh
+    - name: Set up ChromeDriver
+      # You may pin to the exact commit or the version.
+      # uses: nanasess/setup-chromedriver@835cae695490330a7e390033b2b5bd67e6f8055e
+      uses: nanasess/setup-chromedriver@v1.0.1
 
     - name: Install dependencies
       run: |
