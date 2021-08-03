@@ -291,18 +291,7 @@ def proj_creation(request):
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
             skills_and_levels = {
-                "Python": form.cleaned_data["Python"],
-                "R": form.cleaned_data["R"],
-                "SQL": form.cleaned_data["SQL"],
-                "Tableau/Looker": form.cleaned_data["Tableau/Looker"],
-                "Data Visualization": form.cleaned_data["Data Visualization"],
-                "Data Manipulation": form.cleaned_data["Data Manipulation"],
-                "Text Analysis": form.cleaned_data["Text Analysis"],
-                "Machine Learning/Deep Learning": form.cleaned_data["Machine Learning/Deep Learning"],
-                "Geospatial Data, Tools and Libraries": form.cleaned_data["Geospatial Data, Tools and Libraries"],
-                "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
-                "Mobile App Development": form.cleaned_data["Mobile App Development"],
-                "Cloud Computing": form.cleaned_data["Cloud Computing"],
+                skill: form.cleaned_data[skill] for skill in get_default_skills()
             }
             for i in skills_and_levels.keys():
                 if skills_and_levels[i] == 'FA':
@@ -418,18 +407,7 @@ def edit_project(request):
             form = EditProjectForm(request.POST)
             if form.is_valid():
                 skills_and_levels = {
-                    "Python": form.cleaned_data["Python"],
-                    "R": form.cleaned_data["R"],
-                    "SQL": form.cleaned_data["SQL"],
-                    "Tableau/Looker": form.cleaned_data["Tableau/Looker"],
-                    "Data Visualization": form.cleaned_data["Data Visualization"],
-                    "Data Manipulation": form.cleaned_data["Data Manipulation"],
-                    "Text Analysis": form.cleaned_data["Text Analysis"],
-                    "Machine Learning/Deep Learning": form.cleaned_data["Machine Learning/Deep Learning"],
-                    "Geospatial Data, Tools and Libraries": form.cleaned_data["Geospatial Data, Tools and Libraries"],
-                    "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
-                    "Mobile App Development": form.cleaned_data["Mobile App Development"],
-                    "Cloud Computing": form.cleaned_data["Cloud Computing"],
+                    skill: form.cleaned_data[skill] for skill in get_default_skills()
                 }
                 for i in skills_and_levels.keys():
                     if skills_and_levels[i] == 'FA':
