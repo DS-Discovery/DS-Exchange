@@ -25,7 +25,7 @@ jobs:
           - 5432:5432
 
     env:
-      WEBDRIVER: /wd/hub/chromedriver.exe
+      WEBDRIVER: ./chromedriver.exe
 
     steps:
     - uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
 
     - name: Run pytest
       run: |
-        ls /wd/hub/
+        echo $PATH
         $CONDA/bin/coverage run manage.py test
 
     - name: Upload coverage
