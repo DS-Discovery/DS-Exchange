@@ -125,6 +125,9 @@ class Project(models.Model):
             "skillset": self.skillset,
             "additional_skills": self.additional_skills,
             "technical_requirements": self.technical_requirements,
+            "optional_q1": self.optional_q1,
+            "optional_q2": self.optional_q2,
+            "optional_q3": self.optional_q3,
         }
 
 

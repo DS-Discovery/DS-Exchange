@@ -25,6 +25,12 @@ from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
+question_text = "Why are you interested in this project specifically? What relevant skills and experiences will you bring to the project?"
+
+def default_question(project, question_type="text"):
+    # Default General Project Question for all projects
+    general_project_question = Question(project=project, question_text=question_text, question_type=question_type)
+    general_project_question.save()
 
 # @login_required
 def list_projects(request):
@@ -335,6 +341,13 @@ def proj_creation(request):
                           optional_q3=form.cleaned_data['optional_q3']
                           )
             proj.save()
+
+            default_question(proj)
+            for q in ['optional_q1', 'optional_q2', 'optional_q3']:
+                if form.cleaned_data[q]:
+                    question_obj = Question(project=proj, question_text=form.cleaned_data[q], question_type="text")
+                    question_obj.save()
+
             p = Partner.objects.filter(email_address = email)
             if len(p) > 0:
                 p = Partner.objects.get(email_address = email)
@@ -422,6 +435,17 @@ def edit_project(request):
                         skills_and_levels[i] = 'No Experience'
                     else:
                         continue
+                proj_dict = project[0].to_dict()
+                print(proj_dict.keys())
+                for q in ['optional_q1', 'optional_q2', 'optional_q3']:
+                    if form.cleaned_data[q]:
+                        question_obj = Question.objects.filter(project=project[0], question_text=proj_dict[q])
+                        if question_obj.count() > 0:
+                            question_obj.update(question_text=form.cleaned_data[q], question_type="text")
+                        else:
+                            question_obj = Question(project=project[0], question_text=form.cleaned_data[q], question_type="text")
+                            question_obj.save()
+
                 project.update(email = form.cleaned_data['email'])
                 project.update(organization=form.cleaned_data['organization'])
                 project.update(project_name=form.cleaned_data['project_name'])
