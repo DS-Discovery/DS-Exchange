@@ -440,7 +440,11 @@ def edit_project(request):
                 for q in ['optional_q1', 'optional_q2', 'optional_q3']:
                     if form.cleaned_data[q]:
                         question_obj = Question.objects.filter(project=project[0], question_text=proj_dict[q])
-                        question_obj.update(question_text=form.cleaned_data[q], question_type="text")
+                        if question_obj.count() > 0:
+                            question_obj.update(question_text=form.cleaned_data[q], question_type="text")
+                        else:
+                            question_obj = Question(project=project[0], question_text=form.cleaned_data[q], question_type="text")
+                            question_obj.save()
 
                 project.update(email = form.cleaned_data['email'])
                 project.update(organization=form.cleaned_data['organization'])
