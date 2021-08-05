@@ -46,9 +46,10 @@ function loadProjects(selectedProj) {
 function loadCategoryFilter() {
     var categories = new Set();
     for (i = 0; i < projects.length; i++) {
-        for (j = 0; j < projects[i].project_category.length; j++) {
-            categories.add(projects[i].project_category[j]);
-        }
+        categories.add(projects[i].project_category);
+        // for (j = 0; j < projects[i].project_category.length; j++) {
+        //     categories.add(projects[i].project_category[j]);
+        // }
     }
     categories = Array.from(categories).sort();
     var filterHTML = `
@@ -210,7 +211,7 @@ function loadSidebar(project) {
             <div class="d-flex flex-row justify-content-center mb-2">
                   <a href="${ encodeURIComponent(project.project_name) }/apply"><button type="button" class="btn btn-outline-info">Apply</button></a>
               </div>
-              
+
             </div>
 
         </div>

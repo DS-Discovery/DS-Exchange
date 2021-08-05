@@ -82,9 +82,9 @@ class ProjectAdminForm(ModelForm):
         md_help = "This field supports Markdown syntax (but please don't use Markdown headers)."
         for f in ["description", "timeline", "project_workflow"]:
             self.fields[f].help_text = md_help
-        self.fields["project_category"].help_text = "Please enter as a semicolon-delimited string, e.g. <code style='font-size: inherit;'>Academic;Government</code>."
+        # self.fields["project_category"].help_text = "Please enter as a semicolon-delimited string, e.g. <code style='font-size: inherit;'>Academic;Government</code>."
         self.fields["skillset"].help_text = f"The values in the JSON object above should be among the keys in this mapping: <code style='font-size: inherit;'>{Student.skill_levels_options}</code>."
-        
+
         # for s, l in self.instance.skillset.items():
         #     # self.fields[s] = forms.ChoiceField(choices=Student.skill_levels, label=_(s), widget=forms.Select())
         #     self.fields[s] = forms.CharField()
@@ -97,13 +97,13 @@ class ProjectResource(resources.ModelResource):
 
 
 class ProjectAdmin(ImportExportModelAdmin):
-    
+
     resource_class = ProjectResource
     form = ProjectAdminForm
     # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
-    list_display = ('project_name', 'project_category', 'semester', 'num_applications')
-    list_filter = ['project_category']
+    list_display = ('project_name', 'project_category', 'semester', 'num_applications', 'project_category')
+    # list_filter = ['project_category']
     search_fields = ['project_name']
     ordering = ("project_name", )
 

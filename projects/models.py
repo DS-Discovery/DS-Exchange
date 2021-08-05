@@ -79,13 +79,18 @@ class Project(models.Model):
         ('e', 'Prior participation'),
         ('f', 'Other')
     ), blank=True)
-    other_marketing_channel = models.CharField(max_length=100,  blank=True, null=True)
+    other_marketing_channel = models.CharField(max_length=100, blank=True, null=True)
     # semester = models.CharField(max_length=100)
     # year = models.CharField(max_length=100)
     embed_link = models.CharField(max_length=400, blank = True, null=True,)
     semester = models.CharField(max_length=4, choices=Semester.choices)
-    project_category = models.CharField(max_length=200, blank=True, null=True)
-    project_name = models.CharField(max_length=200, null=False, blank=False, unique=True)
+    project_category = models.CharField(max_length=200, choices=(
+        ('a', 'Academia'),
+        ('b', 'Social Sector'),
+        ('c', 'Startup'),
+        ('d', 'Other')
+    ), blank=True, null=True)
+    project_name = models.CharField(max_length=200, null=False, blank=False)
     student_num = models.IntegerField(default=0)
     project_workflow = models.CharField(max_length=1000, blank=True)
     dataset = models.CharField(max_length=50, blank=True)
@@ -114,7 +119,8 @@ class Project(models.Model):
             "organization_description": self.organization_description,
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
-            "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],
+            "project_category": self.get_project_category_display(),
+            # "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],
             "student_num": self.student_num,
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],

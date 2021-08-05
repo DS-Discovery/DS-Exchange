@@ -19,7 +19,7 @@ class EditProjectForm(forms.ModelForm):
             'organization_description',
             'organization_website',
             'project_name',
-            'project_sector',
+            'project_category',
             'other_project_category',
             'description',
             'timeline',
@@ -43,13 +43,6 @@ class EditProjectForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skillset.items():
             self.fields[s] = ChoiceField(choices=Student.skill_levels, required=False, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
-        temp_d = {
-        "a": "Academia",
-        "b": "Social Sector",
-        "c": "Startup",
-        "d": "Other",
-        }
-        self.fields['project_sector'] = ChoiceField(choices=temp_d.items(), widget=Select(attrs={'class': 'skill-dropdown'}))
         self.order_fields(self.field_order)
 
     class Meta:
@@ -63,6 +56,7 @@ class EditProjectForm(forms.ModelForm):
 
             # Project Details
             'project_name',
+            'project_category',
             'other_project_category',
             'description',
             'timeline',
@@ -127,7 +121,7 @@ class PartnerProjCreationForm(forms.ModelForm):
             'marketing_channel',
             'other_marketing_channel',
             'project_name',
-            'project_sector',
+            'project_category',
             'other_project_category',
             'description',
             'timeline',
@@ -154,13 +148,6 @@ class PartnerProjCreationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skillset.items():
             self.fields[s] = ChoiceField(choices=Student.skill_levels, required=False, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
-        temp_d = {
-        "a": "Academia",
-        "b": "Social Sector",
-        "c": "Startup",
-        "d": "Other",
-        }
-        self.fields['project_sector'] = ChoiceField(choices=temp_d.items(), widget=Select(attrs={'class': 'skill-dropdown'}))
         self.order_fields(self.field_order)
 
     class Meta:
@@ -178,6 +165,7 @@ class PartnerProjCreationForm(forms.ModelForm):
 
             # Project Details
             'project_name',
+            'project_category',
             'other_project_category',
             'description',
             'timeline',

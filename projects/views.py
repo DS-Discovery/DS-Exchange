@@ -49,9 +49,8 @@ def list_projects(request):
     context = {
         "projects_json": projects_json,
         "selected": request.GET.get('selected', ''),
-        "selected": request.GET.get('selected', ''),
         "is_partner": Partner.objects.filter(email_address=email).count() > 0,
-        "is_student": Student.objects.filter(email_address=email).count() > 0,
+        "is_student": Student.objects.filter(email_address=email).count() > 0
     }
 
     return render(request, 'projects/listing.html', context)
@@ -316,7 +315,7 @@ def proj_creation(request):
             proj = Project(email = form.cleaned_data['email'] if form.cleaned_data['email'] else email,
                           organization=form.cleaned_data['organization'],
                           project_name=form.cleaned_data['project_name'],
-                          project_category=form.cleaned_data['project_sector'],
+                          project_category=form.cleaned_data['project_category'],
                           description=form.cleaned_data['description'],
                           semester="FA21",
                           organization_description=form.cleaned_data['organization_description'],
@@ -449,7 +448,7 @@ def edit_project(request):
                 project.update(email = form.cleaned_data['email'])
                 project.update(organization=form.cleaned_data['organization'])
                 project.update(project_name=form.cleaned_data['project_name'])
-                project.update(project_category=form.cleaned_data['project_sector'])
+                project.update(project_category=form.cleaned_data['project_category'])
                 project.update(description=form.cleaned_data['description'])
                 project.update(organization_description=form.cleaned_data['organization_description'])
                 # project.update(other_marketing_channel=form.cleaned_data['other_marketing_channel'])
@@ -473,5 +472,6 @@ def edit_project(request):
                 project.update(optional_q3=form.cleaned_data['optional_q3'])
 
                 return redirect('/profile')
+    print(form.errors)
     messages.info(request, 'Invalid project requested.')
     return redirect('/profile')
