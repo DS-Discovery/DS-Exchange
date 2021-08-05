@@ -335,6 +335,12 @@ def proj_creation(request):
                           optional_q3=form.cleaned_data['optional_q3']
                           )
             proj.save()
+
+            # Default General Project Question for all projects
+            question_text = "Why are you interested in this project specifically? What relevant skills and experiences will you bring to the project?"
+            general_project_question = Question(project=proj, question_text=question_text, question_type="text")
+            general_project_question.save()
+
             p = Partner.objects.filter(email_address = email)
             if len(p) > 0:
                 p = Partner.objects.get(email_address = email)
