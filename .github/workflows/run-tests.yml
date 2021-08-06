@@ -14,18 +14,41 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      WEBDRIVER: /usr/local/bin/chromedriver
+
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: discovery_db
+        ports:
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-        
+
+    - name: Set up ChromeDriver
+      # You may pin to the exact commit or the version.
+      uses: nanasess/setup-chromedriver@835cae695490330a7e390033b2b5bd67e6f8055e
+      # uses: nanasess/setup-chromedriver@v1.0.1
+
     - name: Install dependencies
       run: |
         $CONDA/bin/pip install -r requirements.txt
-        
+
+    - name: Run migrations
+      run: |
+        $CONDA/bin/coverage run manage.py makemigrations
+        $CONDA/bin/coverage run manage.py migrate
+
     - name: Run pytest
       run: |
         $CONDA/bin/coverage run manage.py test

@@ -9,7 +9,7 @@ from django.forms import CharField, ChoiceField, ModelForm, Select, Textarea, Te
 from allauth.account.forms import LoginForm
 from allauth.socialaccount.forms import SignupForm
 
-from students.models import Student
+from students.models import Student, get_default_skills
 from projects.models import Partner, Project
 
 class EditProjectForm(forms.ModelForm):
@@ -32,27 +32,17 @@ class EditProjectForm(forms.ModelForm):
             'hce_intern',
             'optional_q1',
             'optional_q2',
-            'optional_q3',
-            'Python',
-            'R',
-            'SQL',
-            'Tableau/Looker',
-            'Data Visualization',
-            'Data Manipulation',
-            'Text Analysis',
-            'Machine Learning/Deep Learning',
-            'Geospatial Data, Tools and Libraries',
-            'Web Development (frontend, backend, full stack)',
-            'Mobile App Development',
-            'Cloud Computing',
-            'technical_requirements',
-            'additional_skills',
-        ]
+            'optional_q3']
+    field_order.extend(list(get_default_skills().keys()))
+    field_order.extend([
+        'technical_requirements',
+        'additional_skills'
+    ])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for s, l in self.instance.skillset.items():
-            self.fields[s] = ChoiceField(choices=Student.skill_levels, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
+            self.fields[s] = ChoiceField(choices=Student.skill_levels, required=False, label=_(s), widget=Select(attrs={'class': 'skill-dropdown'}))
         temp_d = {
         "a": "Academia",
         "b": "Social Sector",
@@ -92,6 +82,10 @@ class EditProjectForm(forms.ModelForm):
             'additional_skills',
         )
 
+        widgets = {
+            'timeline': forms.Textarea(attrs={'rows': 10, 'cols': 100}),
+            'project_workflow': forms.Textarea(attrs={'rows': 10, 'cols': 100})
+        }
 
         labels = {
             "email": "Email address",
@@ -146,25 +140,15 @@ class PartnerProjCreationForm(forms.ModelForm):
             'hce_intern',
             'optional_q1',
             'optional_q2',
-            'optional_q3',
-            'Python',
-            'R',
-            'SQL',
-            'Tableau/Looker',
-            'Data Visualization',
-            'Data Manipulation',
-            'Text Analysis',
-            'Machine Learning/Deep Learning',
-            'Geospatial Data, Tools and Libraries',
-            'Web Development (frontend, backend, full stack)',
-            'Mobile App Development',
-            'Cloud Computing',
-            'technical_requirements',
-            'additional_skills',
-            'meet_regularly',
-            'survey_response',
-            'environment',
-        ]
+            'optional_q3']
+    field_order.extend(list(get_default_skills().keys()))
+    field_order.extend([
+        'technical_requirements',
+        'additional_skills',
+        'meet_regularly',
+        'survey_response',
+        'environment',
+    ])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -218,6 +202,10 @@ class PartnerProjCreationForm(forms.ModelForm):
             'environment',
         )
 
+        widgets = {
+            'timeline': forms.Textarea(attrs={'rows': 10, 'cols': 100}),
+            'project_workflow': forms.Textarea(attrs={'rows': 10, 'cols': 100})
+        }
 
         labels = {
             "email": "Email address",

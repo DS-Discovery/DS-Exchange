@@ -13,7 +13,6 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 from constance import config
-from flags.state import flag_enabled
 
 from applications.forms import AnswerForm
 from applications.models import Answer, Application
@@ -21,11 +20,17 @@ from students.models import Student
 
 from .forms import EditProjectForm
 from .forms import PartnerProjCreationForm
-from .models import Partner, PartnerProjectInfo, Project, Question
+from .models import Partner, PartnerProjectInfo, Project, Question, get_default_skills
 from django.http import HttpResponse
 
 logger = logging.getLogger(__name__)
 
+question_text = "Why are you interested in this project specifically? What relevant skills and experiences will you bring to the project?"
+
+def default_question(project, question_type="text"):
+    # Default General Project Question for all projects
+    general_project_question = Question(project=project, question_text=question_text, question_type=question_type)
+    general_project_question.save()
 
 # @login_required
 def list_projects(request):
@@ -96,7 +101,7 @@ def apply(request, project_name):
             messages.info(request, "You have not yet signed up. Please complete the signup form to continue.")
             return redirect("/profile/signup")
 
-    if not flag_enabled('APPLICATIONS_OPEN'):
+    if not config.APPLICATIONS_OPEN:
         messages.info(
             request,
             "Applications are currently closed. If you believe you have received "
@@ -124,8 +129,6 @@ def apply(request, project_name):
     if request.method == 'POST':
 
         post = request.POST.copy()
-
-        # print(post)
 
         def querydict_to_dict(query_dict):
             data = {}
@@ -172,6 +175,13 @@ def apply(request, project_name):
             ans_list.append(new_ans)
 
         # print(ans_list)
+        for skill in get_default_skills():
+            if (skill not in student.skills.keys()) or (not student.skills[skill]):
+                messages.info(
+                    request,
+                    'Please ensure you have filled out your skill levels in your profile.'
+                )
+                return redirect("/profile/")
 
         if is_valid:
 
@@ -280,22 +290,14 @@ def proj_creation(request):
     email = None
     if request.user.is_authenticated:
         email = request.user.email
+    if Partner.objects.filter(email_address=email).count() == 0:
+        messages.info(request, "You must be a partner to create projects.")
+        return redirect("/projects")
     if request.method == 'POST':
         form = PartnerProjCreationForm(request.POST)
         if form.is_valid():
             skills_and_levels = {
-                "Python": form.cleaned_data["Python"],
-                "R": form.cleaned_data["R"],
-                "SQL": form.cleaned_data["SQL"],
-                "Tableau/Looker": form.cleaned_data["Tableau/Looker"],
-                "Data Visualization": form.cleaned_data["Data Visualization"],
-                "Data Manipulation": form.cleaned_data["Data Manipulation"],
-                "Text Analysis": form.cleaned_data["Text Analysis"],
-                "Machine Learning/Deep Learning": form.cleaned_data["Machine Learning/Deep Learning"],
-                "Geospatial Data, Tools and Libraries": form.cleaned_data["Geospatial Data, Tools and Libraries"],
-                "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
-                "Mobile App Development": form.cleaned_data["Mobile App Development"],
-                "Cloud Computing": form.cleaned_data["Cloud Computing"],
+                skill: form.cleaned_data[skill] for skill in get_default_skills()
             }
             for i in skills_and_levels.keys():
                 if skills_and_levels[i] == 'FA':
@@ -339,6 +341,13 @@ def proj_creation(request):
                           optional_q3=form.cleaned_data['optional_q3']
                           )
             proj.save()
+
+            default_question(proj)
+            for q in ['optional_q1', 'optional_q2', 'optional_q3']:
+                if form.cleaned_data[q]:
+                    question_obj = Question(project=proj, question_text=form.cleaned_data[q], question_type="text")
+                    question_obj.save()
+
             p = Partner.objects.filter(email_address = email)
             if len(p) > 0:
                 p = Partner.objects.get(email_address = email)
@@ -356,7 +365,7 @@ def proj_creation(request):
                 role = "Sponsor"
             )
             link.save()
-            return redirect('/profile')
+            return redirect('/profile/')
         else:
             partner = Partner.objects.get(email_address = email)
             logger.error(f"Invalid form for partner {partner}:\n{form}")
@@ -365,7 +374,7 @@ def proj_creation(request):
                 'Your application was invalid and could not be processed. If this error persists, '
                 'please contact ds-discovery@berkeley.edu.'
             )
-            return redirect('/profile')
+            return redirect('/profile/')
     else:
         form = PartnerProjCreationForm()
         return render(request, 'projects/partner_proj_creation.html', {'form': form})
@@ -395,13 +404,14 @@ def edit_project(request):
             data = project.__dict__
             form = EditProjectForm(initial = data)
 
-            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is bceause project creation hardcoded this association.
+            # Different from Student.skill_levels_inverse -- E is capitalized in Experience here but not in the Student's dictionary. This is because project creation hardcoded this association. + add blank skill level option
             skill_levels_inverse = {
             'Familiar':'FA',
             'Beginner':'BE',
             'Intermediate':'IN',
             'Advanced':'AD',
-            'No Experience':'NE'
+            'No Experience':'NE',
+            '':''
             }
             return render(request, 'projects/edit_project.html', {'form': form, 'project': project, 'skill_levels_inverse': skill_levels_inverse})
 
@@ -410,18 +420,7 @@ def edit_project(request):
             form = EditProjectForm(request.POST)
             if form.is_valid():
                 skills_and_levels = {
-                    "Python": form.cleaned_data["Python"],
-                    "R": form.cleaned_data["R"],
-                    "SQL": form.cleaned_data["SQL"],
-                    "Tableau/Looker": form.cleaned_data["Tableau/Looker"],
-                    "Data Visualization": form.cleaned_data["Data Visualization"],
-                    "Data Manipulation": form.cleaned_data["Data Manipulation"],
-                    "Text Analysis": form.cleaned_data["Text Analysis"],
-                    "Machine Learning/Deep Learning": form.cleaned_data["Machine Learning/Deep Learning"],
-                    "Geospatial Data, Tools and Libraries": form.cleaned_data["Geospatial Data, Tools and Libraries"],
-                    "Web Development (frontend, backend, full stack)": form.cleaned_data["Web Development (frontend, backend, full stack)"],
-                    "Mobile App Development": form.cleaned_data["Mobile App Development"],
-                    "Cloud Computing": form.cleaned_data["Cloud Computing"],
+                    skill: form.cleaned_data[skill] for skill in get_default_skills()
                 }
                 for i in skills_and_levels.keys():
                     if skills_and_levels[i] == 'FA':
@@ -436,6 +435,17 @@ def edit_project(request):
                         skills_and_levels[i] = 'No Experience'
                     else:
                         continue
+                proj_dict = project[0].to_dict()
+                print(proj_dict.keys())
+                for q in ['optional_q1', 'optional_q2', 'optional_q3']:
+                    if form.cleaned_data[q]:
+                        question_obj = Question.objects.filter(project=project[0], question_text=proj_dict[q])
+                        if question_obj.count() > 0:
+                            question_obj.update(question_text=form.cleaned_data[q], question_type="text")
+                        else:
+                            question_obj = Question(project=project[0], question_text=form.cleaned_data[q], question_type="text")
+                            question_obj.save()
+
                 project.update(email = form.cleaned_data['email'])
                 project.update(organization=form.cleaned_data['organization'])
                 project.update(project_name=form.cleaned_data['project_name'])
