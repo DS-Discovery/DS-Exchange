@@ -103,6 +103,14 @@ class Project(models.Model):
     def __str__(self):
         return self.project_name
 
+    def student_num_fn(self):
+        default_nums = self.get_num_students_display()
+        if default_nums.isnumeric():
+            default_nums = int(default_nums)
+        else:
+            default_nums = self.other_num_students
+        return max([self.student_num, default_nums])
+
     def to_dict(self):
         return {
             'email': self.email,
@@ -115,7 +123,7 @@ class Project(models.Model):
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
             "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],
-            "student_num": self.student_num,
+            "student_num": self.student_num_fn(),
             "description": self.description,
             "questions": [q.to_dict() for q in Question.objects.filter(project=self)],
             "timeline": self.timeline,
