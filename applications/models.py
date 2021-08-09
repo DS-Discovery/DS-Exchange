@@ -54,6 +54,17 @@ class Application(models.Model):
             "OFR": "Status 5",
             "OFA": "Status 6"
         }
+    
+    @property
+    def status_email_subject(self):
+        return {
+            "RNI": str(Project.project_name) + "Application Status (Data Science Discovery)", #FIXME should be team name
+            "INT": "Status 2",
+            "RWI": "Status 3",
+            "OFS": "Status 4",
+            "OFR": "Status 5",
+            "OFA": "Status 6"
+        }
 
     def to_dict(self):
         return {
