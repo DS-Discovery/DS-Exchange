@@ -145,6 +145,8 @@ CONSTANCE_CONFIG = {
     "HIDE_PROJECT_APPLICATION_THRESHOLD": (10, "Number of applications at which to hide project", int),
     "SCHOLAR_APP_LIMIT": (9, "Number of applications a Data Scholar can submit", int),
     "APP_LIMIT": (6, "Number of applications any student can submit", int),
+    "APP_LIMIT_START_DATE": ("2021-08-09", "Start date of student application cycle (Used to filter applications when limiting application submission counts. Example format: 2021-08-09)", str),
+    "APP_LIMIT_END_DATE": ("2021-08-22", "End date of student application cycle (Used to filter applications when limiting application submission counts. Example format: 2021-08-09)", str),
     "CURRENT_SEMESTER": ("Fall 2021", "Current semester", str),
 }
 
