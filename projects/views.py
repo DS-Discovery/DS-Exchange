@@ -109,7 +109,7 @@ def apply(request, project_name):
         )
         return redirect("/projects")
 
-    count = Application.objects.filter(student=student).count()
+    count = Application.objects.filter(student=student, created_at__range=[config.APP_LIMIT_START_DATE, config.APP_LIMIT_END_DATE]).count()
 
     if count > config.APP_LIMIT - 1 and not student.is_scholar:
         messages.info(request, f'You have already applied to {config.APP_LIMIT} projects.')
