@@ -190,8 +190,10 @@ def update_application_status(request):
 
     #mailto =('<meta http-equiv="refresh" content="0;url=mailto:' +
      #email +'?subject='+ subject + '&body='+ body +' " target="_blank" />')
-    mailto = ('<a href="mailto:' + email + '?subject=' + subject + '&body=' + body +
-     ' "  target="_blank" rel="noopener noreferrer" > Application status successfully updated. Send status update email. </a>') 
+    mailto = ('Application status successfully updated. Click <a href="mailto:' + email + 
+              '?subject=' + subject + '&body=' + body + 
+              ' "  target="_blank" rel="noopener noreferrer" ><b>here</b></a> to send a status update email.') 
+    
 
     return HttpResponse(mailto, status=200)
 
