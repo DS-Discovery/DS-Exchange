@@ -89,9 +89,9 @@ class Application(models.Model):
     @property
     def status_email_subject(self):
         return {
-            "RNI": str(self.project) + " Application Status (Data Science Discovery)", #FIXME should be team name
-            "INT": "[ACTION REQUIRED] " + str(self.project)  + " Interview Request (Data Science Discovery)", #FIXME
-            "RWI": str(self.project) + " Application Status (Data Science Discovery)", #FIXME should be team name
+            "RNI": str(self.project) + " Application Status (Data Science Discovery)",
+            "INT": "[ACTION REQUIRED] " + str(self.project)  + " Interview Request (Data Science Discovery)", 
+            "RWI": str(self.project) + " Application Status (Data Science Discovery)", 
             "OFS": str(self.project) + " Application Status (Data Science Discovery)", 
             "OFR": "Status 5",
             "OFA": "Status 6"
