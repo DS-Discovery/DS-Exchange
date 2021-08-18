@@ -175,7 +175,7 @@ def update_application_status(request):
 
     if new_status in partner_statuses:
         email = str(application.student.email_address)
-        subject = "DS Discovery Application Status: " + str(application.project)
+        subject = application.status_email_subject[new_status]
         name = str(application.student.first_name)
     elif new_status in student_statuses:
         return HttpResponse("Application status successfully updated.", status=200)
@@ -183,9 +183,8 @@ def update_application_status(request):
         #subject = "DS Discovery Application Update from " + str(application.student.first_name) + " " + str(application.student.last_name)
         #name = str(application.project) #FIXME
 
-    body = ("Dear " + name + ", \n\nYour status has been updated to " + str(application.app_status_mapping[new_status]) + 
-    ". " + str(application.status_email_body[new_status]) + 
-     ". \n\nThanks for your patience in this process. \n\nSincerely, \nDS Discovery Team") #FIXME
+    body = ("Dear " + name + ", \n\n" + str(application.status_email_body[new_status]) + 
+     "\n\nSincerely, \n\n" + str(application.project) + " Team") #FIXME
     
     body = body.replace('\n', '%0D%0A')
 

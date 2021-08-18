@@ -47,10 +47,41 @@ class Application(models.Model):
     @property
     def status_email_body(self):
         return {
-            "RNI": "Status 1",
-            "INT": "Status 2",
-            "RWI": "Status 3",
-            "OFS": "Status 4",
+            "RNI": "Thank you for applying to the " + str(self.project) + " Discovery project." \
+                    " After reviewing your application, we regret to inform you that we are unable to offer " \
+                    "you a spot on the team this semester.\n\nWe received many outstanding applications this " \
+                    "fall and unfortunately, we are unable to offer spots on our team to every applicant. Our " \
+                    "decision in no way diminishes your many personal and academic accomplishments.\n\n" \
+                    "If you applied to more than one Discovery student team: other teams are continuing to notify " \
+                    "applicants in the coming weeks. Additionally, Discovery student teams will be recruiting again for Spring 2022. "\
+                    "\n\nThank you again for your interest in the " + str(self.project) + " project. Please feel free to contact " \
+                    + str(self.project.email) + " if you have any questions or concerns. We hope you consider applying " \
+                    "to the Data Science Discovery projects again.",
+            "INT": "After reviewing your application, we would like to interview you for the Fall " \
+                    "2021 " + str(self.project) + " Discovery Project. We'd like to get a chance to talk " \
+                    "to you and get to know you further, [INSERT INFORMATION ABOUT INTERVIEW SCHEDULING] " \
+                    ". \n\n" \
+                    "Interviews will take place from [INPUT DATES] remotely by [_______]. If " \
+                    "none of these days or times work for your schedule, please reply to this email as soon as " \
+                    "possible, so that we may schedule an alternate time slot.\n\n" \
+                    "Please feel free to contact " + str(self.project.email) + " if you have any questions or concerns. We look " \
+                    "forward to speaking with you soon.",
+            "RWI": "Thank you so much for taking the time to interview with us and apply for the " + str(self.project) +" Discovery " \
+                    "team. It was great getting the chance to learn more about you and your qualifications.\n\n" \
+                    "Although you were a great candidate, we regret to inform you that we are unable to offer you a spot on " \
+                    "the team this semester. We received many applications during this Fall recruitment cycle and unfortunately, " \
+                    "are unable to offer positions to everyone.\n\nOur decision does not take away from your potential and " \
+                    "all of your personal accomplishments. We hope you consider applying to the Data Science Discovery program " \
+                    "again for Spring 2022.\n\nIf you applied to more than one Discovery student team: other teams are continuing " \
+                    "to notify applicants in the coming weeks. Additionally, Discovery projects will be recruiting again in the Spring.\n\n" \
+                    "Thank you again for your interest in the " + str(self.project) + " project. Please feel free to contact " + str(self.project.email) + " if " \
+                    "you have any questions or concerns.",
+            "OFS": "Thank you for taking the time to interview with us. [optional sentence about the interview or their qualifications.]\n\n" \
+                    "We are excited to offer you a position with " + str(self.project) +" Discovery project for the Fall 2021 semester!\n\n" \
+                    "Please let us know as soon as possible whether you will be accepting this offer. This is important in order to avoid " \
+                    "any delays with your start date. But, if you're waiting to hear back from other offers or need some time to decide, " \
+                    "please let us know your decision by September 8th.\n\nIf you are being interviewed or considered for multiple Discovery " \
+                    "projects, please note that you can only accept one position offer.\n\nLooking forward to hearing from you soon!",
             "OFR": "Status 5",
             "OFA": "Status 6"
         }
@@ -58,10 +89,10 @@ class Application(models.Model):
     @property
     def status_email_subject(self):
         return {
-            "RNI": str(Project.project_name) + "Application Status (Data Science Discovery)", #FIXME should be team name
-            "INT": "Status 2",
-            "RWI": "Status 3",
-            "OFS": "Status 4",
+            "RNI": str(self.project) + " Application Status (Data Science Discovery)", #FIXME should be team name
+            "INT": "[ACTION REQUIRED] " + str(self.project)  + " Interview Request (Data Science Discovery)", #FIXME
+            "RWI": str(self.project) + " Application Status (Data Science Discovery)", #FIXME should be team name
+            "OFS": str(self.project) + " Application Status (Data Science Discovery)", 
             "OFR": "Status 5",
             "OFA": "Status 6"
         }
