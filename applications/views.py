@@ -170,10 +170,48 @@ def update_application_status(request):
     application.status = new_status
     application.save()
 
-    return HttpResponse("Application status successfully updated.", status=200)
+    partner_statuses = ["RNI", "INT", "RWI", "OFS"]
+    student_statuses = ["OFR", "OFA"]
+
+    if new_status in partner_statuses:
+        email = str(application.student.email_address)
+        subject = application.status_email_subject[new_status]
+        name = str(application.student.first_name)
+    elif new_status in student_statuses:
+        return HttpResponse("Application status successfully updated.", status=200)
+        #email = email # email is default because default is partner email
+        #subject = "DS Discovery Application Update from " + str(application.student.first_name) + " " + str(application.student.last_name)
+        #name = str(application.project) #FIXME
+
+    body = ("Dear " + name + ", \n\n" + str(application.status_email_body[new_status]) + 
+     "\n\nSincerely, \n\n" + str(application.project) + " Team") #FIXME
+    
+    body = body.replace('\n', '%0D%0A')
+
+    #mailto =('<meta http-equiv="refresh" content="0;url=mailto:' +
+     #email +'?subject='+ subject + '&body='+ body +' " target="_blank" />')
+    mailto = ('Application status successfully updated. Click <a href="mailto:' + email + 
+              '?subject=' + subject + '&body=' + body + 
+              ' "  target="_blank" rel="noopener noreferrer" ><b>here</b></a> to send a status update email.') 
+    
+
+    return HttpResponse(mailto, status=200)
+
+
+    #send_status_email(application)
+    
+    #return HttpResponse("Application status successfully updated.", status=200)
 
     # messages.info(request, "Application status successfully updated.")
     # return redirect(
     #     f"/applications?selected_applicant={application.id}&project_wanted={application.project.id}"
     #     f"&skill_wanted={request.POST.get('skill_wanted')}&level_wanted={request.POST.get('level_wanted')}"
     # )
+
+
+#def send_status_email(application):
+    
+    #mailto_syntax = mailto:student_email?subject=Discovery Application Submitted&body=Body-goes-here
+    #partner_email = str(email)
+    
+    
