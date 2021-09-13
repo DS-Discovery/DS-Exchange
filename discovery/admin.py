@@ -65,7 +65,6 @@ def status_summary(request, pages=10):
     page_query = request.GET.get("page", 1)
     any_all_query = request.GET.get("any_all", "ANY")
     filter_query = [f for f, _ in filters if request.GET.get(f, False) == "True"]
-    #print("DEBUG0: " + str(request.GET.dict()))
 
     sort_query = col_name(sort_query)
     formatted_group_query = col_name(group_query)
@@ -107,7 +106,6 @@ def status_summary(request, pages=10):
             table[col_name('Last_Name')] = [Student.objects.get(email_address=id).last_name for id in table[formatted_group_query]]
 
         table = table[table_col]
-        #print("DEBUG1: " + str(table_col))
 
         # Status Filter
         if any_all_query == "ALL":
@@ -115,7 +113,7 @@ def status_summary(request, pages=10):
         if any_all_query == "ANY":
             filter_threshold = 1
         indices = [i for i, val in table.iterrows() if sum([val[s] > 0 for s in filter_query]) >= filter_threshold]
-        #table = table.iloc[indices] - Temporary fix to allow export of all data (no filters)
+        table = table.iloc[indices] 
 
         table_row_list = []
         for _, row in table.iterrows():
@@ -123,7 +121,6 @@ def status_summary(request, pages=10):
         if len(table_row_list) == 0:
             table_row_list = [{c:"" for c in col_order}]
 
-    #print("DEBUG2: " + str(table_row_list))
     table = TrackingTable(table_row_list)
     table.order_by = sort_query
     table.paginate(page=page_query, per_page=pages)
