@@ -77,7 +77,11 @@
         <input type="hidden" name="group" value={{ group_query }}>
         <input type="hidden" name="semester" value={{ semester_query }}>
         <input type="hidden" name="any_all" value={{ any_all_query }}>
-        <input type="hidden" name="filter" value={{ filter_query }}>
+        {% for value, option in filter_support %}
+          {% if value in filter_query %}
+            <input type="hidden" name={{ value }} value="True" >
+          {% endif %}
+        {% endfor %}
         </div>
         <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
     </form>
