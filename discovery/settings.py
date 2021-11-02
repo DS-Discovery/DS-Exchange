@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 import yaml
 
+SECURE_SSL_REDIRECT = True
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -234,7 +236,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = int(os.environ.get("SITE_ID")) if os.environ.get("SITE_ID") is not None else 4
+SITE_ID = int(os.environ.get("SITE_ID")) if os.environ.get("SITE_ID") is not None else 5
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
