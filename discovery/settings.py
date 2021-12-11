@@ -237,7 +237,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # site_id is really weird, check from 1-n to see which one eventually works
-SITE_ID = int(os.environ.get("SITE_ID")) if os.environ.get("SITE_ID") is not None else 5
+SITE_ID = int(os.environ.get("SITE_ID")) if os.environ.get("SITE_ID") is not None else 4
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
