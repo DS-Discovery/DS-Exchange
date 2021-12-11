@@ -14,6 +14,13 @@ from pathlib import Path
 import os
 import yaml
 
+#SECURE_SSL_REDIRECT = True
+#USE_X_FORWARDED_HOST = True
+#SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+
+#Account default http protocol fixed oauth2 issue
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

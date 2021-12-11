@@ -180,6 +180,7 @@ def get_profile(request):
 
 
 def google_auth_redirect(request):
+    #print(request.scheme)
     return redirect("/accounts/google/login")
 
 
