@@ -7,7 +7,6 @@ from django.forms import ModelForm, Textarea
 from django.utils.translation import ugettext_lazy as _
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
-
 from students.models import Student
 
 from .models import get_default_skills, Partner, PartnerProjectInfo, Project, Question
@@ -24,7 +23,7 @@ class QuestionInLine(admin.TabularInline):
 class PartnerProjectInfoInline(admin.TabularInline):
     model = PartnerProjectInfo
     extra = 2
-    ordering = ("project", )
+   # ordering = ("project", )
 
 
 class PartnerResource(resources.ModelResource):
@@ -41,8 +40,8 @@ class PartnerAdmin(ImportExportModelAdmin):
     def all_projects(self, obj):
         return ";\n".join([str(p.project) for p in PartnerProjectInfo.objects.filter(partner = obj)])
 
-    list_display = ['last_name', 'first_name', 'email_address']
-    ordering = list_display.copy()
+    list_display = ['last_name', 'first_name', 'email_address', 'all_projects']
+    ordering = ['last_name', 'first_name', 'email_address']
 
 admin.site.register(Partner, PartnerAdmin)
 
@@ -96,15 +95,38 @@ class ProjectResource(resources.ModelResource):
         model = Project
 
 
-class ProjectAdmin(ImportExportModelAdmin):
+class ApprovedProjectAdmin(ImportExportModelAdmin):
     
     resource_class = ProjectResource
     form = ProjectAdminForm
     # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
     inlines = [QuestionInLine]
-    list_display = ('project_name', 'project_category', 'semester', 'num_applications')
+    def all_partners(self, obj):
+        return ";\n".join([str(p.partner) for p in PartnerProjectInfo.objects.filter(project = obj)])
+    list_display = ('project_name', 'project_category', 'semester', 'num_applications', 'all_partners')
     list_filter = ['project_category']
     search_fields = ['project_name']
     ordering = ("project_name", )
+    def get_queryset(self, request):
+        return self.model.objects.filter(is_approved = True)
 
-admin.site.register(Project, ProjectAdmin)
+class PendingProjectAdmin(ImportExportModelAdmin):
+    
+    resource_class = ProjectResource
+    form = ProjectAdminForm
+    # fields = ['semester', 'project_name', 'organization', 'project_category', 'student_num', 'description']
+    inlines = [QuestionInLine]
+    def all_partners(self, obj):
+        return ";\n".join([str(p.partner) for p in PartnerProjectInfo.objects.filter(project = obj)])
+    list_display = ('project_name', 'project_category', 'semester', 'num_applications', 'all_partners')
+    list_filter = ['project_category']
+    search_fields = ['project_name']
+    ordering = ("project_name", )
+    def get_queryset(self, request):
+        return self.model.objects.filter(is_approved = False)
+        
+class PendingProject(Project):
+    class Meta:
+        proxy = True
+admin.site.register(PendingProject, PendingProjectAdmin)
+admin.site.register(Project, ApprovedProjectAdmin)

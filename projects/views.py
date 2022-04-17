@@ -61,6 +61,8 @@ def get_projects_json():
     projects = []
     for p in Project.objects.all():
         d = p.to_dict()
+        if d['is_approved'] == False:
+            continue
         if d['semester'] == config.CURRENT_SEMESTER:
             d["num_applicants"] = Application.objects.filter(project=p).count()
             projects.append(d)

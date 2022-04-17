@@ -88,6 +88,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'constance', # constance
+    #'moderation', #django-moderation moderation.apps.ModerationConfig
     'projects.apps.ProjectsConfig',
     'students.apps.StudentsConfig',
     'applications.apps.ApplicationsConfig',

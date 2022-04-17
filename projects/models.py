@@ -93,6 +93,7 @@ class Project(models.Model):
     skillset = models.JSONField(default=get_default_skills, blank=True, null=True)
     additional_skills = models.CharField(max_length=500, blank=True, null=True)
     technical_requirements = models.CharField(max_length=500, blank=True, null=True)
+    is_approved = models.BooleanField(default=False, blank=True, null=True)
     # models.CharField(max_length=500, blank=True) # TODO: convert to JSON ala Student
     # TODO: dropdown for skills in admin view
 
@@ -122,6 +123,7 @@ class Project(models.Model):
             "organization_description": self.organization_description,
             "embed_link": self.embed_link,
             "semester": self.sem_mapping[self.semester],
+            "is_approved" : self.is_approved,
             "project_category": self.project_category.split(";") if self.project_category != '' and self.project_category != None else [],
             "student_num": self.student_num_fn(),
             "description": self.description,
@@ -137,7 +139,6 @@ class Project(models.Model):
             "optional_q2": self.optional_q2,
             "optional_q3": self.optional_q3,
         }
-
 
 class Partner(models.Model):
     email_address = models.EmailField(primary_key=True)
@@ -195,7 +196,6 @@ class Question(models.Model):
 
     def __str__(self):
         return self.project.project_name + " - " + self.question_text
-
 
 from applications.models import Application
 from students.models import Student
