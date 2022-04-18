@@ -1,5 +1,5 @@
 from django.contrib.admin import AdminSite
-from django.conf.urls import url
+from django.urls import re_path as url
 from django.template.response import TemplateResponse
 from django.contrib.admin.views.decorators import staff_member_required
 
