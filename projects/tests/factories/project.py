@@ -33,3 +33,4 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     skillset = factory.LazyAttribute(generate_skills)
     additional_skills = factory.Faker('paragraph')
     technical_requirements = factory.Faker('paragraph')
+    is_approved = True
