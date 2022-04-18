@@ -23,7 +23,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     embed_link = factory.Faker('url')
     semester = 'SP21'
     project_category = factory.LazyAttribute(lambda o: ';'.join(fake.words(random.randint(1, 9))))
-    student_num = factory.Faker('random_number')
+    student_num = 3
     description = factory.Faker('paragraph')
     organization_description = factory.Faker('paragraph')
     timeline = factory.Faker('paragraph')
