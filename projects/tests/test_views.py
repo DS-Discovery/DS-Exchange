@@ -160,7 +160,7 @@ class ViewsTestCase(TestCase):
         self.assertTrue(user.is_authenticated)
 
         config.APP_LIMIT = 10
-        config.SCHOLAR_APP_LIMIT = 10
+        config.SCHOLAR_APP_LIMIT = 0
         config.APPLICATIONS_OPEN = True
 
         project_name = self.project.project_name
@@ -184,7 +184,7 @@ class ViewsTestCase(TestCase):
         user = auth.get_user(self.client)
         self.assertTrue(user.is_authenticated)
 
-        config.APP_LIMIT = 1
+        config.APP_LIMIT = 0
         config.SCHOLAR_APP_LIMIT = 10
         config.APPLICATIONS_OPEN = True
 
