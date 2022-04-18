@@ -192,7 +192,7 @@ class ViewsTestCase(TestCase):
         response = self.client.get(reverse('apply', args=(project_name,)))
         self.assertRedirects(response,
                              '/projects',
-                             status_code=302,
+                             status_code=200,
                              target_status_code=301,
                              fetch_redirect_response=True)
         messages = list(get_messages(response.wsgi_request))
@@ -217,7 +217,7 @@ class ViewsTestCase(TestCase):
         response = self.client.get(reverse('apply', args=(project_name,)))
         self.assertRedirects(response,
                              '/projects',
-                             status_code=302,
+                             status_code=200,
                              target_status_code=301,
                              fetch_redirect_response=True)
         messages = list(get_messages(response.wsgi_request))
