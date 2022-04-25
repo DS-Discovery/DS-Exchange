@@ -4,7 +4,7 @@ import logging
 from django import forms
 from django.contrib import admin
 from django.forms import ModelForm, Textarea
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy  as _
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from students.models import Student
@@ -124,7 +124,7 @@ class PendingProjectAdmin(ImportExportModelAdmin):
     ordering = ("project_name", )
     def get_queryset(self, request):
         return self.model.objects.filter(is_approved = False)
-        
+
 class PendingProject(Project):
     class Meta:
         proxy = True
