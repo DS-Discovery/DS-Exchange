@@ -1,0 +1,65 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load render_table from django_tables2 %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "css/table.css" %}">
+<script type="text/javascript" src="{% static "js/usertools.js" %}" defer></script>
+{% endblock %}
+
+{% block sidebar %}
+<span class="user-tools">
+  <h1 id='tools'>{% translate 'Tools' %}</h1>
+  <div id='tools-drop'>
+    <form class="actions">
+        
+        <h2 id='semester'>{% translate 'Semester' %}</h2>
+        <div id='semester-drop'>
+          <select name="semester" required="">
+            {% for value, option in semester_support %}
+            <option value={{ value }} {% if semester_query == value %}selected{% endif %}> {% translate option %}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        
+    
+        
+  
+
+
+      <h2 id='proj'>{% translate 'Project' %}</h2>
+      <div id='proj-drop'>
+        <select name="proj" required="">
+          {% for value in proj_support %}
+          <option value={{ value }} {% if proj_query == value %}selected{% endif %}> {{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      
+      <br/>
+      </div>
+      <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
+  </form>
+    <form class="actions">
+        <h2 id='export'>{% translate 'Export' %}</h2>
+        <div id='export-drop'>
+        <select name="export" required="">
+          <option value="" selected="">---------</option>
+          {% for format in export_support %}
+          <option value={{ format }}>{{ format }}</option>
+          {% endfor %}
+        
+        </div>
+        <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
+    </form>
+  </div>
+</span>
+{% endblock %}
+
+{% block content %}
+{% render_table table %}
+{% endblock %}
