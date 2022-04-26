@@ -158,7 +158,7 @@ def status_summary(request, pages=10):
 
 class RosterTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
-    col_order = [col_name('Email_Address'), col_name('First_Name'), col_name('Last_Name'), col_name('Status')]
+    col_order = [col_name('Email_Address'), col_name('First_Name'), col_name('Last_Name'), col_name('Status'), col_name('Student_id'), col_name('college'), col_name('Major'), col_name('Year'), col_name('resume_link'), col_name('general_question')]
     for column in col_order:
         if column in status:
             cmd = f'{column} = tables.Column(orderable=True, verbose_name="{column}")'
@@ -171,34 +171,32 @@ class RosterTable(ExportMixin, tables.Table):
 def project_roster(request, pages=10):
    
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
-    # semester_query = inv_sem_map[config.CURRENT_SEMESTER]
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
     filter_query = [f for f, _ in filters if request.GET.get(f, False) == "True"]
     filter_set = set([application_status_mapping[f.upper()] for f, _ in filters if request.GET.get(f, False) == "True"])
- 
+    def remove_spaces(s):
+        return s.replace(" ", "")
 
     projs = Project.objects.filter(semester=semester_query.upper(), is_approved=True)
-    project_name_space_map = {k.project_name.replace(" ", "") : k.project_name for k in projs}
+    project_removed_space_map = {remove_spaces(k.project_name) : k.project_name for k in projs}
     if len(projs) == 0:
         return "No projs"
-    proj_query = request.GET.get('project', projs[0].project_name.replace(" ", ""))
+    proj_query = request.GET.get('project', remove_spaces(projs[0].project_name))
     proj_names = [p.project_name for p in projs]
-    if project_name_space_map[proj_query] not in proj_names:
-        proj_query = projs[0].project_name.replace(" ", "")
+    if project_removed_space_map[proj_query] not in proj_names:
+        proj_query = remove_spaces(projs[0].project_name)
 
-    proj = Project.objects.filter(project_name=project_name_space_map[proj_query])[0]
+    proj = Project.objects.filter(project_name=project_removed_space_map[proj_query])[0]
     filtered = Application.objects.filter(project=proj)
     students_emails = filtered.values_list("student")
 
-    
     students = Student.objects.filter(email_address__in = students_emails)
 
     df = pd.DataFrame([model_to_dict(s) for s in students])
     if df.shape[0] == 0:
         table_row_list = [{c:"" for c in col_order}]
     else:
-
         df['Status'] = [application_status_mapping[Application.objects.get(student=e).status] for e in df['email_address']]
         df.columns = [col_name(t) for t in df.columns]
         
@@ -216,17 +214,17 @@ def project_roster(request, pages=10):
     # To export filtered table
     if TableExport.is_valid_format(export_query):
         exporter = TableExport(export_query, table)
-        return exporter.response('{}_project_roster.{}'.format(project_name_space_map[proj_query], export_query))
+        return exporter.response('{}_project_roster.{}'.format(project_removed_space_map[proj_query], export_query))
     possible_semesters = set([s['semester'] for s in Project.objects.order_by().values('semester').distinct()])
     context = dict(
-       title='Project Roster for {}'.format(project_name_space_map[proj_query]),
+       title='Project Roster for {}'.format(project_removed_space_map[proj_query]),
        has_permission=request.user.is_authenticated,
        site_url=True,
        table=table,
        # Allowable Values
        filter_support=filters,
     #    semester_support=[(s[0], s[1]) for s in Semester.choices if s[0] in possible_semesters],
-       proj_support = [(p.project_name.replace(" ", ''),p.project_name)  for p in projs],
+       proj_support = [(remove_spaces(p.project_name),p.project_name)  for p in projs],
        export_support=table.export_querys,
     #    semester_query=semester_query,
        proj_query = proj_query,
