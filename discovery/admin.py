@@ -171,7 +171,7 @@ class RosterTable(ExportMixin, tables.Table):
 def project_roster(request, pages=10):
    
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
-    
+    # semester_query = inv_sem_map[config.CURRENT_SEMESTER]
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
 
@@ -180,6 +180,10 @@ def project_roster(request, pages=10):
     if len(projs) == 0:
         return "No projs"
     proj_query = request.GET.get('project', projs[0].project_name.replace(" ", ""))
+    proj_names = [p.project_name for p in projs]
+    if project_name_space_map[proj_query] not in proj_names:
+        proj_query = projs[0].project_name.replace(" ", "")
+
     proj = Project.objects.filter(project_name=project_name_space_map[proj_query])[0]
     filtered = Application.objects.filter(project=proj)
     students_emails = filtered.values_list("student")
@@ -208,19 +212,19 @@ def project_roster(request, pages=10):
     # To export filtered table
     if TableExport.is_valid_format(export_query):
         exporter = TableExport(export_query, table)
-        return exporter.response('project_roster.{}'.format(export_query))
+        return exporter.response('{}_project_roster.{}'.format(project_name_space_map[proj_query], export_query))
     possible_semesters = set([s['semester'] for s in Project.objects.order_by().values('semester').distinct()])
     context = dict(
-       title='Project Roster for {}'.format(proj_query),
+       title='Project Roster for {}'.format(project_name_space_map[proj_query]),
        has_permission=request.user.is_authenticated,
        site_url=True,
        table=table,
        # Allowable Values
        filter_support=filters,
-       semester_support=[(s[0], s[1]) for s in Semester.choices if s[0] in possible_semesters],
+    #    semester_support=[(s[0], s[1]) for s in Semester.choices if s[0] in possible_semesters],
        proj_support = [(p.project_name.replace(" ", ''),p.project_name)  for p in projs],
        export_support=table.export_querys,
-       semester_query=semester_query,
+    #    semester_query=semester_query,
        proj_query = proj_query,
     )
     return TemplateResponse(request, "admin/project_roster.html", context)

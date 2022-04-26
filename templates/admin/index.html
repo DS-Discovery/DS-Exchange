@@ -1,7 +1,8 @@
 {% extends "admin/index.html" %}
 <!-- From: C:\ProgramData\Anaconda3\Lib\site-packages\django\contrib\admin\templates\admin -->
-
+{% load helperfuncs %}
 {% load i18n static %}
+
 
 <!-- Only replacing a part of the sidebar -->
 {% block sidebar %}
@@ -14,7 +15,7 @@
               
           </li>
           <li>
-            <a href='project_roster?'>{% translate 'Project Roster' %}</a>
+            <a href='project_roster?semester={% current_semester %}'>{% translate 'Project Roster' %}</a>
           </li>
         </ul>
         <h2>{% translate 'Recent actions' %}</h2>

@@ -15,21 +15,19 @@
   <div id='tools-drop'>
     <form class="actions">
         
-        <h2 id='semester'>{% translate 'Semester' %}</h2>
+        <!-- <h2 id='semester'>{% translate 'Semester' %}</h2>
         <div id='semester-drop'>
           <select name="semester" required="">
             {% for value, option in semester_support %}
             <option value={{ value }} {% if semester_query == value %}selected{% endif %}> {% translate option %}</option>
             {% endfor %}
           </select>
-        </div>
+        </div> -->
 
         
     
         
-  
-
-
+      
       <h2 id='project'>{% translate 'Project' %}</h2>
       <div id='project-drop'>
         <select name="project" required="">
@@ -44,19 +42,20 @@
       </div>
       <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
   </form>
-    <form class="actions">
-        <h2 id='export'>{% translate 'Export' %}</h2>
-        <div id='export-drop'>
-        <select name="export" required="">
-          <option value="" selected="">---------</option>
-          {% for format in export_support %}
-          <option value={{ format }}>{{ format }}</option>
-          {% endfor %}
-          <br/>
-        </div>
-        <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
-    </form>
-  </div>
+  <form class="actions">
+    <h2 id='export'>{% translate 'Export' %}</h2>
+    <div id='export-drop'>
+    <select name="export" required="">
+      <option value="" selected="">---------</option>
+      {% for format in export_support %}
+      <option value={{ format }}>{{ format }}</option>
+      {% endfor %}
+    </select>
+    
+    </div>
+    <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
+</form>
+</div>
 </span>
 {% endblock %}
 
