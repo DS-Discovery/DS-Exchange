@@ -178,7 +178,7 @@ def project_roster(request, pages=10):
     filter_set = set([application_status_mapping[f.upper()] for f, _ in filters if request.GET.get(f, False) == "True"])
  
 
-    projs = Project.objects.filter(semester=semester_query.upper())
+    projs = Project.objects.filter(semester=semester_query.upper(), is_approved=True)
     project_name_space_map = {k.project_name.replace(" ", "") : k.project_name for k in projs}
     if len(projs) == 0:
         return "No projs"
