@@ -37,6 +37,7 @@ function select_toggle_onclick(id) {
   let elem = document.getElementById(id);
   let select_mode = elem.classList.contains('select')? true : false;
   elem.onclick = function() { toggle_select( select_mode) };
+
 }
 ['tools', 'group', 'display', 'semester', 'filter', 'export'].forEach(add_onclick);
 ['showSelect', 'showDeselect'].forEach(select_toggle_onclick);

@@ -6,7 +6,7 @@
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
 <link rel="stylesheet" type="text/css" href="{% static "css/table.css" %}">
-<script type="text/javascript" src="{% static "js/usertools.js" %}" defer></script>
+\
 {% endblock %}
 
 {% block sidebar %}
@@ -24,9 +24,6 @@
           </select>
         </div> -->
 
-        
-    
-        
       
       <h2 id='project'>{% translate 'Project' %}</h2>
       <div id='project-drop'>
@@ -38,22 +35,16 @@
       </div>
       <h2 id='filter'>{% translate 'Status Filter' %}</h2>
       <div id='filter-drop'>
-      <label>{% translate 'Show students that meet' %}
-
-    
-
-          
-  
-           {% translate 'of the selected conditions.' %}</label>
-           <br/>
+      <label>{% translate 'Show students that meet of the selected conditions.' %}</label>
+       <br/>
       {% for value, option in filter_support %}
       <br/>
       <label><input type="checkbox" name={{ value }} value="True" {% if value in filter_query %}checked{% endif %}/> {% translate option %}</label>
       {% endfor %}
-     
-      
-      
       <br/>
+        <!-- <button id="showSelect" class="show select button">{% translate 'Select all' %}</button>
+        <button id="showDeselect" class="show deselect button">{% translate 'Deselect all' %}</button> -->
+        <br/>
       </div>
       <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
   </form>
