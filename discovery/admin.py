@@ -174,6 +174,9 @@ def project_roster(request, pages=10):
     # semester_query = inv_sem_map[config.CURRENT_SEMESTER]
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
+    filter_query = [f for f, _ in filters if request.GET.get(f, False) == "True"]
+    filter_set = set([application_status_mapping[f.upper()] for f, _ in filters if request.GET.get(f, False) == "True"])
+ 
 
     projs = Project.objects.filter(semester=semester_query.upper())
     project_name_space_map = {k.project_name.replace(" ", "") : k.project_name for k in projs}
@@ -202,7 +205,8 @@ def project_roster(request, pages=10):
         table = df
         table_row_list = []
         for _, row in table.iterrows():
-            table_row_list.append(row.to_dict())
+            if row['Status'] in filter_set:
+                table_row_list.append(row.to_dict())
         if len(table_row_list) == 0:
             table_row_list = [{c:"" for c in col_order}]
   
@@ -226,6 +230,7 @@ def project_roster(request, pages=10):
        export_support=table.export_querys,
     #    semester_query=semester_query,
        proj_query = proj_query,
+        filter_query=filter_query,
     )
     return TemplateResponse(request, "admin/project_roster.html", context)
 

@@ -36,7 +36,22 @@
           {% endfor %}
         </select>
       </div>
+      <h2 id='filter'>{% translate 'Status Filter' %}</h2>
+      <div id='filter-drop'>
+      <label>{% translate 'Show students that meet' %}
 
+    
+
+          
+  
+           {% translate 'of the selected conditions.' %}</label>
+           <br/>
+      {% for value, option in filter_support %}
+      <br/>
+      <label><input type="checkbox" name={{ value }} value="True" {% if value in filter_query %}checked{% endif %}/> {% translate option %}</label>
+      {% endfor %}
+     
+      
       
       <br/>
       </div>
