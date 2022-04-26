@@ -34,6 +34,7 @@ def verbose_name(name):
     return name.title().replace('_', ' ')
 
 col_rename = {col_name(t[0]):verbose_name(str(t[1])) for t in Application.ApplicationStatus.choices}
+application_status_mapping = {t[0]:t[1] for t in Application.ApplicationStatus.choices}
 status = list(col_rename.keys())
 total = [col_name('Total')]
 student_group = [col_name('Student'), col_name('First_Name'), col_name('Last_Name')]
@@ -157,7 +158,7 @@ def status_summary(request, pages=10):
 
 class RosterTable(ExportMixin, tables.Table):
     export_querys = ['csv', 'json', 'latex', 'ods', 'tsv', 'xls', 'xlsx', 'yaml']
-    col_order = [col_name('Email_Address'), col_name('First_Name'), col_name('Last_Name')]
+    col_order = [col_name('Email_Address'), col_name('First_Name'), col_name('Last_Name'), col_name('Status')]
     for column in col_order:
         if column in status:
             cmd = f'{column} = tables.Column(orderable=True, verbose_name="{column}")'
@@ -170,27 +171,30 @@ class RosterTable(ExportMixin, tables.Table):
 def project_roster(request, pages=10):
    
     semester_query = request.GET.get('semester', inv_sem_map[config.CURRENT_SEMESTER])
-   
+    
     export_query = request.GET.get('export', None)
     page_query = request.GET.get("page", 1)
 
     projs = Project.objects.filter(semester=semester_query.upper())
-
+    project_name_space_map = {k.project_name.replace(" ", "") : k.project_name for k in projs}
     if len(projs) == 0:
         return "No projs"
-    proj_query = request.GET.get('proj', projs[0])
-    filtered = Application.objects.filter(project=proj_query)
+    proj_query = request.GET.get('project', projs[0].project_name.replace(" ", ""))
+    proj = Project.objects.filter(project_name=project_name_space_map[proj_query])[0]
+    filtered = Application.objects.filter(project=proj)
     students_emails = filtered.values_list("student")
 
     
     students = Student.objects.filter(email_address__in = students_emails)
 
     df = pd.DataFrame([model_to_dict(s) for s in students])
-    print("DFSFFSF", df)
     if df.shape[0] == 0:
         table_row_list = [{c:"" for c in col_order}]
     else:
+
+        df['Status'] = [application_status_mapping[Application.objects.get(student=e).status] for e in df['email_address']]
         df.columns = [col_name(t) for t in df.columns]
+        
         table = df
         table_row_list = []
         for _, row in table.iterrows():
@@ -207,14 +211,14 @@ def project_roster(request, pages=10):
         return exporter.response('project_roster.{}'.format(export_query))
     possible_semesters = set([s['semester'] for s in Project.objects.order_by().values('semester').distinct()])
     context = dict(
-       title='Project Roster',
+       title='Project Roster for {}'.format(proj_query),
        has_permission=request.user.is_authenticated,
        site_url=True,
        table=table,
        # Allowable Values
        filter_support=filters,
        semester_support=[(s[0], s[1]) for s in Semester.choices if s[0] in possible_semesters],
-       proj_support = projs,
+       proj_support = [(p.project_name.replace(" ", ''),p.project_name)  for p in projs],
        export_support=table.export_querys,
        semester_query=semester_query,
        proj_query = proj_query,

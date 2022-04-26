@@ -30,11 +30,11 @@
   
 
 
-      <h2 id='proj'>{% translate 'Project' %}</h2>
-      <div id='proj-drop'>
-        <select name="proj" required="">
-          {% for value in proj_support %}
-          <option value={{ value }} {% if proj_query == value %}selected{% endif %}> {{ value }}</option>
+      <h2 id='project'>{% translate 'Project' %}</h2>
+      <div id='project-drop'>
+        <select name="project" required="">
+          {% for value, option in proj_support %}
+          <option value={{ value }} {% if proj_query == value %}selected{% endif %}> {% translate option %}</option>
           {% endfor %}
         </select>
       </div>
@@ -52,7 +52,7 @@
           {% for format in export_support %}
           <option value={{ format }}>{{ format }}</option>
           {% endfor %}
-        
+          <br/>
         </div>
         <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
     </form>
