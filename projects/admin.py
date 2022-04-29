@@ -36,6 +36,7 @@ class PartnerAdmin(ImportExportModelAdmin):
     resource_class = PartnerResource
     fields = [ 'email_address','first_name','last_name',]
     inlines = [PartnerProjectInfoInline]
+    search_fields = ('email_address', 'first_name', 'last_name')
 
     def all_projects(self, obj):
         return ";\n".join([str(p.project) for p in PartnerProjectInfo.objects.filter(partner = obj)])
