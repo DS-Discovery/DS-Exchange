@@ -17,6 +17,7 @@ class StudentAdmin(ImportExportModelAdmin):
     resource_class = StudentResource
     list_display = ['last_name', 'first_name', 'student_id', 'email_address', ]
     ordering = list_display.copy()
+    search_fields = ('email_address', 'student_id', 'first_name','last_name')
 
 admin.site.register(Student, StudentAdmin)
 

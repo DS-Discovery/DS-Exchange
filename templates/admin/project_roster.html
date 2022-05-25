@@ -1,0 +1,70 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% load render_table from django_tables2 %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}">
+<link rel="stylesheet" type="text/css" href="{% static "css/table.css" %}">
+\
+{% endblock %}
+
+{% block sidebar %}
+<span class="user-tools">
+  <h1 id='tools'>{% translate 'Tools' %}</h1>
+  <div id='tools-drop'>
+    <form class="actions">
+        
+        <!-- <h2 id='semester'>{% translate 'Semester' %}</h2>
+        <div id='semester-drop'>
+          <select name="semester" required="">
+            {% for value, option in semester_support %}
+            <option value={{ value }} {% if semester_query == value %}selected{% endif %}> {% translate option %}</option>
+            {% endfor %}
+          </select>
+        </div> -->
+
+      
+      <h2 id='project'>{% translate 'Project' %}</h2>
+      <div id='project-drop'>
+        <select name="project" required="">
+          {% for value, option in proj_support %}
+          <option value={{ value }} {% if proj_query == value %}selected{% endif %}> {% translate option %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <h2 id='filter'>{% translate 'Status Filter' %}</h2>
+      <div id='filter-drop'>
+      <label>{% translate 'Show students that meet of the selected conditions.' %}</label>
+       <br/>
+      {% for value, option in filter_support %}
+      <br/>
+      <label><input type="checkbox" name={{ value }} value="True" {% if value in filter_query %}checked{% endif %}/> {% translate option %}</label>
+      {% endfor %}
+      <br/>
+        <!-- <button id="showSelect" class="show select button">{% translate 'Select all' %}</button>
+        <button id="showDeselect" class="show deselect button">{% translate 'Deselect all' %}</button> -->
+        <br/>
+      </div>
+      <button type="submit" class="button" title="Run the selected action">{% translate 'Go' %}</button>
+  </form>
+  <form class="actions">
+    <h2 id='export'>{% translate 'Export' %}</h2>
+    <div id='export-drop'>
+    <select name="export" required="">
+      <option value="" selected="">---------</option>
+      {% for format in export_support %}
+      <option value={{ format }}>{{ format }}</option>
+      {% endfor %}
+    </select>
+    
+    </div>
+    <button type="submit" class="button" title="Export">{% translate 'Export' %}</button>
+</form>
+</div>
+</span>
+{% endblock %}
+
+{% block content %}
+{% render_table table %}
+{% endblock %}

@@ -31,7 +31,9 @@ container
 
                     <strong>{{ project.project_name }}</strong> ({{ project.organization }})<br>
                     {% with projectPartnerRoles|getIx:project.project_name as partnerProjectInfos %}
-                        <em>Role:</em> {{ partnerProjectInfos.role }}
+                        <em>Role:</em> {{ partnerProjectInfos.role }} <br>
+                        <em>Approved:</em> {{ project.is_approved }} <br>
+                        
                         {% if project.semester == current_semester %}
                         <br>
                         <a href="/projects/edit_project?project={{project.id}}"><button type="button" class="btn btn-outline-info">Edit</button></a>

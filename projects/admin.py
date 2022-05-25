@@ -36,6 +36,7 @@ class PartnerAdmin(ImportExportModelAdmin):
     resource_class = PartnerResource
     fields = [ 'email_address','first_name','last_name',]
     inlines = [PartnerProjectInfoInline]
+    search_fields = ('email_address', 'first_name', 'last_name')
 
     def all_projects(self, obj):
         return ";\n".join([str(p.project) for p in PartnerProjectInfo.objects.filter(partner = obj)])
@@ -95,6 +96,8 @@ class ProjectResource(resources.ModelResource):
         model = Project
 
 
+
+
 class ApprovedProjectAdmin(ImportExportModelAdmin):
     
     resource_class = ProjectResource
@@ -107,6 +110,12 @@ class ApprovedProjectAdmin(ImportExportModelAdmin):
     list_filter = ['project_category']
     search_fields = ['project_name']
     ordering = ("project_name", )
+    actions = ['unapprove_selected']
+    
+    def unapprove_selected(self, request, queryset):
+        queryset.update(is_approved=False)
+
+
     def get_queryset(self, request):
         return self.model.objects.filter(is_approved = True)
 
@@ -122,6 +131,11 @@ class PendingProjectAdmin(ImportExportModelAdmin):
     list_filter = ['project_category']
     search_fields = ['project_name']
     ordering = ("project_name", )
+    actions = ['approve_selected']
+    
+    def approve_selected(self, request, queryset):
+        queryset.update(is_approved=True)
+
     def get_queryset(self, request):
         return self.model.objects.filter(is_approved = False)
 

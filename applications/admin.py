@@ -15,5 +15,6 @@ class ApplicationAdmin(ImportExportModelAdmin):
     resource_class = ApplicationResource
     list_display = ('id', 'project', 'student', 'status')
     ordering = ('id', )
+    search_fields = ('student', 'status', 'project')
 
 admin.site.register(Application, ApplicationAdmin)

@@ -1,4 +1,6 @@
 from django import template 
+from constance import config
+from projects.models import Project
 
 register = template.Library()
 
@@ -41,3 +43,7 @@ def get_attr(obj, attr):
 def is_group_member(user, group_name):
     return user.groups.filter(name=group_name).exists()
 
+@register.simple_tag
+def current_semester():
+    inv_sem_map = {v:k for k, v in Project.sem_mapping.items()}
+    return inv_sem_map[config.CURRENT_SEMESTER]

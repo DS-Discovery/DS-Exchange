@@ -97,7 +97,7 @@ class StudentSignupTest(StaticLiveServerTestCase):
         if (pprojList != None) :
             for pgElement in self.selenium.find_elements_by_xpath("//div[contains(@class, 'list-group-item')]"):
                 text = pgElement.text
-                role = text.split("Role: ",1)[1]
+                role = text.split("Role: ",1)[1].replace("\nApproved: True", "")
                 project_name = text.split(" (")[0]
                 organization = re.search('\((.*)\)',text).group(1)
 
